@@ -190,6 +190,8 @@ const endView        = document.getElementById('end-view');
 const endSubtitle    = document.getElementById('end-subtitle');
 const endGrade       = document.getElementById('end-grade');
 const restartBtn     = document.getElementById('restart-btn');
+const siteFooter     = document.querySelector('.site-footer');
+const landingLegal   = document.querySelector('.landing-legal');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function shuffle(arr) {
@@ -255,6 +257,9 @@ function startQuiz(animate) {
       mainEl.classList.add('quiz-reveal');
     }
   }
+
+  const sidebar = document.querySelector('.quiz-sidebar');
+  if (sidebar) sidebar.classList.add('sidebar-visible');
 
   renderQuestion();
   requestAnimationFrame(alignSidebar);
@@ -344,6 +349,10 @@ function selectLanguage(lang) {
   const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
   const DUR  = 680;
 
+  // Hide footer and landing legal links for the duration of the transition
+  if (siteFooter)    siteFooter.style.visibility    = 'hidden';
+  if (landingLegal)  landingLegal.style.visibility  = 'hidden';
+
   // Step 1 — fade out subtitle and button
   heroSub.classList.add('fade-out');
   langButtons.classList.add('fade-out');
@@ -426,6 +435,8 @@ function selectLanguage(lang) {
         landingView.style.cssText = '';
         const c = document.getElementById('logo-clone');
         if (c) c.remove();
+        if (siteFooter)   siteFooter.style.visibility   = '';
+        if (landingLegal) landingLegal.style.visibility = '';
       }, FADE + 20);
     }, DUR);
 
@@ -444,11 +455,14 @@ document.querySelector('#site-header .logo').addEventListener('click', () => {
   quizView.classList.add('hidden');
   endView.classList.add('hidden');
   questionCounter.classList.add('hidden');
+  const sidebar = document.querySelector('.quiz-sidebar');
+  if (sidebar) sidebar.classList.remove('sidebar-visible');
 
   // Reset landing to initial state
   heroLogo.style.visibility = '';
   heroSub.classList.remove('fade-out');
   langButtons.classList.remove('fade-out');
+  if (landingLegal) landingLegal.style.visibility = '';
   landingView.style.cssText = '';
   landingView.classList.remove('hidden');
 

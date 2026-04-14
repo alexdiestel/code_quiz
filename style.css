@@ -94,6 +94,7 @@ body {
   opacity: 0;
   transition: none;
 }
+.logo-icon-letters { color: var(--orange); }
 .logo-text { display: flex; flex-direction: column; line-height: 1.2; }
 .logo-title { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
 .logo-u { color: var(--orange); }
@@ -121,7 +122,8 @@ body {
 
 /* Sidebar: fixed, floats right of the centered 740px column.
    Right edge of content = 50vw + 370px. Ad starts 20px beyond that.
-   Minimum viewport to fit without overlap: 740 + 2×(20 + 160) = 1100px */
+   Minimum viewport to fit without overlap: 740 + 2×(20 + 160) = 1100px
+   Hidden by default — JS adds .sidebar-visible when quiz starts. */
 .quiz-sidebar {
   display: none;
   position: fixed;
@@ -131,77 +133,82 @@ body {
   z-index: 50;
 }
 @media (min-width: 1100px) {
-  .quiz-sidebar { display: block; }
+  .quiz-sidebar { display: block; visibility: hidden; }
+  .quiz-sidebar.sidebar-visible { visibility: visible; }
 }
 
-/* ── Skyscraper ad (160px wide, vertical) ─────────────────────────────────── */
-.ad-sky {
+/* ── Ad slot placeholder (shown until Carbon Ads script is live) ─────────── */
+.carbonads-placeholder {
+  width: 160px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.carbonads-stripe {
+  height: 260px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #12182a,
+    #12182a 6px,
+    #161d30 6px,
+    #161d30 12px
+  );
+  border: 1px solid #1e2840;
+  border-radius: var(--radius-sm);
+  opacity: .5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: .05em;
+}
+.carbonads-cq {
+  color: var(--orange);
+}
+
+/* ── Carbon Ads — #carbonads is injected by their script; we style it here ── */
+#carbonads {
   width: 160px;
   background: #0f1623;
   border: 1px solid #2a3a55;
   border-radius: var(--radius-sm);
   overflow: hidden;
+  font-family: 'Inter', sans-serif;
+}
+#carbonads .carbon-wrap {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
 }
-.ad-sky > .ad-badge {
-  padding: 8px 10px 6px;
-  text-align: center;
-}
-.ad-sky-thumb {
+#carbonads .carbon-img img {
+  display: block;
   width: 160px;
-  height: 120px;
-  flex-shrink: 0;
-  background: linear-gradient(160deg, #1e3a5f 0%, #0f2340 100%);
-  border-top: 1px solid #2a3a55;
+  height: auto;
   border-bottom: 1px solid #2a3a55;
-  position: relative;
 }
-.ad-sky-thumb::after {
-  content: '{ }';
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #3b82f6;
-  opacity: .7;
-}
-.ad-sky-copy {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px 12px;
-}
-.ad-sky-headline {
-  font-family: 'Inter', sans-serif;
-  font-size: .82rem;
-  font-weight: 700;
+#carbonads .carbon-text {
+  font-size: .8rem;
   color: #cbd5e1;
-  line-height: 1.3;
+  line-height: 1.5;
+  padding: 12px 12px 10px;
+  display: block;
+  text-decoration: none;
 }
-.ad-sky-sub {
-  font-family: 'Inter', sans-serif;
-  font-size: .73rem;
+#carbonads .carbon-text:hover { color: #fff; }
+#carbonads .carbon-poweredby {
+  display: block;
+  font-size: .68rem;
   color: var(--text-muted);
-  line-height: 1.55;
+  text-align: right;
+  padding: 0 10px 10px;
+  text-decoration: none;
 }
-.ad-sky-cta {
-  margin: 0 12px 14px;
-  font-family: 'Inter', sans-serif;
-  font-size: .78rem;
-  font-weight: 600;
-  color: #fff;
-  background: #2563eb;
-  border-radius: 6px;
-  padding: 9px 0;
-  text-align: center;
-}
+#carbonads .carbon-poweredby:hover { color: var(--text-dim); }
+/* Hide the "ads via Carbon" badge — optional, remove if Carbon requires it visible */
+/* #carbonads .carbon-poweredby { display: none; } */
 
 /* ── Shared card ─────────────────────────────────────────────────────────── */
 .card {
@@ -361,7 +368,7 @@ body {
 .difficulty-badge.easy   { color: var(--green);  background: rgba(34,197,94,.08);  border-color: rgba(34,197,94,.3);  }
 .difficulty-badge.medium { color: var(--yellow); background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.3); }
 .difficulty-badge.hard   { color: var(--red);    background: rgba(244,63,94,.08);  border-color: rgba(244,63,94,.3);  }
-.difficulty-badge.boss   { color: var(--orange); background: rgba(254,188,46,.08); border-color: rgba(254,188,46,.35); text-shadow: 0 0 10px rgba(254,188,46,.35); }
+.difficulty-badge.boss   { color: var(--primary-lt); background: rgba(167,139,250,.08); border-color: rgba(167,139,250,.35); text-shadow: 0 0 10px rgba(167,139,250,.25); }
 
 /* ── Question meta (category tag) ────────────────────────────────────────── */
 .question-meta {
