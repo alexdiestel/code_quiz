@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code_Quiz</title>
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+  <!-- ── Header (hidden until a language is chosen) ───────────────────────── -->
+  <header class="site-header header-hidden" id="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">{ }</div>
+        <div class="logo-text">
+          <span class="logo-title">Code<span class="logo-u">_</span>Quiz</span>
+          <span class="logo-sub" id="logo-sub">Python</span>
+        </div>
+      </div>
+      <div class="question-counter hidden" id="question-counter">1 / 0</div>
+    </div>
+  </header>
+
+  <!-- ── Landing ──────────────────────────────────────────────────────────── -->
+  <div id="landing-view">
+    <div id="hero-content">
+
+      <h1 id="hero-logo">Code<span class="hero-u">_</span>Quiz</h1>
+
+      <p id="hero-sub">Read the code. Guess the output.</p>
+
+      <div id="lang-buttons">
+        <button class="lang-btn" id="python-btn">Python</button>
+        <!-- future languages slot in here -->
+      </div>
+
+    </div>
+
+    <nav class="landing-legal">
+      <a href="impressum.html">Impressum</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </div>
+
+  <!-- ── Main ─────────────────────────────────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Quiz view -->
+    <div id="quiz-view" class="hidden">
+
+      <div class="progress-wrap">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+        <span class="difficulty-badge easy" id="difficulty-badge">Easy</span>
+      </div>
+
+      <div class="card" id="question-card">
+
+        <div class="question-meta">
+          <span class="category-tag" id="category-tag"></span>
+        </div>
+        <p class="question-text" id="question-text"></p>
+
+        <div class="code-window">
+          <div class="code-titlebar">
+            <div class="dots">
+              <span class="dot dot-r"></span>
+              <span class="dot dot-y"></span>
+              <span class="dot dot-g"></span>
+            </div>
+            <span class="code-filename">snippet.py</span>
+          </div>
+          <pre class="code-body"><code class="language-python" id="code-display"></code></pre>
+        </div>
+
+        <div class="choices" id="choices-container"></div>
+
+      </div>
+
+      <div class="card feedback-card hidden" id="feedback-card">
+
+        <div class="feedback-status">
+          <span class="status-icon" id="status-icon"></span>
+          <span class="status-text"  id="status-text"></span>
+        </div>
+
+        <div class="feedback-answer">
+          <span class="answer-label">The output is:</span>
+          <code class="answer-value" id="correct-answer-display"></code>
+        </div>
+
+        <p class="feedback-explanation" id="feedback-explanation"></p>
+
+        <div class="feedback-footer">
+          <button class="btn btn-primary" id="next-btn">Next Question &rarr;</button>
+        </div>
+
+      </div>
+
+    </div><!-- /quiz-view -->
+
+    <!-- End screen -->
+    <div id="end-view" class="hidden">
+      <div class="card end-card">
+        <div class="end-trophy">[ COMPLETE ]</div>
+        <h2 class="end-title">Quiz Complete!</h2>
+        <p class="end-subtitle" id="end-subtitle"></p>
+        <div class="end-grade" id="end-grade"></div>
+
+        <div class="ad-placeholder" aria-hidden="true">
+          <span class="ad-badge">Advertisement</span>
+          <div class="ad-inner">
+            <div class="ad-thumb"></div>
+            <div class="ad-copy">
+              <span class="ad-headline">Your product reaches developers here</span>
+              <span class="ad-sub">Relevant, targeted · No tracking required</span>
+            </div>
+            <div class="ad-cta">Learn More</div>
+          </div>
+        </div>
+
+        <div class="end-actions">
+          <button class="btn btn-primary" id="restart-btn">Play Again &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ── Sidebar ad — fixed, floats right of centered content (≥ 1100px) ── -->
+  <aside class="quiz-sidebar" aria-hidden="true">
+    <div class="ad-sky">
+      <span class="ad-badge">Advertisement</span>
+      <div class="ad-sky-thumb"></div>
+      <div class="ad-sky-copy">
+        <span class="ad-sky-headline">Reach developers where they learn</span>
+        <span class="ad-sky-sub">Targeted placement on a Python quiz with an engaged technical audience.</span>
+      </div>
+      <div class="ad-sky-cta">Learn More</div>
+    </div>
+  </aside>
+
+  <footer class="site-footer">
+    <span class="site-footer-copy">&copy; 2026 Alexander Diestel</span>
+    <nav class="site-footer-links">
+      <a href="impressum.html">Impressum</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </footer>
+
+  <script src="questions/lists.js"></script>
+  <script src="questions/strings.js"></script>
+  <script src="questions/types.js"></script>
+  <script src="questions/functions.js"></script>
+  <script src="questions/memory.js"></script>
+  <script src="questions/boss.js"></script>
+  <script src="questions/catalogue.js"></script>
+  <script src="quiz.js"></script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Impressum · Code_Quiz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .legal-wrap {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 48px 20px 80px;
+      flex: 1;
+    }
+    .legal-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-bottom: 36px;
+      transition: color .15s;
+    }
+    .legal-back:hover { color: var(--text-dim); }
+    .legal-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      margin-bottom: 36px;
+      display: block;
+    }
+    .legal-logo span { color: var(--orange); }
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .legal-subtitle {
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+    }
+    h2 {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      margin: 32px 0 10px;
+    }
+    p, address {
+      font-size: .93rem;
+      color: var(--text-dim);
+      line-height: 1.75;
+      font-style: normal;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 36px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow"></div>
+
+  <div class="legal-wrap">
+
+    <a class="legal-back" href="index.html">&larr; Back to quiz</a>
+
+    <span class="legal-logo">Code<span>_</span>Quiz</span>
+
+    <h1>Impressum</h1>
+    <p class="legal-subtitle">Angaben gemäß § 5 TMG</p>
+
+    <h2>Operator</h2>
+    <address>
+      Alexander Diestel<br>
+      Ulmenallee 5<br>
+      51427 Bergisch Gladbach<br>
+      Deutschland
+    </address>
+
+    <h2>Contact</h2>
+    <p>E-Mail: <span class="placeholder">[to be added]</span></p>
+
+    <hr>
+
+    <h2>Liability for Content</h2>
+    <p>
+      The contents of this website have been compiled with the utmost care.
+      However, we cannot guarantee the accuracy, completeness, or timeliness
+      of the content. As a service provider we are responsible for our own
+      content on these pages under general law in accordance with § 7 (1) TMG.
+      According to §§ 8–10 TMG, however, we are not obliged to monitor
+      transmitted or stored third-party information or to investigate
+      circumstances that indicate illegal activity.
+    </p>
+
+    <h2>Liability for Links</h2>
+    <p>
+      Our website may contain links to external third-party websites over whose
+      content we have no influence. We therefore cannot accept any liability for
+      this external content. The respective provider or operator of the linked
+      pages is always responsible for their content.
+    </p>
+
+    <h2>Copyright</h2>
+    <p>
+      The content and works on this website created by the site operator are
+      subject to German copyright law. Duplication, processing, distribution, or
+      any form of commercialisation of such material beyond the scope of
+      copyright law shall require the prior written consent of the author.
+    </p>
+
+  </div>
+
+  <footer class="site-footer">
+    <span class="site-footer-copy">&copy; 2026 Alexander Diestel</span>
+    <nav class="site-footer-links">
+      <a href="impressum.html">Impressum</a>
+      <a href="privacy.html">Privacy Policy</a>
+    </nav>
+  </footer>
+
+</body>
+</html>
