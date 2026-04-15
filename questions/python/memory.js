@@ -1,5 +1,5 @@
-// memory.js — 13 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97
-const Q_MEMORY = [
+// memory.js — 19 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149
+const PY_MEMORY = [
   {
     id: 8, category: 'memory', difficulty: 'medium',
     code: `a = [1, 2, 3]
@@ -137,4 +137,84 @@ print(x == None, x is None)`,
     answer: 0,
     explanation: `Both comparisons return <code>True</code> here, but they mean different things. <code>==</code> checks <strong>value equality</strong>; <code>is</code> checks <strong>identity</strong> (same object in memory). <code>None</code> is a singleton — only one <code>None</code> exists — so both happen to agree. However, <code>x is None</code> is preferred style: a custom class can override <code>__eq__</code> to return <code>True</code> even when <code>x</code> is not <code>None</code>, fooling <code>==</code> but never <code>is</code>.`
   },
+
+  {
+    id: 144, category: 'memory', difficulty: 'easy',
+    code:
+`quest = {'level': 3, 'score': 150}
+print(quest.get('lives', 0))`,
+    question: "What does this code output?",
+    choices: ['None', 'KeyError', '0', '3'],
+    answer: 2,
+    explanation: `<code>dict.get(key, default)</code> returns the value for <code>key</code> if it exists, otherwise returns the default. <code>'lives'</code> is not in <code>quest</code>, so <code>0</code> is returned. This is safer than <code>quest['lives']</code>, which would raise a <code>KeyError</code>. The dict is not modified.`,
+  },
+
+  {
+    id: 145, category: 'memory', difficulty: 'medium',
+    code:
+`a = {'x': 1, 'y': 2}
+b = {'y': 10, 'z': 3}
+a.update(b)
+print(a['y'])`,
+    question: "What does this code output?",
+    choices: ['2', '10', '3', 'KeyError'],
+    answer: 1,
+    explanation: `<code>dict.update(other)</code> merges <code>other</code> into the dict, <strong>overwriting existing keys</strong> with values from <code>other</code>. Both <code>a</code> and <code>b</code> have key <code>'y'</code> — after the update, <code>a['y']</code> is <code>10</code> (from <code>b</code>). New keys from <code>b</code> are added; existing keys not in <code>b</code> are untouched.`,
+  },
+
+  {
+    id: 146, category: 'memory', difficulty: 'medium',
+    code:
+`items = [3, 1, 4, 1, 5]
+result = items.sort()
+print(result)`,
+    question: "What does this code output?",
+    choices: ['[1, 1, 3, 4, 5]', 'None', 'True', '[3, 1, 4, 1, 5]'],
+    answer: 1,
+    explanation: `<code>list.sort()</code> sorts the list <strong>in-place</strong> and returns <code>None</code>. This is a deliberate design choice: returning <code>None</code> signals that the operation mutated the original, not that a new object was created. To get a sorted copy without modifying the original, use the built-in <code>sorted(items)</code>.`,
+  },
+
+  {
+    id: 147, category: 'memory', difficulty: 'medium',
+    code:
+`original = [[1, 2], [3, 4]]
+copy = original[:]
+copy[0].append(99)
+print(original[0])`,
+    question: "What does this code output?",
+    choices: ['[1, 2]', '[1, 2, 99]', '[99, 1, 2]', 'IndexError'],
+    answer: 1,
+    explanation: `<code>original[:]</code> is a <strong>shallow copy</strong> — a new outer list, but the inner lists are shared between original and copy. <code>copy[0]</code> and <code>original[0]</code> point to the same inner list <code>[1, 2]</code>. Appending through <code>copy</code> is visible through <code>original</code>. A deep copy (<code>copy.deepcopy()</code>) would isolate the inner lists.`,
+  },
+
+  {
+    id: 148, category: 'memory', difficulty: 'hard',
+    code:
+`t = ([1, 2], [3, 4])
+t[0].append(99)
+print(t)`,
+    question: "What does this code output?",
+    choices: [
+      '([1, 2], [3, 4])',
+      '([1, 2, 99], [3, 4])',
+      'TypeError',
+      '([99, 1, 2], [3, 4])',
+    ],
+    answer: 1,
+    explanation: `Tuples are immutable — you cannot replace or remove their elements. But immutability only applies to the tuple's <em>slots</em>. Each slot holds a <strong>reference</strong> to an object, and if that object is mutable, it can be modified through any reference. <code>t[0]</code> is a list; appending to the list doesn't change the tuple (the slot still points to the same list object), so no error is raised.`,
+  },
+
+  {
+    id: 149, category: 'memory', difficulty: 'hard',
+    code:
+`a = b = []
+a += [1]
+b += [2]
+print(a)`,
+    question: "What does this code output?",
+    choices: ['[1]', '[2]', '[1, 2]', '[1, 2, 2]'],
+    answer: 2,
+    explanation: `<code>a = b = []</code> makes both names point to the same list. For lists, <code>+=</code> calls <code>list.extend()</code> which mutates <em>in place</em> — it does not rebind the variable. So <code>a += [1]</code> appends to the shared list, and <code>b += [2]</code> appends again to the same list. Both names still point to the same object, now <code>[1, 2]</code>.`,
+  },
+
 ];

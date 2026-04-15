@@ -1,5 +1,5 @@
-// strings.js — 16 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78
-const Q_STRINGS = [
+// strings.js — 21 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131
+const PY_STRINGS = [
   {
     id: 3, category: 'strings', difficulty: 'easy',
     code: `print("ha" * 3)`,
@@ -142,4 +142,61 @@ print(s.replace("a", "x", 2))`,
     answer: 1,
     explanation: `<code>str.count()</code> is <em>non-overlapping</em>. It finds <code>"aa"</code> at index 0, then advances past it to index 2, where only one <code>"a"</code> remains — too short for another match. Total: <code>1</code>. If overlapping matches mattered (returning <code>2</code>), you would need a manual loop or a regex with a lookahead. This non-overlapping behaviour is consistent with how <code>replace()</code> and <code>split()</code> work.`
   },
+
+  {
+    id: 127, category: 'strings', difficulty: 'easy',
+    code:
+`steps = ['read', 'the', 'code']
+print(' '.join(steps))`,
+    question: "What does this code output?",
+    choices: ["'read the code'", 'read the code', "['read', 'the', 'code']", 'readthecode'],
+    answer: 1,
+    explanation: `<code>str.join(iterable)</code> concatenates the items of the iterable, placing the string it was called on between each pair. <code>' '.join(['read', 'the', 'code'])</code> inserts a space between each word. No quotes are printed — <code>print</code> outputs the value, not its repr.`,
+  },
+
+  {
+    id: 128, category: 'strings', difficulty: 'easy',
+    code:
+`quest = 'code_quest_2026'
+parts = quest.split('_')
+print(parts[1])`,
+    question: "What does this code output?",
+    choices: ['code', 'quest', '2026', '_quest_2026'],
+    answer: 1,
+    explanation: `<code>str.split(sep)</code> breaks the string at every occurrence of <code>sep</code> and returns a list. <code>'code_quest_2026'.split('_')</code> → <code>['code', 'quest', '2026']</code>. Index 1 is <code>'quest'</code>. The separator itself is not included in any of the resulting pieces.`,
+  },
+
+  {
+    id: 129, category: 'strings', difficulty: 'medium',
+    code:
+`s = 'abcabc'
+print(s.replace('b', 'X', 1))`,
+    question: "What does this code output?",
+    choices: ['aXcaXc', 'aXcabc', 'abcaXc', 'XXcXXc'],
+    answer: 1,
+    explanation: `The optional third argument to <code>str.replace(old, new, count)</code> limits how many replacements are made. With <code>count=1</code>, only the <em>first</em> occurrence of <code>'b'</code> is replaced, leaving the second untouched. Without a count argument, all occurrences would be replaced.`,
+  },
+
+  {
+    id: 130, category: 'strings', difficulty: 'medium',
+    code:
+`s = '  quest  '
+print(len(s.strip()))`,
+    question: "What does this code output?",
+    choices: ['9', '7', '5', '6'],
+    answer: 2,
+    explanation: `<code>str.strip()</code> removes leading and trailing whitespace, returning a new string. <code>'  quest  '.strip()</code> → <code>'quest'</code>, which has 5 characters. The original string (length 9) is unchanged — strings are <strong>immutable</strong>.`,
+  },
+
+  {
+    id: 131, category: 'strings', difficulty: 'hard',
+    code:
+`code = 'abcdef'
+print(code[1::2])`,
+    question: "What does this code output?",
+    choices: ['ace', 'bdf', 'bce', 'adf'],
+    answer: 1,
+    explanation: `<code>[start::step]</code> begins at index 1 and takes every 2nd character. Starting at <code>'b'</code> (index 1): <code>'b'</code> (1), <code>'d'</code> (3), <code>'f'</code> (5). Compare with <code>[::2]</code> which starts at index 0 and gives <code>'ace'</code>. The step applies <em>after</em> the start position, not from the beginning.`,
+  },
+
 ];

@@ -2,27 +2,31 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg:          #0a0e1a;
-  --surface:     #111827;
-  --surface2:    #1a2236;
-  --border:      #1f2d45;
-  --border2:     #263550;
-  --primary:     #7c3aed;
-  --primary-lt:  #a78bfa;
-  --accent:      #06b6d4;
-  --text:        #e2e8f0;
-  --text-muted:  #64748b;
-  --text-dim:    #94a3b8;
-  --green:       #22c55e;
-  --green-bg:    #052e16;
-  --green-border:#166534;
-  --red:         #f43f5e;
-  --red-bg:      #2d0a14;
-  --red-border:  #9f1239;
-  --yellow:      #f59e0b;
-  --orange:      #febc2e;
-  --radius:      12px;
-  --radius-sm:   8px;
+  --bg:           #0a0e1a;  /* overridden per-language by JS */
+  --surface:      #111827;
+  --surface2:     #1a2236;
+  --border:       #1f2d45;
+  --border2:      #263550;
+  /* Language-themed variables — overridden per-language by JS */
+  --primary:      #7c3aed;
+  --primary-lt:   #a78bfa;
+  --primary-dark: #5b21b6;
+  --accent:       #06b6d4;
+  --glow-rgb:     124 58 237;   /* space-separated for rgb() / rgba() */
+  /* Neutral palette */
+  --text:         #e2e8f0;
+  --text-muted:   #64748b;
+  --text-dim:     #94a3b8;
+  --green:        #22c55e;
+  --green-bg:     #052e16;
+  --green-border: #166534;
+  --red:          #f43f5e;
+  --red-bg:       #2d0a14;
+  --red-border:   #9f1239;
+  --yellow:       #f59e0b;
+  --orange:       #febc2e;
+  --radius:       12px;
+  --radius-sm:    8px;
 }
 
 html { scroll-behavior: smooth; }
@@ -47,7 +51,7 @@ body {
   transform: translateX(-50%);
   width: 800px;
   height: 600px;
-  background: radial-gradient(ellipse at center, rgba(124,58,237,.13) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgb(var(--glow-rgb) / 0.13) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
 }
@@ -83,8 +87,8 @@ body {
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--primary-lt);
-  background: rgba(124,58,237,.15);
-  border: 1px solid rgba(124,58,237,.3);
+  background: rgb(var(--glow-rgb) / 0.15);
+  border: 1px solid rgb(var(--glow-rgb) / 0.30);
   border-radius: var(--radius-sm);
   padding: 4px 10px;
   letter-spacing: -1px;
@@ -302,7 +306,8 @@ body {
 /* ── Language buttons ──────────────────────────────────────────────────────── */
 #lang-buttons {
   display: flex;
-  gap: 14px;
+  flex-direction: column;
+  gap: 10px;
   width: 100%;
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
@@ -311,7 +316,6 @@ body {
   font-family: 'Inter', sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text);
   background: var(--surface2);
   border: 1px solid var(--border2);
   border-radius: var(--radius-sm);
@@ -319,13 +323,24 @@ body {
   width: 100%;
   cursor: pointer;
   letter-spacing: 0.01em;
-  transition: background .18s, border-color .18s, transform .14s, box-shadow .18s;
+  transition: background .18s, border-color .18s, transform .14s, box-shadow .18s, color .18s;
 }
+/* Per-language resting color */
+.lang-btn[data-lang="python"] { color: #a78bfa; }
+.lang-btn[data-lang="cpp"]    { color: #f87171; }
+
 .lang-btn:hover {
   background: #1b2c45;
-  border-color: var(--accent);
   transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgba(6,182,212,.18);
+}
+/* Per-language tint on hover */
+.lang-btn[data-lang="python"]:hover {
+  border-color: #a78bfa;
+  box-shadow: 0 6px 22px rgba(124,58,237,.22);
+}
+.lang-btn[data-lang="cpp"]:hover {
+  border-color: #f87171;
+  box-shadow: 0 6px 22px rgba(185,28,28,.28);
 }
 .lang-btn:active { transform: translateY(0); }
 
@@ -476,7 +491,7 @@ body {
 }
 .choice-btn:hover:not(:disabled) {
   background: #1f2d45;
-  border-color: var(--primary);
+  border-color: var(--primary-lt);
 }
 .choice-btn:disabled { cursor: default; }
 .choice-btn.correct  { background: var(--green-bg); border-color: var(--green); color: var(--green); }
@@ -705,9 +720,9 @@ body {
 .btn:active { opacity: .75; }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary), #5b21b6);
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
   color: #fff;
-  box-shadow: 0 4px 18px rgba(124,58,237,.28);
+  box-shadow: 0 4px 18px rgb(var(--glow-rgb) / 0.28);
 }
 .btn-primary:disabled {
   opacity: .38;

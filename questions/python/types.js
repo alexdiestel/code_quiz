@@ -1,6 +1,6 @@
-// types.js — 33 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
-//                                  79,80,81,82,83,84,85,86
-const Q_TYPES = [
+// types.js — 39 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
+//                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137
+const PY_TYPES = [
   {
     id: 4, category: 'types', difficulty: 'easy',
     code: `print(7 // 2)`,
@@ -291,4 +291,77 @@ print(b)`,
     answer: 1,
     explanation: `Chained assignment <code>a = b = []</code> binds <em>both</em> names to the <strong>same single list object</strong>. It does not create two separate empty lists. When you mutate via <code>a</code>, <code>b</code> reflects the change because they are the same object. The safe way to create independent lists: <code>a = []</code> then <code>b = []</code> on separate lines — each literal creates a new object.`
   },
+
+  {
+    id: 132, category: 'types', difficulty: 'easy',
+    code:
+`n = 7
+if (score := n * 3) > 20:
+    print(score)`,
+    question: "What does this code output?",
+    choices: ['7', '21', 'True', 'Nothing is printed'],
+    answer: 1,
+    explanation: `The walrus operator <code>:=</code> assigns and evaluates in one step. <code>(score := n * 3)</code> sets <code>score = 21</code> and the expression evaluates to <code>21</code>. Since <code>21 > 20</code> is true, the block runs and prints <code>21</code>. Unlike a regular assignment, <code>:=</code> can appear inside expressions such as <code>if</code> conditions.`,
+  },
+
+  {
+    id: 133, category: 'types', difficulty: 'easy',
+    code:
+`items = []
+level = 0
+name = 'quest'
+print(bool(items), bool(level), bool(name))`,
+    question: "What does this code output?",
+    choices: ['True True True', 'False False True', 'False True False', 'True False True'],
+    answer: 1,
+    explanation: `In Python, <strong>falsy</strong> values include empty containers (<code>[]</code>, <code>{}</code>, <code>()</code>), zero (<code>0</code>, <code>0.0</code>), <code>None</code>, and empty strings. Everything else is truthy. An empty list is falsy, zero is falsy, but any non-empty string — including <code>'quest'</code> — is truthy.`,
+  },
+
+  {
+    id: 134, category: 'types', difficulty: 'medium',
+    code:
+`x = 3.0
+print(x == 3, type(x) == int)`,
+    question: "What does this code output?",
+    choices: ['True True', 'False False', 'True False', 'False True'],
+    answer: 2,
+    explanation: `<code>==</code> compares values across compatible types: <code>3.0 == 3</code> is <code>True</code> because Python promotes the int to float for the comparison. But <code>type(x) == int</code> is <code>False</code> — <code>x</code> is a <code>float</code>, not an <code>int</code>. Value equality does not imply type equality.`,
+  },
+
+  {
+    id: 135, category: 'types', difficulty: 'medium',
+    code:
+`x = 5
+print(1 < x < 10, 10 > x > 1)`,
+    question: "What does this code output?",
+    choices: ['True True', 'True False', 'False True', 'False False'],
+    answer: 0,
+    explanation: `Python allows <strong>chained comparisons</strong> that read like mathematical notation. <code>1 < x < 10</code> is equivalent to <code>(1 < x) and (x < 10)</code> — both hold for <code>x = 5</code>. <code>10 > x > 1</code> is the same range written in descending order. Each intermediate value is evaluated only once.`,
+  },
+
+  {
+    id: 136, category: 'types', difficulty: 'hard',
+    code:
+`x = (1, 2, 3)
+y = x
+x += (4,)
+print(len(y))`,
+    question: "What does this code output?",
+    choices: ['4', '3', '1', 'TypeError'],
+    answer: 1,
+    explanation: `Tuples are <strong>immutable</strong> — <code>x += (4,)</code> cannot extend the existing tuple in place. Instead it creates a brand-new tuple <code>(1, 2, 3, 4)</code> and <strong>rebinds</strong> <code>x</code> to it. <code>y</code> still points to the original 3-element tuple, so <code>len(y)</code> is <code>3</code>. Compare this with <code>list += [4]</code>, which mutates in place.`,
+  },
+
+  {
+    id: 137, category: 'types', difficulty: 'hard',
+    code:
+`a = b = []
+a.append(1)
+print(b)`,
+    question: "What does this code output?",
+    choices: ['[]', '[1]', 'None', 'NameError'],
+    answer: 1,
+    explanation: `<code>a = b = []</code> creates one list and makes <em>both</em> names point to it — this is chained assignment, not two separate lists. <code>a.append(1)</code> mutates that shared list, so <code>b</code> reflects the change. To get two independent lists, use <code>a = []; b = []</code> on separate lines.`,
+  },
+
 ];

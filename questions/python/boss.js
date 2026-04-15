@@ -1,5 +1,5 @@
-// boss.js — 6 questions — IDs: 51,52,53,98,99,100
-const Q_BOSS = [
+// boss.js — 7 questions — IDs: 51,52,53,98,99,100,150
+const PY_BOSS = [
   {
     id: 51, category: 'functions', difficulty: 'boss',
     code: `x = 10
@@ -84,4 +84,23 @@ print(MyClass.result[0])`,
     answer: 1,
     explanation: `In Python 3, list comprehensions have their own scope — and that scope does <em>not</em> include the class body. When the comprehension looks up <code>x</code>, it skips the class namespace entirely and resolves to the module-level <code>"global"</code>. This changed from Python 2, where class scope was visible inside comprehensions. The same applies to generator expressions and dict/set comprehensions. Class scope is uniquely "invisible" to nested scopes.`
   },
+
+  {
+    id: 150, category: 'functions', difficulty: 'boss',
+    code:
+`def run():
+    try:
+        return 1
+    except:
+        return 2
+    finally:
+        return 3
+
+print(run())`,
+    question: "What does `run()` return?",
+    choices: ['1', '2', '3', '1 then 3'],
+    answer: 2,
+    explanation: `A <code>finally</code> block <em>always</em> executes — even when a <code>return</code> was already reached in <code>try</code>. When <code>finally</code> itself contains a <code>return</code>, it <strong>overrides</strong> any earlier return value. The <code>try</code> block's <code>return 1</code> is abandoned before the function actually returns. This is one of the most surprising corners of Python's execution model.`,
+  },
+
 ];

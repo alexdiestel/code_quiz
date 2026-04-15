@@ -1,5 +1,5 @@
-// functions.js — 16 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92
-const Q_FUNCTIONS = [
+// functions.js — 22 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143
+const PY_FUNCTIONS = [
   {
     id: 41, category: 'functions', difficulty: 'easy',
     code: `def double(x):
@@ -176,4 +176,83 @@ print(f(3, 7))`,
     answer: 1,
     explanation: `This lambda returns the larger of two values — an inline max. The body after <code>:</code> must be a single expression; a ternary fits perfectly. <code>f(3, 7)</code>: is <code>3 > 7</code>? No → return <code>y = 7</code>. Lambdas cannot contain statements (<code>if</code> blocks, loops, <code>return</code>), only expressions — which is why the ternary <em>expression</em> is used here instead of an <code>if</code> <em>statement</em>.`
   },
+
+  {
+    id: 138, category: 'functions', difficulty: 'easy',
+    code:
+`def add(x, y):
+    x + y
+
+print(add(3, 4))`,
+    question: "What does this code output?",
+    choices: ['7', '0', 'None', 'TypeError'],
+    answer: 2,
+    explanation: `The function computes <code>x + y</code> but never returns it — the result is discarded. A Python function with no <code>return</code> statement (or a bare <code>return</code>) implicitly returns <code>None</code>. This is a common source of bugs: the expression on its own line is valid syntax, it just doesn't do anything useful.`,
+  },
+
+  {
+    id: 139, category: 'functions', difficulty: 'easy',
+    code:
+`def total(*args):
+    return sum(args)
+
+print(total(1, 2, 3, 4))`,
+    question: "What does this code output?",
+    choices: ['10', '[1, 2, 3, 4]', '(1, 2, 3, 4)', 'TypeError'],
+    answer: 0,
+    explanation: `The <code>*args</code> syntax collects all positional arguments into a <strong>tuple</strong>. Inside the function, <code>args</code> is <code>(1, 2, 3, 4)</code>. <code>sum()</code> works on any iterable including tuples, so <code>sum(args)</code> returns <code>10</code>. You can call a <code>*args</code> function with any number of positional arguments, including zero.`,
+  },
+
+  {
+    id: 140, category: 'functions', difficulty: 'medium',
+    code:
+`def power(base, exp=2):
+    return base ** exp
+
+print(power(3), power(2, 10))`,
+    question: "What does this code output?",
+    choices: ['9 20', '6 20', '9 1024', '6 1024'],
+    answer: 2,
+    explanation: `<code>exp=2</code> is a default argument — used when the caller omits it. <code>power(3)</code> computes <code>3 ** 2 = 9</code>. <code>power(2, 10)</code> overrides the default, computing <code>2 ** 10 = 1024</code>. Python's <code>**</code> operator is <strong>exponentiation</strong> and works on arbitrarily large integers without overflow.`,
+  },
+
+  {
+    id: 141, category: 'functions', difficulty: 'medium',
+    code:
+`double = lambda n: n * 2
+result = list(map(double, [1, 2, 3]))
+print(result)`,
+    question: "What does this code output?",
+    choices: ['[2, 4, 6]', '[1, 2, 3]', '<map object>', '[2, 2, 2]'],
+    answer: 0,
+    explanation: `<code>map(f, iterable)</code> applies <code>f</code> to each element lazily, returning a <strong>map object</strong> (an iterator). Wrapping it with <code>list()</code> forces evaluation. The lambda doubles each value: 1→2, 2→4, 3→6. Without the <code>list()</code> call, printing would show <code>&lt;map object at 0x...&gt;</code>.`,
+  },
+
+  {
+    id: 142, category: 'functions', difficulty: 'medium',
+    code:
+`def outer():
+    x = 10
+    def inner():
+        return x * 2
+    return inner()
+
+print(outer())`,
+    question: "What does this code output?",
+    choices: ['10', '20', 'None', 'NameError'],
+    answer: 1,
+    explanation: `<code>inner</code> is a nested function with access to <code>x</code> from <code>outer</code>'s local scope — a <strong>closure</strong>. The inner function "closes over" variables from the enclosing scope and can read them even though they are not its own local variables. <code>outer()</code> calls <code>inner()</code> and returns its result: <code>10 * 2 = 20</code>.`,
+  },
+
+  {
+    id: 143, category: 'functions', difficulty: 'hard',
+    code:
+`funcs = [lambda: i for i in range(3)]
+print(funcs[0](), funcs[1](), funcs[2]())`,
+    question: "What does this code output?",
+    choices: ['0 1 2', '2 2 2', '0 0 0', '1 2 3'],
+    answer: 1,
+    explanation: `Each lambda captures the <em>variable</em> <code>i</code>, not its value at creation time. By the time any lambda is called, the loop has finished and <code>i</code> holds its final value: <code>2</code>. This is called <strong>late binding</strong>. Fix: use a default argument — <code>lambda i=i: i</code> — which captures the value at definition time rather than at call time.`,
+  },
+
 ];

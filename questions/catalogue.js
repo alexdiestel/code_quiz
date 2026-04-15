@@ -1,60 +1,121 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   CATALOGUE — Code_Quiz question database
-   Last updated: 2026-04-14
+   CATALOGUE — Code_Quest language registry
    ───────────────────────────────────────────────────────────────────────────
-   Total: 100 questions  |  easy: 30  medium: 39  hard: 25  boss: 6
 
-   File            Qs   IDs
-   lists.js        16   1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72
-   strings.js      16   3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78
-   types.js        33   4,5,6,7,10,13,19,35,36,37,38,39,40,
-                        54,55,56,57,58,59,60,61,65,66,67,68,
-                        79,80,81,82,83,84,85,86
-   functions.js    16   16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92
-   memory.js       13   8,9,21,46,47,48,49,50,93,94,95,96,97
-   boss.js          6   51,52,53,98,99,100
+   Each entry in LANGUAGES defines one playable language:
+     label       Display name shown in header and landing button
+     slug        Key used in LANGUAGES and data-lang attributes
+     filename    Shown in the code window titlebar
+     hlClass     highlight.js CSS class for syntax colouring
+     theme       CSS custom-property overrides applied when language is active
+     categories  Category metadata (label, color) keyed by category id
+     questions   Flat array assembled from the language's question modules
 
-   Next available ID: 101
-
-   Rules for adding questions:
-   · Set answer: as an index (0–3) into the choices[] array — not a string copy
-   · Add the new ID to the relevant row above and increment the file Qs count
-   · Update Total and the easy/medium/hard/boss counts
+   Adding a new language: create questions/<slug>/*.js, add its entry here,
+   add a button to index.html, and load its script tags before catalogue.js.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-const CATEGORIES = {
-  lists: {
-    label:       'Lists',
-    description: 'Indexing, slicing, and list operations',
-    color:       '#06b6d4',
-  },
-  strings: {
-    label:       'Strings',
-    description: 'String methods, iteration, and immutability',
-    color:       '#a78bfa',
-  },
-  types: {
-    label:       'Types & Variables',
-    description: 'Data types, operators, truthiness, and floats',
-    color:       '#f59e0b',
-  },
-  functions: {
-    label:       'Functions',
-    description: 'Arguments, closures, lambdas, and comprehensions',
-    color:       '#10b981',
-  },
-  memory: {
-    label:       'Memory & Objects',
-    description: 'Mutability, aliasing, and object references',
-    color:       '#f43f5e',
-  },
-};
+const LANGUAGES = {
 
-const QUESTIONS = [
-  ...Q_LISTS,
-  ...Q_STRINGS,
-  ...Q_TYPES,
-  ...Q_FUNCTIONS,
-  ...Q_MEMORY,
-  ...Q_BOSS,
-];
+  // ── Python ────────────────────────────────────────────────────────────────
+  python: {
+    label:    'Python',
+    slug:     'python',
+    filename: 'snippet.py',
+    hlClass:  'language-python',
+    theme: {
+      bg:          '#0a0e1a',
+      primary:     '#7c3aed',
+      primaryLt:   '#a78bfa',
+      primaryDark: '#5b21b6',
+      accent:      '#06b6d4',
+      glowRgb:     '124 58 237',
+    },
+    categories: {
+      lists: {
+        label:       'Lists',
+        description: 'Indexing, slicing, and list operations',
+        color:       '#06b6d4',
+      },
+      strings: {
+        label:       'Strings',
+        description: 'String methods, iteration, and immutability',
+        color:       '#a78bfa',
+      },
+      types: {
+        label:       'Types & Variables',
+        description: 'Data types, operators, truthiness, and floats',
+        color:       '#f59e0b',
+      },
+      functions: {
+        label:       'Functions',
+        description: 'Arguments, closures, lambdas, and comprehensions',
+        color:       '#10b981',
+      },
+      memory: {
+        label:       'Memory & Objects',
+        description: 'Mutability, aliasing, and object references',
+        color:       '#f43f5e',
+      },
+    },
+    questions: [
+      ...PY_LISTS,
+      ...PY_STRINGS,
+      ...PY_TYPES,
+      ...PY_FUNCTIONS,
+      ...PY_MEMORY,
+      ...PY_BOSS,
+    ],
+  },
+
+  // ── C++ ───────────────────────────────────────────────────────────────────
+  cpp: {
+    label:    'C++',
+    slug:     'cpp',
+    filename: 'snippet.cpp',
+    hlClass:  'language-cpp',
+    theme: {
+      bg:          '#0a0e1a',
+      primary:     '#b91c1c',
+      primaryLt:   '#f87171',
+      primaryDark: '#991b1b',
+      accent:      '#ef4444',
+      glowRgb:     '185 28 28',
+    },
+    categories: {
+      output: {
+        label:       'Output',
+        description: 'cout, operators, and basic output behaviour',
+        color:       '#06b6d4',
+      },
+      types: {
+        label:       'Types',
+        description: 'Data types, auto, sizeof, and conversions',
+        color:       '#f59e0b',
+      },
+      pointers: {
+        label:       'Pointers',
+        description: 'Pointers, references, and memory addressing',
+        color:       '#f43f5e',
+      },
+      control: {
+        label:       'Control Flow',
+        description: 'Loops, scope, and conditionals',
+        color:       '#10b981',
+      },
+      functions: {
+        label:       'Functions',
+        description: 'Pass-by-value, pass-by-reference, and static locals',
+        color:       '#a78bfa',
+      },
+    },
+    questions: [
+      ...CPP_OUTPUT,
+      ...CPP_TYPES,
+      ...CPP_POINTERS,
+      ...CPP_CONTROL,
+      ...CPP_BOSS,
+    ],
+  },
+
+};

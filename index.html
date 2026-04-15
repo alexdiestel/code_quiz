@@ -46,8 +46,8 @@
       <p id="hero-sub">Read the code. Guess the output.</p>
 
       <div id="lang-buttons">
-        <button class="lang-btn" id="python-btn">Python</button>
-        <!-- future languages slot in here -->
+        <button class="lang-btn" id="python-btn" data-lang="python">Python</button>
+        <button class="lang-btn" id="cpp-btn"    data-lang="cpp">C++</button>
       </div>
 
     </div>
@@ -84,7 +84,7 @@
               <span class="dot dot-y"></span>
               <span class="dot dot-g"></span>
             </div>
-            <span class="code-filename">snippet.py</span>
+            <span class="code-filename" id="code-filename">snippet.py</span>
           </div>
           <pre class="code-body"><code class="language-python" id="code-display"></code></pre>
         </div>
@@ -153,12 +153,20 @@
     </nav>
   </footer>
 
-  <script src="questions/lists.js"></script>
-  <script src="questions/strings.js"></script>
-  <script src="questions/types.js"></script>
-  <script src="questions/functions.js"></script>
-  <script src="questions/memory.js"></script>
-  <script src="questions/boss.js"></script>
+  <!-- Python questions -->
+  <script src="questions/python/lists.js"></script>
+  <script src="questions/python/strings.js"></script>
+  <script src="questions/python/types.js"></script>
+  <script src="questions/python/functions.js"></script>
+  <script src="questions/python/memory.js"></script>
+  <script src="questions/python/boss.js"></script>
+  <!-- C++ questions -->
+  <script src="questions/cpp/output.js"></script>
+  <script src="questions/cpp/types.js"></script>
+  <script src="questions/cpp/pointers.js"></script>
+  <script src="questions/cpp/control.js"></script>
+  <script src="questions/cpp/boss.js"></script>
+  <!-- Language registry (must be last) -->
   <script src="questions/catalogue.js"></script>
   <script src="quiz.js"></script>
 </body>

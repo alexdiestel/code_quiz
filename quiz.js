@@ -160,12 +160,15 @@ function enrichExplanation(html) {
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
+let currentLangConfig = null; // set by selectLanguage(); drives questions/categories/theme
+
 let deck           = [];
 let current        = 0;
 let correctCount   = 0;
 let score          = 0;
 let answered       = false;
 let results        = []; // 'correct' | 'wrong' | null per deck slot
+let seenIds        = new Set();
 
 const DIFF_POINTS  = { easy: 100, medium: 250, hard: 500, boss: 1000 };
 
@@ -174,7 +177,7 @@ const landingView    = document.getElementById('landing-view');
 const heroLogo       = document.getElementById('hero-logo');
 const heroSub        = document.getElementById('hero-sub');
 const langButtons    = document.getElementById('lang-buttons');
-const pythonBtn      = document.getElementById('python-btn');
+const codeFilename   = document.getElementById('code-filename');
 const siteHeader     = document.getElementById('site-header');
 const quizView       = document.getElementById('quiz-view');
 const diffBadge      = document.getElementById('difficulty-badge');
@@ -399,26 +402,37 @@ function renderStarmap() {
 
 // ── Quiz flow ─────────────────────────────────────────────────────────────────
 function selectDeck() {
+  const questions = currentLangConfig.questions;
   const pick = (diff, n) => {
-    const pool = QUESTIONS.filter(q => q.difficulty === diff);
-    return shuffle(pool).slice(0, Math.min(n, pool.length));
+    const pool   = questions.filter(q => q.difficulty === diff);
+    let unseen   = pool.filter(q => !seenIds.has(q.id));
+    // If this tier is exhausted, reset only that tier's seen entries
+    if (unseen.length < n) {
+      pool.forEach(q => seenIds.delete(q.id));
+      unseen = pool;
+    }
+    return shuffle(unseen).slice(0, Math.min(n, unseen.length));
   };
-  return [
+  const chosen = [
     ...pick('easy',   3),
     ...pick('medium', 3),
     ...pick('hard',   3),
     ...pick('boss',   1),
   ];
+  chosen.forEach(q => seenIds.add(q.id));
+  return chosen;
 }
 
-function startQuiz(animate) {
+function startQuiz(animate, keepScore = false) {
   deck         = selectDeck();
   current      = 0;
   correctCount = 0;
-  score        = 0;
   answered     = false;
   results      = new Array(deck.length).fill(null);
-  scorePts.textContent = '0';
+  if (!keepScore) {
+    score = 0;
+    scorePts.textContent = '0';
+  }
   scoreDisplay.classList.remove('hidden');
 
   endView.classList.add('hidden');
@@ -454,7 +468,7 @@ function renderQuestion() {
   document.getElementById('question-points').textContent =
     `+${(DIFF_POINTS[q.difficulty] ?? 0).toLocaleString()} pts`;
 
-  const cat = CATEGORIES[q.category];
+  const cat = currentLangConfig.categories[q.category];
   categoryTag.textContent       = cat ? cat.label : q.category;
   categoryTag.style.color       = cat ? cat.color : 'var(--text-dim)';
   categoryTag.style.borderColor = cat ? cat.color + '55' : 'var(--border)';
@@ -462,6 +476,7 @@ function renderQuestion() {
 
   questionText.textContent = q.question;
 
+  codeDisplay.className   = currentLangConfig.hlClass;
   codeDisplay.textContent = q.code;
   codeDisplay.removeAttribute('data-highlighted');
   hljs.highlightElement(codeDisplay);
@@ -528,8 +543,27 @@ function showEndScreen() {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ── Theme application ─────────────────────────────────────────────────────────
+function applyTheme(theme) {
+  const root = document.documentElement;
+  root.style.setProperty('--bg',           theme.bg);
+  root.style.setProperty('--primary',      theme.primary);
+  root.style.setProperty('--primary-lt',   theme.primaryLt);
+  root.style.setProperty('--primary-dark', theme.primaryDark);
+  root.style.setProperty('--accent',       theme.accent);
+  root.style.setProperty('--glow-rgb',     theme.glowRgb);
+}
+
 // ── Landing transition ────────────────────────────────────────────────────────
 function selectLanguage(lang) {
+  currentLangConfig = LANGUAGES[lang];
+  applyTheme(currentLangConfig.theme);
+  seenIds.clear();
+
+  // Update header subtitle and code-window filename
+  const logoSub = document.getElementById('logo-sub');
+  if (logoSub) logoSub.textContent = currentLangConfig.label;
+  if (codeFilename) codeFilename.textContent = currentLangConfig.filename;
   const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
   const DUR  = 680;
 
@@ -630,7 +664,10 @@ function selectLanguage(lang) {
 // ── Events ────────────────────────────────────────────────────────────────────
 window.addEventListener('resize', alignSidebar, { passive: true });
 
-pythonBtn.addEventListener('click', () => selectLanguage('python'));
+// Wire up all language buttons via data-lang attribute
+document.querySelectorAll('.lang-btn[data-lang]').forEach(btn => {
+  btn.addEventListener('click', () => selectLanguage(btn.dataset.lang));
+});
 
 document.querySelector('#site-header .logo').addEventListener('click', () => {
   if (siteHeader.classList.contains('header-hidden')) return;
@@ -640,6 +677,7 @@ document.querySelector('#site-header .logo').addEventListener('click', () => {
   endView.classList.add('hidden');
   questionCard.classList.remove('hidden');
   scoreDisplay.classList.add('hidden');
+  seenIds.clear();
   const sidebar = document.querySelector('.quiz-sidebar');
   if (sidebar) sidebar.classList.remove('sidebar-visible');
 
@@ -650,6 +688,9 @@ document.querySelector('#site-header .logo').addEventListener('click', () => {
   if (landingLegal) landingLegal.style.visibility = '';
   landingView.style.cssText = '';
   landingView.classList.remove('hidden');
+
+  // Reset background to neutral default
+  document.documentElement.style.setProperty('--bg', '#0a0e1a');
 
   // Slide header out
   siteHeader.classList.add('header-hidden');
@@ -672,7 +713,7 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
-restartBtn.addEventListener('click', () => startQuiz(true));
+restartBtn.addEventListener('click', () => startQuiz(true, true));
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 // (start screen is already visible by default via HTML)

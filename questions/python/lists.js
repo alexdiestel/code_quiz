@@ -1,5 +1,5 @@
-// lists.js — 16 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72
-const Q_LISTS = [
+// lists.js — 22 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126
+const PY_LISTS = [
   {
     id: 1, category: 'lists', difficulty: 'easy',
     code: `x = [10, 20, 30, 40, 50]
@@ -151,4 +151,77 @@ print(x)`,
     answer: 0,
     explanation: `<code>del</code> with a <strong>slice</strong> removes every element in that range in one step. <code>x[1:3]</code> covers indices 1 and 2 (values <code>1</code> and <code>2</code>), so they are cut out, leaving <code>[0, 3, 4]</code>. This is more efficient than popping elements one by one in a loop, and it works on any slice, including stepped ones like <code>del x[::2]</code>.`
   },
+
+  {
+    id: 121, category: 'lists', difficulty: 'easy',
+    code:
+`items = [x * 2 for x in range(4)]
+print(items)`,
+    question: "What does this code output?",
+    choices: ['[0, 2, 4, 6]', '[2, 4, 6, 8]', '[0, 1, 2, 3]', '[1, 2, 3, 4]'],
+    answer: 0,
+    explanation: `A <strong>list comprehension</strong> builds a new list by evaluating the expression for each value in the iterable. <code>range(4)</code> yields 0, 1, 2, 3 — doubling each gives <code>[0, 2, 4, 6]</code>. The expression runs left-to-right: <em>value expression</em> → <em>for clause</em> → optional <em>if clause</em>.`,
+  },
+
+  {
+    id: 122, category: 'lists', difficulty: 'easy',
+    code:
+`row = [0] * 4
+row[2] = 7
+print(row)`,
+    question: "What does this code output?",
+    choices: ['[7, 7, 7, 7]', '[0, 7, 0, 0]', '[0, 0, 7, 0]', '[0, 0, 0, 7]'],
+    answer: 2,
+    explanation: `<code>[0] * 4</code> creates a list of four independent integer objects. Assigning <code>row[2] = 7</code> replaces only the item at index 2. Because integers are <strong>immutable</strong>, each slot holds its own value — changing one cannot affect the others. This safe behaviour changes for mutable objects like lists (see the nested list trap).`,
+  },
+
+  {
+    id: 123, category: 'lists', difficulty: 'medium',
+    code:
+`grid = [[0] * 3] * 3
+grid[1][1] = 9
+print(grid[0])`,
+    question: "What does this code output?",
+    choices: ['[0, 0, 0]', '[0, 9, 0]', '[9, 0, 0]', '[0, 0, 9]'],
+    answer: 1,
+    explanation: `<code>[[0]*3] * 3</code> does not create three independent rows. It creates three <strong>references to the same inner list</strong>. Mutating <code>grid[1][1]</code> mutates that one shared list, which all three rows point to. Safe fix: <code>[[0]*3 for _ in range(3)]</code> — the comprehension creates a fresh list on every iteration.`,
+  },
+
+  {
+    id: 124, category: 'lists', difficulty: 'medium',
+    code:
+`steps = ['start', 'move', 'win']
+for i, v in enumerate(steps, 1):
+    pass
+print(i, v)`,
+    question: "What is printed after the loop?",
+    choices: ['0 win', '1 start', '3 win', '2 win'],
+    answer: 2,
+    explanation: `<code>enumerate(steps, 1)</code> yields <code>(1, 'start')</code>, <code>(2, 'move')</code>, <code>(3, 'win')</code>. The loop variables <code>i</code> and <code>v</code> are not scoped to the loop — they persist after it ends, holding the values from the <em>last</em> iteration. Python loop variables always leak into the enclosing scope.`,
+  },
+
+  {
+    id: 125, category: 'lists', difficulty: 'medium',
+    code:
+`nums = [1, 2, 3, 4, 5, 6]
+result = [n for n in nums if n % 2 == 0]
+print(len(result))`,
+    question: "How many elements are in `result`?",
+    choices: ['2', '3', '4', '6'],
+    answer: 1,
+    explanation: `The <strong>if clause</strong> in a list comprehension filters the source iterable. <code>n % 2 == 0</code> is true for 2, 4, and 6 — three elements. The resulting list is <code>[2, 4, 6]</code>, so <code>len(result)</code> is <code>3</code>.`,
+  },
+
+  {
+    id: 126, category: 'lists', difficulty: 'hard',
+    code:
+`moves = [10, 20, 30, 40]
+x = moves.pop(1)
+print(x, len(moves))`,
+    question: "What does this code output?",
+    choices: ['10 3', '20 3', '20 4', '30 3'],
+    answer: 1,
+    explanation: `<code>list.pop(i)</code> removes the element at index <code>i</code>, <strong>returns it</strong>, and shortens the list by one. Index 1 holds <code>20</code>, so <code>x = 20</code>. The list becomes <code>[10, 30, 40]</code> — length 3. Unlike <code>del moves[1]</code>, <code>pop</code> gives you the removed value.`,
+  },
+
 ];
