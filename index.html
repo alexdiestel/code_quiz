@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Code_Quiz</title>
+  <title>Code_Quest</title>
 
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
@@ -26,11 +26,14 @@
       <div class="logo">
         <div class="logo-icon">{<span class="logo-icon-letters">CQ</span>}</div>
         <div class="logo-text">
-          <span class="logo-title">Code<span class="logo-u">_</span>Quiz</span>
+          <span class="logo-title">Code<span class="logo-u">_</span>Quest</span>
           <span class="logo-sub" id="logo-sub">Python</span>
         </div>
       </div>
-      <div class="question-counter hidden" id="question-counter">1 / 0</div>
+      <div class="score-display hidden" id="score-display">
+        <span class="score-pts" id="score-pts">0</span>
+        <span class="score-label">pts</span>
+      </div>
     </div>
   </header>
 
@@ -38,7 +41,7 @@
   <div id="landing-view">
     <div id="hero-content">
 
-      <h1 id="hero-logo">Code<span class="hero-u">_</span>Quiz</h1>
+      <h1 id="hero-logo">Code<span class="hero-u">_</span>Quest</h1>
 
       <p id="hero-sub">Read the code. Guess the output.</p>
 
@@ -61,17 +64,16 @@
     <!-- Quiz view -->
     <div id="quiz-view" class="hidden">
 
-      <div class="progress-wrap">
-        <div class="progress-bar">
-          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-        </div>
-        <span class="difficulty-badge easy" id="difficulty-badge">Easy</span>
+      <div class="starmap-wrap">
+        <svg class="starmap-svg" id="starmap-svg" viewBox="0 0 640 56"></svg>
       </div>
 
       <div class="card" id="question-card">
 
         <div class="question-meta">
+          <span class="difficulty-badge easy" id="difficulty-badge">Easy</span>
           <span class="category-tag" id="category-tag"></span>
+          <span class="question-points" id="question-points">100 pts</span>
         </div>
         <p class="question-text" id="question-text"></p>
 
@@ -111,33 +113,21 @@
 
       </div>
 
-    </div><!-- /quiz-view -->
-
-    <!-- End screen -->
-    <div id="end-view" class="hidden">
-      <div class="card end-card">
-        <div class="end-trophy">[ COMPLETE ]</div>
-        <h2 class="end-title">Quiz Complete!</h2>
-        <p class="end-subtitle" id="end-subtitle"></p>
-        <div class="end-grade" id="end-grade"></div>
-
-        <div class="ad-placeholder" aria-hidden="true">
-          <span class="ad-badge">Advertisement</span>
-          <div class="ad-inner">
-            <div class="ad-thumb"></div>
-            <div class="ad-copy">
-              <span class="ad-headline">Your product reaches developers here</span>
-              <span class="ad-sub">Relevant, targeted · No tracking required</span>
-            </div>
-            <div class="ad-cta">Learn More</div>
+      <!-- End screen — inside quiz-view so the starmap stays visible -->
+      <div id="end-view" class="hidden">
+        <div class="card end-card">
+          <div class="end-trophy">[ COMPLETE ]</div>
+          <h2 class="end-title">Quest Complete!</h2>
+          <p class="end-subtitle" id="end-subtitle"></p>
+          <div class="end-score" id="end-score"></div>
+          <div class="end-grade" id="end-grade"></div>
+          <div class="end-actions">
+            <button class="btn btn-primary" id="restart-btn">Continue Quest &rarr;</button>
           </div>
         </div>
-
-        <div class="end-actions">
-          <button class="btn btn-primary" id="restart-btn">Play Again &rarr;</button>
-        </div>
       </div>
-    </div>
+
+    </div><!-- /quiz-view -->
 
   </main>
 

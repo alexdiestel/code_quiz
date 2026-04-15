@@ -99,14 +99,23 @@ body {
 .logo-title { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 600; color: var(--text); letter-spacing: -0.02em; }
 .logo-u { color: var(--orange); }
 .logo-sub   { font-size: .73rem; color: var(--text-muted); }
-.question-counter {
+.score-display {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.score-pts {
   font-family: 'JetBrains Mono', monospace;
-  font-size: .88rem;
-  color: var(--text-dim);
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 4px 14px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--orange);
+  letter-spacing: -.02em;
+  transition: color .2s;
+}
+.score-label {
+  font-size: .7rem;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
 }
 
 /* ── Layout ──────────────────────────────────────────────────────────────── */
@@ -132,10 +141,11 @@ body {
   width: 160px;
   z-index: 50;
 }
-@media (min-width: 1100px) {
+/* Ad hidden — restore by uncommenting the two rules below */
+/* @media (min-width: 1100px) {
   .quiz-sidebar { display: block; visibility: hidden; }
   .quiz-sidebar.sidebar-visible { visibility: visible; }
-}
+} */
 
 /* ── Ad slot placeholder (shown until Carbon Ads script is live) ─────────── */
 .carbonads-placeholder {
@@ -332,25 +342,17 @@ body {
    QUIZ SCREEN
    ════════════════════════════════════════════════════════════════════════════ */
 
-/* ── Progress ────────────────────────────────────────────────────────────── */
-.progress-wrap {
-  display: flex;
-  align-items: center;
-  gap: 14px;
+/* ── Star map progress ───────────────────────────────────────────────────── */
+.starmap-wrap {
+  width: 100%;
   margin-bottom: 20px;
+  padding: 0 2px; /* room for glow to bleed at edges */
 }
-.progress-bar {
-  flex: 1;
-  height: 6px;
-  background: var(--surface2);
-  border-radius: 99px;
-  overflow: hidden;
-}
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
-  border-radius: 99px;
-  transition: width .5s ease;
+.starmap-svg {
+  width: 100%;
+  height: 56px;
+  display: block;
+  overflow: visible;
 }
 
 
@@ -370,8 +372,11 @@ body {
 .difficulty-badge.hard   { color: var(--red);    background: rgba(244,63,94,.08);  border-color: rgba(244,63,94,.3);  }
 .difficulty-badge.boss   { color: var(--primary-lt); background: rgba(167,139,250,.08); border-color: rgba(167,139,250,.35); text-shadow: 0 0 10px rgba(167,139,250,.25); }
 
-/* ── Question meta (category tag) ────────────────────────────────────────── */
+/* ── Question meta (difficulty badge + category tag) ────────────────────── */
 .question-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 10px;
 }
 .category-tag {
@@ -383,6 +388,16 @@ body {
   border-radius: 99px;
   border: 1px solid;
   /* color set inline via JS */
+}
+
+.question-points {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--orange);
+  letter-spacing: .02em;
+  white-space: nowrap;
 }
 
 /* ── Question text ───────────────────────────────────────────────────────── */
@@ -462,7 +477,6 @@ body {
 .choice-btn:hover:not(:disabled) {
   background: #1f2d45;
   border-color: var(--primary);
-  transform: translateY(-1px);
 }
 .choice-btn:disabled { cursor: default; }
 .choice-btn.correct  { background: var(--green-bg); border-color: var(--green); color: var(--green); }
@@ -685,10 +699,10 @@ body {
   border-radius: var(--radius-sm);
   cursor: pointer;
   padding: 11px 22px;
-  transition: opacity .15s, transform .12s;
+  transition: opacity .15s;
 }
-.btn:hover  { opacity: .88; transform: translateY(-1px); }
-.btn:active { transform: translateY(0); }
+.btn:hover  { opacity: .88; }
+.btn:active { opacity: .75; }
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), #5b21b6);
@@ -719,9 +733,24 @@ body {
   margin-bottom: 20px;
   letter-spacing: .05em;
 }
-.end-title  { font-size: 2rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -.03em; }
-.end-subtitle { color: var(--text-dim); margin-bottom: 20px; font-size: 1.05rem; }
-.end-grade  { font-size: 1.4rem; font-weight: 700; margin-bottom: 32px; }
+.end-title    { font-size: 2rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -.03em; }
+.end-subtitle { color: var(--text-dim); margin-bottom: 16px; font-size: 1.05rem; }
+.end-score {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: var(--orange);
+  letter-spacing: -.02em;
+  margin-bottom: 8px;
+}
+.end-score::after {
+  content: ' pts';
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0;
+}
+.end-grade  { font-size: 1.2rem; font-weight: 700; margin-bottom: 32px; }
 .grade-perfect { color: var(--yellow); }
 .grade-expert  { color: var(--green);  }
 .grade-mid     { color: var(--accent); }
@@ -808,8 +837,6 @@ body {
   /* Tooltip: narrower so it fits without edge-clipping */
   .tooltip-popup { width: 200px; font-size: .76rem; }
 
-  /* Progress badge text fits */
-  .difficulty-badge { font-size: .66rem; padding: 2px 8px; }
 }
 
 /* ── Landscape phone / very short viewport ──────────────────────────────── */

@@ -163,7 +163,11 @@ function enrichExplanation(html) {
 let deck           = [];
 let current        = 0;
 let correctCount   = 0;
+let score          = 0;
 let answered       = false;
+let results        = []; // 'correct' | 'wrong' | null per deck slot
+
+const DIFF_POINTS  = { easy: 100, medium: 250, hard: 500, boss: 1000 };
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const landingView    = document.getElementById('landing-view');
@@ -173,13 +177,12 @@ const langButtons    = document.getElementById('lang-buttons');
 const pythonBtn      = document.getElementById('python-btn');
 const siteHeader     = document.getElementById('site-header');
 const quizView       = document.getElementById('quiz-view');
-const questionCounter= document.getElementById('question-counter');
-const progressFill   = document.getElementById('progress-fill');
 const diffBadge      = document.getElementById('difficulty-badge');
 const categoryTag    = document.getElementById('category-tag');
 const questionText   = document.getElementById('question-text');
 const codeDisplay    = document.getElementById('code-display');
 const choicesEl      = document.getElementById('choices-container');
+const questionCard   = document.getElementById('question-card');
 const feedbackCard   = document.getElementById('feedback-card');
 const statusIcon     = document.getElementById('status-icon');
 const statusText     = document.getElementById('status-text');
@@ -190,6 +193,9 @@ const endView        = document.getElementById('end-view');
 const endSubtitle    = document.getElementById('end-subtitle');
 const endGrade       = document.getElementById('end-grade');
 const restartBtn     = document.getElementById('restart-btn');
+const scoreDisplay   = document.getElementById('score-display');
+const scorePts       = document.getElementById('score-pts');
+const endScore       = document.getElementById('end-score');
 const siteFooter     = document.querySelector('.site-footer');
 const landingLegal   = document.querySelector('.landing-legal');
 
@@ -225,6 +231,172 @@ function alignSidebar() {
   sidebar.style.top = top + 'px';
 }
 
+// ── Star map ──────────────────────────────────────────────────────────────────
+// Fixed dot positions for a 10-question deck (viewBox 0 0 640 56).
+// Slight X and Y variation gives a "flight path between locations" feel.
+const STARMAP_X = [20,  92, 147, 224, 282, 359, 416, 492, 547, 620];
+const STARMAP_Y = [30,  20,  35,  17,  32,  20,  39,  22,  33,  25];
+
+// Font Awesome Free v7.2.0 — fa-skull (regular) · CC BY 4.0 · fontawesome.com/license/free
+// viewBox 0 0 640 640 — centered at 320,320
+const SKULL_PATH = 'M480 491.4C538.5 447.4 576 379.8 576 304C576 171.5 461.4 64 320 64C178.6 64 64 171.5 64 304C64 379.8 101.5 447.4 160 491.4L160 528C160 554.5 181.5 576 208 576L240 576L240 536C240 522.7 250.7 512 264 512C277.3 512 288 522.7 288 536L288 576L352 576L352 536C352 522.7 362.7 512 376 512C389.3 512 400 522.7 400 536L400 576L432 576C458.5 576 480 554.5 480 528L480 491.4zM160 320C160 284.7 188.7 256 224 256C259.3 256 288 284.7 288 320C288 355.3 259.3 384 224 384C188.7 384 160 355.3 160 320zM416 256C451.3 256 480 284.7 480 320C480 355.3 451.3 384 416 384C380.7 384 352 355.3 352 320C352 284.7 380.7 256 416 256z';
+
+function diffColor(diff) {
+  return { easy: '#22c55e', medium: '#f59e0b', hard: '#f43f5e', boss: '#a78bfa' }[diff] || '#94a3b8';
+}
+
+// ── Star field — small pixels drifting right→left behind the map ─────────────
+// Each entry: [cy, r, dur(s), begin-offset(s), peak-opacity]
+// begin offsets calculated so stars are spread across x=30–620 at t=0:
+// x_at_t0 = 640 − (|begin|/dur)×660  →  begin = −(640−x)÷660×dur
+const STARFIELD = [
+  [  5, 0.7, 13.0, -12.0, 0.45],  // x≈30
+  [ 13, 0.5, 12.3, -10.1, 0.30],  // x≈100
+  [ 17, 0.9, 12.2,  -8.7, 0.40],  // x≈170
+  [ 20, 1.0, 14.2,  -8.6, 0.50],  // x≈240
+  [ 23, 1.0, 13.9,  -6.9, 0.45],  // x≈310
+  [ 28, 0.6, 15.4,  -6.1, 0.35],  // x≈380
+  [ 30, 0.7, 15.2,  -4.4, 0.35],  // x≈450
+  [ 32, 1.1, 13.3,  -2.4, 0.50],  // x≈520
+  [ 35, 0.8, 12.6,  -1.1, 0.40],  // x≈580
+  [ 39, 0.6, 13.9, -12.4, 0.35],  // x≈50
+  [ 43, 0.5, 13.1,  -8.7, 0.30],  // x≈200
+  [ 50, 1.2, 13.5,  -4.5, 0.45],  // x≈420
+  [ 52, 0.9, 14.3,  -0.4, 0.40],  // x≈620
+];
+
+function starFieldHTML() {
+  return STARFIELD.map(([cy, r, dur, begin, op]) => `
+    <circle cx="640" cy="${cy}" r="${r}" fill="#c8d8f0">
+      <animateTransform attributeName="transform" type="translate"
+        from="0,0" to="-660,0" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity"
+        values="0;${op};${op};0" keyTimes="0;0.12;0.88;1"
+        dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/>
+    </circle>`).join('');
+}
+
+// Returns line endpoints offset by r px from each dot center along the segment angle.
+function segmentPts(i, j, r) {
+  const a  = Math.atan2(STARMAP_Y[j] - STARMAP_Y[i], STARMAP_X[j] - STARMAP_X[i]);
+  const ca = Math.cos(a), sa = Math.sin(a);
+  return {
+    x1: +(STARMAP_X[i] + r * ca).toFixed(1), y1: +(STARMAP_Y[i] + r * sa).toFixed(1),
+    x2: +(STARMAP_X[j] - r * ca).toFixed(1), y2: +(STARMAP_Y[j] - r * sa).toFixed(1),
+  };
+}
+
+function renderStarmap() {
+  const svg = document.getElementById('starmap-svg');
+  if (!svg) return;
+  const n    = deck.length;
+  const done = current; // 0..done-1 completed, done is current
+  const R    = 7;       // px gap between line endpoint and dot edge
+
+  let html = `
+    <defs>
+      <filter id="dot-glow" x="-80%" y="-80%" width="260%" height="260%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur"/>
+        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="dot-glow-strong" x="-120%" y="-120%" width="340%" height="340%">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/><feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  `;
+
+  // Stars drifting right → left
+  html += starFieldHTML();
+
+  // Background path — individual dashed segments, offset from dot centers
+  for (let i = 0; i < n - 1; i++) {
+    const { x1, y1, x2, y2 } = segmentPts(i, i + 1, R);
+    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+      stroke="#1c2535" stroke-width="1.5" stroke-dasharray="3 5" stroke-linecap="round"/>`;
+  }
+
+  // Traveled segments — newest draws in with stroke-dashoffset animation
+  for (let i = 0; i < done; i++) {
+    const col            = diffColor(deck[i].difficulty);
+    const { x1, y1, x2, y2 } = segmentPts(i, i + 1, R);
+    const isNew          = (i === done - 1);
+    if (isNew) {
+      const len = Math.round(Math.hypot(x2 - x1, y2 - y1));
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+        stroke="${col}" stroke-width="1.5" stroke-linecap="round" opacity="0.55"
+        stroke-dasharray="${len}" stroke-dashoffset="${len}">
+        <animate attributeName="stroke-dashoffset" from="${len}" to="0" dur="1s"
+          calcMode="spline" keyTimes="0;1" keySplines="0.4 0 0.2 1" fill="freeze"/>
+      </line>`;
+    } else {
+      html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+        stroke="${col}" stroke-width="1.5" stroke-linecap="round" opacity="0.55"/>`;
+    }
+  }
+
+  // Dots
+  for (let i = 0; i < n; i++) {
+    const x      = STARMAP_X[i], y = STARMAP_Y[i];
+    const col    = diffColor(deck[i].difficulty);
+    const isBoss = deck[i].difficulty === 'boss';
+
+    if (i === done) {
+      // Current — outer ring + glowing filled dot
+      if (!isBoss) {
+        html += `
+          <circle cx="${x}" cy="${y}" r="9" fill="none"
+            stroke="${col}" stroke-width="1" opacity="0.55"/>
+          <circle cx="${x}" cy="${y}" r="5" fill="${col}" filter="url(#dot-glow)"/>
+        `;
+      }
+    } else if (i < done) {
+      // Completed — correct: strong glow filled; wrong: hollow ring
+      if (!isBoss) {
+        if (results[i] === 'correct') {
+          html += `<circle cx="${x}" cy="${y}" r="4.5" fill="${col}"
+            filter="url(#dot-glow-strong)" opacity="0.9"/>`;
+        } else {
+          html += `<circle cx="${x}" cy="${y}" r="4" fill="none"
+            stroke="${col}" stroke-width="1.2" opacity="0.65"/>`;
+        }
+      }
+    } else {
+      // Future — hollow ring
+      if (!isBoss) {
+        html += `<circle cx="${x}" cy="${y}" r="4" fill="none"
+          stroke="${col}" stroke-width="1.2" opacity="0.5"/>`;
+      }
+    }
+
+    // Boss: FA skull path, no circle — scaled from 640×640 viewBox
+    if (isBoss) {
+      let scale, op, extra;
+      if (i === done) {
+        scale = 0.036; op = 1;
+        extra = `filter="url(#dot-glow)"`;
+        // outer ring to match current-dot indicator on normal dots
+        html += `<circle cx="${x}" cy="${y}" r="13" fill="none"
+          stroke="${col}" stroke-width="1" opacity="0.55"/>`;
+      } else if (i < done) {
+        scale = 0.028; op = results[i] === 'correct' ? 0.85 : 0.6;
+        extra = results[i] === 'correct' ? 'filter="url(#dot-glow-strong)"' : '';
+      } else {
+        scale = 0.028; op = 0.5; extra = '';
+      }
+      html += `<g transform="translate(${x},${y}) scale(${scale}) translate(-320,-320)"
+        fill="${col}" opacity="${op}" ${extra} pointer-events="none">
+        <path d="${SKULL_PATH}"/>
+      </g>`;
+    }
+  }
+
+  svg.innerHTML = html;
+}
+
 // ── Quiz flow ─────────────────────────────────────────────────────────────────
 function selectDeck() {
   const pick = (diff, n) => {
@@ -243,11 +415,15 @@ function startQuiz(animate) {
   deck         = selectDeck();
   current      = 0;
   correctCount = 0;
+  score        = 0;
   answered     = false;
+  results      = new Array(deck.length).fill(null);
+  scorePts.textContent = '0';
+  scoreDisplay.classList.remove('hidden');
 
   endView.classList.add('hidden');
+  questionCard.classList.remove('hidden');
   quizView.classList.remove('hidden');
-  questionCounter.classList.remove('hidden');
 
   if (animate) {
     const mainEl = document.querySelector('.main-content');
@@ -271,11 +447,12 @@ function renderQuestion() {
   answered    = false;
   const total = deck.length;
 
-  questionCounter.textContent = `${current + 1} / ${total}`;
-  progressFill.style.width    = `${(current / total) * 100}%`;
+  renderStarmap();
 
   diffBadge.textContent = q.difficulty.charAt(0).toUpperCase() + q.difficulty.slice(1);
   diffBadge.className   = `difficulty-badge ${q.difficulty}`;
+  document.getElementById('question-points').textContent =
+    `+${(DIFF_POINTS[q.difficulty] ?? 0).toLocaleString()} pts`;
 
   const cat = CATEGORIES[q.category];
   categoryTag.textContent       = cat ? cat.label : q.category;
@@ -308,7 +485,12 @@ function handleChoice(btn, q) {
   answered = true;
 
   const correct = btn.dataset.value === q.choices[q.answer];
-  if (correct) correctCount++;
+  if (correct) {
+    correctCount++;
+    score += DIFF_POINTS[q.difficulty] ?? 0;
+    scorePts.textContent = score.toLocaleString();
+  }
+  results[current] = correct ? 'correct' : 'wrong';
 
   choicesEl.querySelectorAll('.choice-btn').forEach(b => {
     b.disabled = true;
@@ -331,12 +513,14 @@ function handleChoice(btn, q) {
 }
 
 function showEndScreen() {
-  quizView.classList.add('hidden');
-  questionCounter.classList.add('hidden');
+  // Hide the question/feedback cards — quiz-view (and starmap) stay visible
+  questionCard.classList.add('hidden');
+  feedbackCard.classList.add('hidden');
   endView.classList.remove('hidden');
 
   const total = deck.length;
-  endSubtitle.textContent = `You answered ${correctCount} out of ${total} correctly.`;
+  endSubtitle.textContent = `${correctCount} of ${total} correct`;
+  endScore.textContent = score.toLocaleString();
   const grade = gradeLabel(correctCount, total);
   endGrade.textContent = grade.text;
   endGrade.className   = `end-grade ${grade.cls}`;
@@ -451,10 +635,11 @@ pythonBtn.addEventListener('click', () => selectLanguage('python'));
 document.querySelector('#site-header .logo').addEventListener('click', () => {
   if (siteHeader.classList.contains('header-hidden')) return;
 
-  // Hide quiz/end screens
+  // Hide quiz view and reset inner state for next start
   quizView.classList.add('hidden');
   endView.classList.add('hidden');
-  questionCounter.classList.add('hidden');
+  questionCard.classList.remove('hidden');
+  scoreDisplay.classList.add('hidden');
   const sidebar = document.querySelector('.quiz-sidebar');
   if (sidebar) sidebar.classList.remove('sidebar-visible');
 
@@ -487,7 +672,7 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
-restartBtn.addEventListener('click', startQuiz);
+restartBtn.addEventListener('click', () => startQuiz(true));
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 // (start screen is already visible by default via HTML)
