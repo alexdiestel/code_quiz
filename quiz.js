@@ -163,7 +163,8 @@ function enrichExplanation(html) {
 // Fire-and-forget: never blocks the quiz, silently drops on error.
 function track(payload) {
   try {
-    navigator.sendBeacon('/api/event', JSON.stringify(payload));
+    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    navigator.sendBeacon('/api/event', blob);
   } catch { /* non-critical */ }
 }
 
