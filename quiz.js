@@ -159,6 +159,14 @@ function enrichExplanation(html) {
   return div.innerHTML;
 }
 
+// ── Analytics ─────────────────────────────────────────────────────────────────
+// Fire-and-forget: never blocks the quiz, silently drops on error.
+function track(payload) {
+  try {
+    navigator.sendBeacon('/api/event', JSON.stringify(payload));
+  } catch { /* non-critical */ }
+}
+
 // ── State ─────────────────────────────────────────────────────────────────────
 let currentLangConfig = null; // set by selectLanguage(); drives questions/categories/theme
 
@@ -451,6 +459,8 @@ function startQuiz(animate, keepScore = false) {
   const sidebar = document.querySelector('.quiz-sidebar');
   if (sidebar) sidebar.classList.add('sidebar-visible');
 
+  track({ event_type: 'quiz_start', lang: currentLangConfig.slug });
+
   renderQuestion();
   requestAnimationFrame(alignSidebar);
 }
@@ -507,6 +517,15 @@ function handleChoice(btn, q) {
   }
   results[current] = correct ? 'correct' : 'wrong';
 
+  track({
+    event_type:  'question_answered',
+    lang:        currentLangConfig.slug,
+    category:    q.category,
+    question_id: q.id,
+    difficulty:  q.difficulty,
+    correct,
+  });
+
   choicesEl.querySelectorAll('.choice-btn').forEach(b => {
     b.disabled = true;
     if (b.dataset.value === q.choices[q.answer]) b.classList.add('correct');
@@ -539,6 +558,11 @@ function showEndScreen() {
   const grade = gradeLabel(correctCount, total);
   endGrade.textContent = grade.text;
   endGrade.className   = `end-grade ${grade.cls}`;
+
+  track({
+    event_type: 'quiz_complete',
+    lang:       currentLangConfig.slug,
+  });
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
