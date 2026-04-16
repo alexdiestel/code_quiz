@@ -123,7 +123,7 @@ function positionTooltip(anchorEl) {
 }
 
 document.addEventListener('mouseenter', e => {
-  if (!e.target.closest) return;
+  if (!(e.target instanceof Element)) return;
   const term = e.target.closest('.tooltip-term');
   if (!term) return;
   tooltipEl.textContent = term.dataset.tip;
@@ -132,7 +132,7 @@ document.addEventListener('mouseenter', e => {
 }, true);
 
 document.addEventListener('mouseleave', e => {
-  if (!e.target.closest) return;
+  if (!(e.target instanceof Element)) return;
   if (e.target.closest('.tooltip-term')) tooltipEl.classList.remove('visible');
 }, true);
 
