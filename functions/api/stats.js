@@ -26,11 +26,11 @@ export async function onRequestGet({ request, env }) {
   const [questionsPerDay, uniqueUsersPerDay, startsPerDay, completionsPerDay, perQuestion] =
     await Promise.all([
       db.prepare(`
-        SELECT date, COUNT(*) as count
+        SELECT date, lang, COUNT(*) as count
         FROM events
         WHERE event_type = 'question_answered'
           AND date >= date('now', '-30 days')
-        GROUP BY date ORDER BY date DESC
+        GROUP BY date, lang ORDER BY date DESC, lang
       `).all(),
 
       db.prepare(`
@@ -41,11 +41,11 @@ export async function onRequestGet({ request, env }) {
       `).all(),
 
       db.prepare(`
-        SELECT date, COUNT(*) as count
+        SELECT date, lang, COUNT(*) as count
         FROM events
         WHERE event_type = 'quiz_start'
           AND date >= date('now', '-30 days')
-        GROUP BY date ORDER BY date DESC
+        GROUP BY date, lang ORDER BY date DESC, lang
       `).all(),
 
       db.prepare(`
