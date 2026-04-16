@@ -1,4 +1,4 @@
-// boss.js — 7 questions — IDs: 51,52,53,98,99,100,150
+// boss.js — 10 questions — IDs: 51,52,53,98,99,100,150,218,219,220
 const PY_BOSS = [
   {
     id: 51, category: 'functions', difficulty: 'boss',
@@ -101,6 +101,52 @@ print(run())`,
     choices: ['1', '2', '3', '1 then 3'],
     answer: 2,
     explanation: `A <code>finally</code> block <em>always</em> executes — even when a <code>return</code> was already reached in <code>try</code>. When <code>finally</code> itself contains a <code>return</code>, it <strong>overrides</strong> any earlier return value. The <code>try</code> block's <code>return 1</code> is abandoned before the function actually returns. This is one of the most surprising corners of Python's execution model.`,
+  },
+
+  {
+    id: 218, category: 'functions', difficulty: 'boss',
+    code:
+`g = (x * 2 for x in [1, 2, 3])
+print(sum(g))
+print(sum(g))`,
+    question: "What does this print?",
+    choices: ['12\n12', '12\n0', '6\n6', '12\nTypeError'],
+    answer: 1,
+    explanation: `A generator can only be <strong>iterated once</strong>. The first <code>sum(g)</code> consumes all values — <code>2 + 4 + 6 = 12</code>. The generator is now exhausted: its internal state is at the end and there is no way to rewind it. The second <code>sum(g)</code> immediately gets <code>StopIteration</code> and returns <code>0</code> (the identity element for addition). To iterate twice, convert to a list first: <code>g = list(...)</code>.`,
+  },
+
+  {
+    id: 219, category: 'memory', difficulty: 'boss',
+    code:
+`class A:
+    def greet(self): return "A"
+class B(A):
+    def greet(self): return "B"
+class C(A):
+    def greet(self): return "C"
+class D(B, C):
+    pass
+
+print(D().greet())`,
+    question: "What does this print?",
+    choices: ["'A'", "'B'", "'C'", "'D'"],
+    answer: 1,
+    explanation: `Python uses the <strong>C3 linearisation</strong> algorithm to compute the Method Resolution Order (MRO). For <code>D(B, C)</code>, the MRO is <code>D → B → C → A</code>. When <code>greet()</code> is called on a <code>D</code> instance, Python searches this list left-to-right and finds <code>B.greet</code> first. Run <code>D.__mro__</code> to inspect the order explicitly. This diamond inheritance pattern is why Python needs a defined MRO instead of simply checking parent classes left-to-right at each level.`,
+  },
+
+  {
+    id: 220, category: 'types', difficulty: 'boss',
+    code:
+`class Quest:
+    def __eq__(self, other):
+        return True
+
+q = Quest()
+print(q == 42, q is 42)`,
+    question: "What does this print?",
+    choices: ['True True', 'True False', 'False False', 'TypeError'],
+    answer: 1,
+    explanation: `<code>==</code> calls <code>__eq__</code>, which this class overrides to always return <code>True</code>. So <code>q == 42</code> is <code>True</code> regardless of what <code>42</code> is. But <code>is</code> checks <strong>object identity</strong> — whether two names point to the exact same object in memory — and cannot be overridden. <code>q</code> and <code>42</code> are different objects, so <code>q is 42</code> is always <code>False</code>. This is why <code>x is None</code> is safer than <code>x == None</code>.`,
   },
 
 ];

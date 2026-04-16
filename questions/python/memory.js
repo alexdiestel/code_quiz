@@ -1,4 +1,4 @@
-// memory.js — 19 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149
+// memory.js — 31 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149,206,207,208,209,210,211,212,213,214,215,216,217
 const PY_MEMORY = [
   {
     id: 8, category: 'memory', difficulty: 'medium',
@@ -215,6 +215,150 @@ print(a)`,
     choices: ['[1]', '[2]', '[1, 2]', '[1, 2, 2]'],
     answer: 2,
     explanation: `<code>a = b = []</code> makes both names point to the same list. For lists, <code>+=</code> calls <code>list.extend()</code> which mutates <em>in place</em> — it does not rebind the variable. So <code>a += [1]</code> appends to the shared list, and <code>b += [2]</code> appends again to the same list. Both names still point to the same object, now <code>[1, 2]</code>.`,
+  },
+
+  {
+    id: 206, category: 'memory', difficulty: 'easy',
+    code:
+`d = {'name': 'quest', 'level': 3}
+print(d['level'])`,
+    question: "What does this print?",
+    choices: ['3', "'level'", 'quest', 'KeyError'],
+    answer: 0,
+    explanation: `<code>d['level']</code> looks up the value associated with key <code>'level'</code>, returning <code>3</code>. Dict lookup is O(1) on average. If the key doesn't exist, Python raises <code>KeyError</code> — use <code>d.get('level')</code> to return <code>None</code> instead, or <code>d.get('level', default)</code> for a fallback.`,
+  },
+
+  {
+    id: 207, category: 'memory', difficulty: 'easy',
+    code:
+`d = {'a': 1, 'b': 2}
+print(2 in d)`,
+    question: "What does this print?",
+    choices: ['True', 'False', 'None', 'KeyError'],
+    answer: 1,
+    explanation: `The <code>in</code> operator on a dict checks <strong>keys</strong>, not values. <code>2</code> is a value in <code>d</code>, not a key — so this is <code>False</code>. To check values, use <code>2 in d.values()</code>. To check both a key and its value exists, use <code>d.get('a') == 2</code>. This is one of Python's most common dict gotchas.`,
+  },
+
+  {
+    id: 208, category: 'memory', difficulty: 'medium',
+    code:
+`d = {x: x ** 2 for x in range(1, 5)}
+print(d[3])`,
+    question: "What does this print?",
+    choices: ['3', '6', '9', 'KeyError'],
+    answer: 2,
+    explanation: `A <strong>dict comprehension</strong> <code>{key: value for ... in ...}</code> builds a dict in one expression. <code>range(1, 5)</code> is <code>1, 2, 3, 4</code>. The resulting dict is <code>{1: 1, 2: 4, 3: 9, 4: 16}</code>. <code>d[3]</code> looks up key <code>3</code> → value <code>9</code>. Dict comprehensions are the dict equivalent of list comprehensions and are equally efficient.`,
+  },
+
+  {
+    id: 209, category: 'memory', difficulty: 'medium',
+    code:
+`d = {'a': 1, 'b': 2, 'c': 3}
+val = d.pop('b')
+print(val, len(d))`,
+    question: "What does this print?",
+    choices: ['2 2', '2 3', '1 2', 'KeyError'],
+    answer: 0,
+    explanation: `<code>dict.pop(key)</code> <strong>removes</strong> the key-value pair and <strong>returns the value</strong>. After popping <code>'b'</code>, the dict becomes <code>{'a': 1, 'c': 3}</code> — two entries. <code>val</code> holds the removed value <code>2</code>. If the key doesn't exist, <code>pop</code> raises <code>KeyError</code> unless you provide a default: <code>d.pop('x', None)</code>.`,
+  },
+
+  {
+    id: 210, category: 'memory', difficulty: 'medium',
+    code:
+`a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+print(len(a & b))`,
+    question: "What does this print?",
+    choices: ['2', '4', '6', '8'],
+    answer: 0,
+    explanation: `The <code>&</code> operator on sets computes the <strong>intersection</strong> — elements present in both. <code>a & b</code> → <code>{3, 4}</code>. <code>len({3, 4})</code> → <code>2</code>. Other set operators: <code>|</code> for union, <code>-</code> for difference, <code>^</code> for symmetric difference. Sets are optimised for these membership operations — all are O(min(len(a), len(b))).`,
+  },
+
+  {
+    id: 211, category: 'memory', difficulty: 'medium',
+    code:
+`d = {'x': 10, 'y': 20, 'z': 30}
+del d['y']
+print(list(d.keys()))`,
+    question: "What does this print?",
+    choices: ["['x', 'z']", "['x', 'y', 'z']", "['y']", "KeyError"],
+    answer: 0,
+    explanation: `<code>del d['y']</code> permanently removes the key-value pair for <code>'y'</code> from the dict. After deletion, <code>d</code> is <code>{'x': 10, 'z': 30}</code>. <code>d.keys()</code> returns a view of the current keys. As of Python 3.7+, dicts preserve insertion order — so <code>['x', 'z']</code> is guaranteed, not just likely.`,
+  },
+
+  {
+    id: 212, category: 'memory', difficulty: 'medium',
+    code:
+`d = {'a': 1}
+d.setdefault('b', 99)
+d.setdefault('a', 99)
+print(d['a'], d['b'])`,
+    question: "What does this print?",
+    choices: ['1 99', '99 99', '1 1', 'KeyError'],
+    answer: 0,
+    explanation: `<code>dict.setdefault(key, default)</code> inserts <code>key</code> with <code>default</code> only if <code>key</code> is <em>not already present</em>. For <code>'b'</code> (missing): inserts <code>99</code>. For <code>'a'</code> (already <code>1</code>): does nothing — the existing value is preserved. This is useful for building dicts incrementally without overwriting data, e.g. grouping: <code>d.setdefault(key, []).append(item)</code>.`,
+  },
+
+  {
+    id: 213, category: 'memory', difficulty: 'hard',
+    code:
+`val = [0]
+d = {'x': val, 'y': val}
+d['x'].append(1)
+print(d['y'])`,
+    question: "What does this print?",
+    choices: ['[0]', '[0, 1]', '[1]', 'TypeError'],
+    answer: 1,
+    explanation: `Both <code>d['x']</code> and <code>d['y']</code> point to the <em>same list object</em> (<code>val</code>). Dicts store <strong>references</strong> to values, not copies. Appending through <code>d['x']</code> mutates the single shared list — so <code>d['y']</code> reflects the change too. To store independent copies, use <code>'x': val.copy(), 'y': val.copy()</code>.`,
+  },
+
+  {
+    id: 214, category: 'memory', difficulty: 'hard',
+    code:
+`data = [1, 2, 2, 3, 3, 3, 4]
+s = set(data)
+print(len(s))`,
+    question: "What does this print?",
+    choices: ['7', '4', '3', '6'],
+    answer: 1,
+    explanation: `A <code>set</code> stores only <strong>unique</strong> elements — duplicates are silently discarded. <code>set([1, 2, 2, 3, 3, 3, 4])</code> → <code>{1, 2, 3, 4}</code>, which has 4 elements. Converting a list to a set is the idiomatic way to deduplicate. Note that sets are unordered, so you cannot rely on the iteration order.`,
+  },
+
+  {
+    id: 215, category: 'memory', difficulty: 'hard',
+    code:
+`a, *b, c = [1, 2, 3, 4, 5]
+print(b)`,
+    question: "What does this print?",
+    choices: ['[2, 3, 4]', '[1, 2, 3, 4]', '[2, 3, 4, 5]', '(2, 3, 4)'],
+    answer: 0,
+    explanation: `The <code>*</code> in an unpacking assignment is an <strong>extended unpack</strong> — it collects all "remaining" elements into a list. <code>a</code> gets the first element (<code>1</code>), <code>c</code> gets the last (<code>5</code>), and <code>b</code> gets everything in between: <code>[2, 3, 4]</code>. The starred variable always receives a list, even if it captures zero or one elements. It can appear at any position: <code>*a, b, c</code> or <code>a, *b, c</code>.`,
+  },
+
+  {
+    id: 216, category: 'memory', difficulty: 'hard',
+    code:
+`s = set()
+s.add([1, 2])
+print(s)`,
+    question: "What does this print?",
+    choices: ['{[1, 2]}', '{1, 2}', 'set()', 'TypeError'],
+    answer: 3,
+    explanation: `Sets can only contain <strong>hashable</strong> objects. Lists are mutable and therefore not hashable — adding one raises <code>TypeError: unhashable type: 'list'</code>. The rule is: if an object can change its contents, its hash would change too, breaking the set's internal structure. Use a <code>tuple</code> instead: <code>s.add((1, 2))</code> works because tuples are immutable and hashable.`,
+  },
+
+  {
+    id: 217, category: 'memory', difficulty: 'hard',
+    code:
+`def add_item(key, d={}):
+    d[key] = True
+    return len(d)
+
+print(add_item('a'), add_item('b'))`,
+    question: "What does this print?",
+    choices: ['1 1', '1 2', '2 2', 'TypeError'],
+    answer: 1,
+    explanation: `The default dict <code>{}</code> is created <em>once</em> when the function is defined and reused on every call. After <code>add_item('a')</code> the shared dict is <code>{'a': True}</code>, length 1. After <code>add_item('b')</code> it becomes <code>{'a': True, 'b': True}</code>, length 2. This is the same mutable-default trap as <code>lst=[]</code>, applied to dicts. Fix: use <code>d=None</code> and create a fresh dict inside if needed.`,
   },
 
 ];

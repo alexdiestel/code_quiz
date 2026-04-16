@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code_Quest — Stats</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #0a0e1a;
+      color: #c8d5e8;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    h1 { font-size: 1.4rem; color: #a78bfa; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+    .subtitle { font-size: 0.8rem; color: #4a5568; margin-bottom: 2.5rem; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .card {
+      background: #111827;
+      border: 1px solid #1e2a3a;
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4a5568;
+      margin-bottom: 1rem;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { text-align: left; color: #4a5568; font-weight: 500; padding: 0 0 0.5rem; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td { padding: 0.3rem 0; border-top: 1px solid #1e2a3a; color: #c8d5e8; }
+    td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+
+    .pill {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .easy   { background: #14532d44; color: #22c55e; }
+    .medium { background: #78350f44; color: #f59e0b; }
+    .hard   { background: #7f1d1d44; color: #f43f5e; }
+    .boss   { background: #3b0764aa; color: #a78bfa; }
+
+    .bar-wrap { display: flex; align-items: center; gap: 0.6rem; }
+    .bar-bg { flex: 1; height: 6px; background: #1e2a3a; border-radius: 3px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+    .bar-pct { font-size: 0.75rem; font-variant-numeric: tabular-nums; min-width: 3rem; text-align: right; }
+
+    .pct-high   { color: #22c55e; }
+    .pct-mid    { color: #f59e0b; }
+    .pct-low    { color: #f43f5e; }
+
+    .empty { color: #4a5568; font-size: 0.8rem; font-style: italic; text-align: center; padding: 1rem 0; }
+
+    #login {
+      max-width: 320px;
+      margin: 20vh auto 0;
+      text-align: center;
+    }
+    #login h1 { margin-bottom: 1rem; }
+    #login input {
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: #111827;
+      border: 1px solid #1e2a3a;
+      border-radius: 8px;
+      color: #c8d5e8;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      outline: none;
+    }
+    #login input:focus { border-color: #7c3aed; }
+    #login button {
+      width: 100%;
+      padding: 0.6rem;
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    #login button:hover { background: #6d28d9; }
+    #error { color: #f43f5e; font-size: 0.8rem; margin-top: 0.5rem; }
+
+    #dashboard { display: none; }
+
+    .refresh { font-size: 0.75rem; color: #4a5568; cursor: pointer; float: right; }
+    .refresh:hover { color: #a78bfa; }
+  </style>
+</head>
+<body>
+
+<div id="login">
+  <h1>{CQ} Stats</h1>
+  <p class="subtitle">Enter your stats key to view analytics</p>
+  <input type="password" id="key-input" placeholder="Stats key" />
+  <button onclick="load()">View Stats</button>
+  <div id="error"></div>
+</div>
+
+<div id="dashboard">
+  <h1>{CQ} Stats Dashboard <span class="refresh" onclick="reload()">↻ Refresh</span></h1>
+  <p class="subtitle" id="last-updated"></p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Unique Users — last 30 days</h2>
+      <table><thead><tr><th>Date</th><th>Users</th></tr></thead>
+      <tbody id="users-table"></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Questions Answered — last 30 days</h2>
+      <table><thead><tr><th>Date</th><th>Answered</th></tr></thead>
+      <tbody id="questions-table"></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Quiz Starts — last 30 days</h2>
+      <table><thead><tr><th>Date</th><th>Starts</th></tr></thead>
+      <tbody id="starts-table"></tbody></table>
+    </div>
+    <div class="card">
+      <h2>Quiz Completions — last 30 days</h2>
+      <table><thead><tr><th>Date</th><th>Completed</th></tr></thead>
+      <tbody id="completions-table"></tbody></table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Per-Question Accuracy — sorted hardest first (min 5 attempts)</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Lang</th><th>Category</th><th>Difficulty</th><th>Attempts</th><th>Correct %</th></tr></thead>
+      <tbody id="question-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  let statsKey = new URL(location.href).searchParams.get('key') || '';
+  if (statsKey) load();
+
+  function load() {
+    statsKey = statsKey || document.getElementById('key-input').value.trim();
+    if (!statsKey) return;
+    fetch(`/api/stats?key=${encodeURIComponent(statsKey)}`)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(render)
+      .catch(() => {
+        document.getElementById('error').textContent = 'Invalid key or server error.';
+      });
+  }
+
+  function reload() { fetch(`/api/stats?key=${encodeURIComponent(statsKey)}`).then(r => r.json()).then(render); }
+
+  function render(data) {
+    document.getElementById('login').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleString();
+
+    fillTable('users-table',       data.unique_users_per_day,  ['date','count']);
+    fillTable('questions-table',   data.questions_per_day,     ['date','count']);
+    fillTable('starts-table',      data.starts_per_day,        ['date','count']);
+    fillTable('completions-table', data.completions_per_day,   ['date','count']);
+    fillQuestionTable(data.per_question);
+  }
+
+  function fillTable(id, rows, cols) {
+    const tb = document.getElementById(id);
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="2" class="empty">No data yet</td></tr>'; return; }
+    tb.innerHTML = rows.map(r =>
+      `<tr>${cols.map(c => `<td>${r[c]}</td>`).join('')}</tr>`
+    ).join('');
+  }
+
+  function fillQuestionTable(rows) {
+    const tb = document.getElementById('question-table');
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="6" class="empty">No data yet — need 5+ answers per question</td></tr>'; return; }
+    tb.innerHTML = rows.map(r => {
+      const pct    = r.correct_pct;
+      const cls    = pct >= 70 ? 'pct-high' : pct >= 40 ? 'pct-mid' : 'pct-low';
+      const barCol = pct >= 70 ? '#22c55e'  : pct >= 40 ? '#f59e0b'  : '#f43f5e';
+      return `<tr>
+        <td>${r.question_id}</td>
+        <td>${r.lang ?? '—'}</td>
+        <td>${r.category ?? '—'}</td>
+        <td><span class="pill ${r.difficulty}">${r.difficulty}</span></td>
+        <td>${r.attempts}</td>
+        <td>
+          <div class="bar-wrap">
+            <div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${barCol}"></div></div>
+            <span class="bar-pct ${cls}">${pct}%</span>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+</script>
+</body>
+</html>

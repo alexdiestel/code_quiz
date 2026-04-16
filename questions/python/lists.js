@@ -1,4 +1,4 @@
-// lists.js — 22 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126
+// lists.js — 38 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166
 const PY_LISTS = [
   {
     id: 1, category: 'lists', difficulty: 'easy',
@@ -222,6 +222,190 @@ print(x, len(moves))`,
     choices: ['10 3', '20 3', '20 4', '30 3'],
     answer: 1,
     explanation: `<code>list.pop(i)</code> removes the element at index <code>i</code>, <strong>returns it</strong>, and shortens the list by one. Index 1 holds <code>20</code>, so <code>x = 20</code>. The list becomes <code>[10, 30, 40]</code> — length 3. Unlike <code>del moves[1]</code>, <code>pop</code> gives you the removed value.`,
+  },
+
+  {
+    id: 151, category: 'lists', difficulty: 'easy',
+    code:
+`a = [1, 2, 3]
+print(a.append(4))`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3, 4]', 'None', '4', 'TypeError'],
+    answer: 1,
+    explanation: `<code>list.append()</code> modifies the list <strong>in-place</strong> and returns <code>None</code> — just like <code>list.sort()</code>. Printing the return value of any in-place method always prints <code>None</code>. The list is modified, but the result of the expression is <code>None</code>. Use <code>a.append(4); print(a)</code> to see the updated list.`,
+  },
+
+  {
+    id: 152, category: 'lists', difficulty: 'easy',
+    code:
+`items = [10, 20, 30, 40, 50]
+print(items[-3])`,
+    question: "What does this print?",
+    choices: ['10', '20', '30', '40'],
+    answer: 2,
+    explanation: `<strong>Negative indexing</strong> counts from the end. <code>-1</code> is the last element (<code>50</code>), <code>-2</code> is <code>40</code>, <code>-3</code> is <code>30</code>. It is equivalent to <code>items[len(items) - 3]</code> → <code>items[2]</code>. This is one of Python's most convenient list features.`,
+  },
+
+  {
+    id: 153, category: 'lists', difficulty: 'easy',
+    code:
+`langs = ['python', 'cpp', 'rust']
+print('go' in langs)`,
+    question: "What does this print?",
+    choices: ['True', 'False', 'None', 'ValueError'],
+    answer: 1,
+    explanation: `The <code>in</code> operator checks for <strong>membership</strong> in a list. It scans elements one by one until a match is found. <code>'go'</code> is not in the list, so it returns <code>False</code>. For large lists, <code>in</code> is O(n) — a <code>set</code> lookup is O(1) if performance matters.`,
+  },
+
+  {
+    id: 154, category: 'lists', difficulty: 'easy',
+    code:
+`a = [1, 2]
+b = [3, 4]
+print(a + b)`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3, 4]', '[4, 6]', '[1, 2, [3, 4]]', 'TypeError'],
+    answer: 0,
+    explanation: `The <code>+</code> operator on lists performs <strong>concatenation</strong> — it creates a new list by joining both sequences end-to-end. No elements are added or summed. Neither <code>a</code> nor <code>b</code> is modified. To combine in-place, use <code>a.extend(b)</code> or <code>a += b</code>.`,
+  },
+
+  {
+    id: 155, category: 'lists', difficulty: 'medium',
+    code:
+`a = [1, 2, 3]
+a.insert(1, 99)
+print(a)`,
+    question: "What does this print?",
+    choices: ['[99, 1, 2, 3]', '[1, 99, 2, 3]', '[1, 2, 99, 3]', '[1, 2, 3, 99]'],
+    answer: 1,
+    explanation: `<code>list.insert(i, x)</code> inserts <code>x</code> <em>before</em> the element currently at index <code>i</code>. Index 1 currently holds <code>2</code>, so <code>99</code> is placed before it, shifting <code>2</code> and <code>3</code> right. The list grows by one. <code>insert(0, x)</code> prepends; <code>insert(len(a), x)</code> is equivalent to <code>append(x)</code>.`,
+  },
+
+  {
+    id: 156, category: 'lists', difficulty: 'medium',
+    code:
+`scores = [10, 20, 10, 30, 10]
+print(scores.count(10))`,
+    question: "What does this print?",
+    choices: ['1', '2', '3', '5'],
+    answer: 2,
+    explanation: `<code>list.count(x)</code> returns how many times <code>x</code> appears in the list. It scans the entire list — O(n). Here <code>10</code> appears at indices 0, 2, and 4, so the result is <code>3</code>. Useful for tallying votes, occurrences, or duplicates without converting to a <code>Counter</code>.`,
+  },
+
+  {
+    id: 157, category: 'lists', difficulty: 'medium',
+    code:
+`a = [0, 1, 2, 3, 4, 5]
+print(a[::2])`,
+    question: "What does this print?",
+    choices: ['[0, 2, 4]', '[1, 3, 5]', '[0, 1, 2]', '[3, 4, 5]'],
+    answer: 0,
+    explanation: `<code>[::2]</code> is a slice with step <code>2</code>: start at 0, take every 2nd element. Picks indices 0, 2, 4 → <code>[0, 2, 4]</code>. Use <code>[1::2]</code> to pick odd-indexed elements (<code>[1, 3, 5]</code>). The step can be negative to go backwards — <code>[::-1]</code> reverses the list.`,
+  },
+
+  {
+    id: 158, category: 'lists', difficulty: 'medium',
+    code:
+`grid = [[1, 2], [3, 4], [5, 6]]
+print(grid[2][0])`,
+    question: "What does this print?",
+    choices: ['1', '3', '5', '6'],
+    answer: 2,
+    explanation: `<code>grid[2]</code> retrieves the third sublist: <code>[5, 6]</code>. Then <code>[0]</code> picks the first element: <code>5</code>. Chained indexing like <code>grid[row][col]</code> is the standard way to access 2D list elements. Unlike NumPy, Python lists do not support <code>grid[2, 0]</code> syntax natively.`,
+  },
+
+  {
+    id: 159, category: 'lists', difficulty: 'medium',
+    code:
+`a = [1, 2, 3, 4, 5]
+print(a[::-1])`,
+    question: "What does this print?",
+    choices: ['[5, 4, 3, 2, 1]', '[1, 2, 3, 4, 5]', '[5, 3, 1]', 'TypeError'],
+    answer: 0,
+    explanation: `<code>[::-1]</code> is a slice with step <code>-1</code>: start from the end, step backwards one at a time. This produces a reversed copy of the list without modifying the original. An alternative is <code>list(reversed(a))</code>. Note: <code>a.reverse()</code> reverses <em>in-place</em> and returns <code>None</code>.`,
+  },
+
+  {
+    id: 160, category: 'lists', difficulty: 'medium',
+    code:
+`a = [3, 1, 2]
+b = sorted(a)
+print(a[0])`,
+    question: "What does this print?",
+    choices: ['1', '2', '3', 'None'],
+    answer: 2,
+    explanation: `<code>sorted()</code> returns a <strong>new sorted list</strong> and leaves the original untouched. <code>a</code> is still <code>[3, 1, 2]</code> — its first element is <code>3</code>. This contrasts with <code>a.sort()</code>, which sorts <code>a</code> in-place (and returns <code>None</code>). Use <code>sorted()</code> when you need to preserve the original order.`,
+  },
+
+  {
+    id: 161, category: 'lists', difficulty: 'medium',
+    code:
+`langs = ['python', 'cpp', 'rust']
+print(langs.index('cpp'))`,
+    question: "What does this print?",
+    choices: ['0', '1', '2', 'ValueError'],
+    answer: 1,
+    explanation: `<code>list.index(x)</code> returns the index of the <em>first</em> occurrence of <code>x</code>. <code>'cpp'</code> is at index <code>1</code>. If the value is not found, it raises <code>ValueError</code> — so check membership with <code>in</code> first if unsure. For duplicate values, only the lowest index is returned.`,
+  },
+
+  {
+    id: 162, category: 'lists', difficulty: 'hard',
+    code:
+`nums = [1, 2, 3, 4, 5, 6]
+result = [x for x in nums if x % 2 == 0]
+print(result)`,
+    question: "What does this print?",
+    choices: ['[1, 3, 5]', '[2, 4, 6]', '[True, True, True]', '[0, 0, 0]'],
+    answer: 1,
+    explanation: `List comprehensions can include a filter condition after the <code>for</code> clause. <code>if x % 2 == 0</code> keeps only even numbers. The result is a new list — the original <code>nums</code> is unchanged. This is equivalent to <code>list(filter(lambda x: x % 2 == 0, nums))</code> but more readable.`,
+  },
+
+  {
+    id: 163, category: 'lists', difficulty: 'hard',
+    code:
+`matrix = [[1, 2], [3, 4]]
+flat = [x for row in matrix for x in row]
+print(flat)`,
+    question: "What does this print?",
+    choices: ['[[1, 2], [3, 4]]', '[1, 2, 3, 4]', '[1, 3, 2, 4]', 'TypeError'],
+    answer: 1,
+    explanation: `A <strong>nested list comprehension</strong> with two <code>for</code> clauses iterates the outer loop first, then the inner. Read it left to right: for each <code>row</code> in <code>matrix</code>, for each <code>x</code> in <code>row</code>, collect <code>x</code>. This flattens one level of nesting. Equivalent to two nested <code>for</code> loops appending to a list.`,
+  },
+
+  {
+    id: 164, category: 'lists', difficulty: 'hard',
+    code:
+`words = ['python', 'go', 'rust', 'c']
+print(min(words, key=len))`,
+    question: "What does this print?",
+    choices: ['python', 'go', 'rust', 'c'],
+    answer: 3,
+    explanation: `<code>min(iterable, key=f)</code> applies <code>f</code> to each element and returns the element with the smallest result — not the smallest key value itself. <code>key=len</code> compares strings by length: 'python'(6), 'go'(2), 'rust'(4), 'c'(1). The shortest string is <code>'c'</code>, so that's returned.`,
+  },
+
+  {
+    id: 165, category: 'lists', difficulty: 'hard',
+    code:
+`a = [1, 2, 3, 4, 5]
+a[1:3] = [20, 30, 40]
+print(a)`,
+    question: "What does this print?",
+    choices: ['[1, 20, 30, 40, 4, 5]', '[1, 20, 30, 4, 5]', '[20, 30, 40]', 'TypeError'],
+    answer: 0,
+    explanation: `<strong>Slice assignment</strong> replaces the selected range with any iterable — they don't have to be the same length. <code>a[1:3]</code> selects elements at indices 1 and 2 (<code>2, 3</code>). Replacing them with <code>[20, 30, 40]</code> (three items) expands the list: the rest of the list shifts right. This can also shrink a list: <code>a[1:3] = []</code> deletes two elements.`,
+  },
+
+  {
+    id: 166, category: 'lists', difficulty: 'hard',
+    code:
+`a = [5, 3, 1, 4, 2]
+a.sort()
+b = a.sort()
+print(b)`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3, 4, 5]', 'None', '[5, 3, 1, 4, 2]', 'TypeError'],
+    answer: 1,
+    explanation: `<code>list.sort()</code> sorts in-place and always returns <code>None</code>. Calling it a second time on the already-sorted list still returns <code>None</code> — there is no "sorted list" return value, ever. Capturing the result of any in-place method (<code>sort</code>, <code>append</code>, <code>reverse</code>) is almost always a bug.`,
   },
 
 ];

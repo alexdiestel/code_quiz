@@ -1,5 +1,5 @@
-// types.js — 39 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
-//                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137
+// types.js — 47 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
+//                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137,183,184,185,186,187,188,189,190
 const PY_TYPES = [
   {
     id: 4, category: 'types', difficulty: 'easy',
@@ -362,6 +362,92 @@ print(b)`,
     choices: ['[]', '[1]', 'None', 'NameError'],
     answer: 1,
     explanation: `<code>a = b = []</code> creates one list and makes <em>both</em> names point to it — this is chained assignment, not two separate lists. <code>a.append(1)</code> mutates that shared list, so <code>b</code> reflects the change. To get two independent lists, use <code>a = []; b = []</code> on separate lines.`,
+  },
+
+  {
+    id: 183, category: 'types', difficulty: 'easy',
+    code:
+`print(7 / 2)`,
+    question: "What does this print?",
+    choices: ['3', '3.5', '3.0', 'TypeError'],
+    answer: 1,
+    explanation: `In Python 3, <code>/</code> always performs <strong>true division</strong> and returns a <code>float</code>, even when both operands are integers and the result is whole. <code>7 / 2</code> → <code>3.5</code>. This changed from Python 2, where <code>/</code> between integers did floor division. Use <code>//</code> for integer (floor) division: <code>7 // 2</code> → <code>3</code>.`,
+  },
+
+  {
+    id: 184, category: 'types', difficulty: 'easy',
+    code:
+`print(int(9.9))`,
+    question: "What does this print?",
+    choices: ['9', '10', '9.9', 'TypeError'],
+    answer: 0,
+    explanation: `<code>int()</code> <strong>truncates</strong> toward zero — it drops the decimal part without rounding. <code>int(9.9)</code> → <code>9</code>, not <code>10</code>. Similarly <code>int(-9.9)</code> → <code>-9</code>. This differs from <code>round()</code> (nearest even) and <code>math.floor()</code> (always down). Use <code>round()</code> if you want conventional rounding.`,
+  },
+
+  {
+    id: 185, category: 'types', difficulty: 'medium',
+    code:
+`print(type(10 / 2))`,
+    question: "What does this print?",
+    choices: ["<class 'int'>", "<class 'float'>", "<class 'bool'>", "TypeError"],
+    answer: 1,
+    explanation: `<code>10 / 2</code> evaluates to <code>5.0</code>, not <code>5</code> — Python 3's <code>/</code> always returns a <code>float</code>. So <code>type(10 / 2)</code> is <code>float</code>. If you need an integer result, use floor division <code>//</code>: <code>10 // 2</code> → <code>5</code> (type <code>int</code>). This is a frequent source of bugs when the result is fed into a function expecting an integer.`,
+  },
+
+  {
+    id: 186, category: 'types', difficulty: 'medium',
+    code:
+`x = 0 or "" or [] or "quest"
+print(x)`,
+    question: "What does this print?",
+    choices: ["'quest'", 'False', '0', 'None'],
+    answer: 0,
+    explanation: `Python's <code>or</code> operator does not return <code>True</code> or <code>False</code> — it returns the <strong>first truthy value</strong> it finds, or the <strong>last value</strong> if all are falsy. <code>0</code>, <code>""</code>, and <code>[]</code> are all falsy; <code>"quest"</code> is truthy, so it is returned. This pattern (<code>x = value or default</code>) is a common Python idiom for providing fallbacks.`,
+  },
+
+  {
+    id: 187, category: 'types', difficulty: 'medium',
+    code:
+`x = 1 and 2 and 3
+print(x)`,
+    question: "What does this print?",
+    choices: ['True', '1', '3', 'False'],
+    answer: 2,
+    explanation: `Python's <code>and</code> returns the <strong>first falsy value</strong>, or the <strong>last value</strong> if all are truthy. <code>1</code>, <code>2</code>, and <code>3</code> are all truthy, so <code>and</code> evaluates all of them and returns the last one: <code>3</code>. Compare with <code>0 and 2 and 3</code>, which short-circuits at <code>0</code> and returns <code>0</code> without evaluating the rest.`,
+  },
+
+  {
+    id: 188, category: 'types', difficulty: 'medium',
+    code:
+`print(bool(0), bool([]), bool("0"))`,
+    question: "What does this print?",
+    choices: ['False False False', 'False False True', 'True True True', 'False True True'],
+    answer: 1,
+    explanation: `<code>0</code> and <code>[]</code> (empty list) are falsy. <code>"0"</code> is a <strong>non-empty string</strong> — any string with at least one character is truthy, even if that character is <code>'0'</code>, <code>' '</code>, or <code>'False'</code>. Only the empty string <code>""</code> is falsy. This trips up many beginners who expect <code>bool("0")</code> to behave like <code>bool(0)</code>.`,
+  },
+
+  {
+    id: 189, category: 'types', difficulty: 'hard',
+    code:
+`x = 5
+y = x
+x += 10
+print(y)`,
+    question: "What does this print?",
+    choices: ['5', '10', '15', 'None'],
+    answer: 0,
+    explanation: `Integers are <strong>immutable</strong>. <code>y = x</code> makes <code>y</code> point to the integer object <code>5</code>. <code>x += 10</code> does <em>not</em> modify that object — it creates a new integer <code>15</code> and <strong>rebinds</strong> <code>x</code> to it. <code>y</code> still points to <code>5</code>, unchanged. This is unlike <code>+=</code> on a list, which mutates in-place and would affect both variables.`,
+  },
+
+  {
+    id: 190, category: 'types', difficulty: 'hard',
+    code:
+`q, r = divmod(17, 5)
+print(q, r)`,
+    question: "What does this print?",
+    choices: ['3 2', '3.4 0', '2 3', '3 3'],
+    answer: 0,
+    explanation: `<code>divmod(a, b)</code> returns a tuple <code>(a // b, a % b)</code> — the quotient and remainder in one call. <code>17 // 5 = 3</code> and <code>17 % 5 = 2</code>. Useful when you need both values without computing each separately. Works on floats too: <code>divmod(7.5, 2.5)</code> → <code>(3.0, 0.0)</code>.`,
   },
 
 ];

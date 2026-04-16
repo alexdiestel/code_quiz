@@ -1,4 +1,4 @@
-// functions.js — 22 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143
+// functions.js — 37 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205
 const PY_FUNCTIONS = [
   {
     id: 41, category: 'functions', difficulty: 'easy',
@@ -253,6 +253,208 @@ print(funcs[0](), funcs[1](), funcs[2]())`,
     choices: ['0 1 2', '2 2 2', '0 0 0', '1 2 3'],
     answer: 1,
     explanation: `Each lambda captures the <em>variable</em> <code>i</code>, not its value at creation time. By the time any lambda is called, the loop has finished and <code>i</code> holds its final value: <code>2</code>. This is called <strong>late binding</strong>. Fix: use a default argument — <code>lambda i=i: i</code> — which captures the value at definition time rather than at call time.`,
+  },
+
+  {
+    id: 191, category: 'functions', difficulty: 'easy',
+    code:
+`def square(n):
+    return n * n
+
+print(square(7))`,
+    question: "What does this print?",
+    choices: ['14', '49', '7', 'None'],
+    answer: 1,
+    explanation: `<code>square(7)</code> calls the function with <code>n = 7</code>. The body computes <code>7 * 7 = 49</code> and returns it. <code>print()</code> then displays <code>49</code>. This is the most basic function pattern: receive input, compute, return output. Note that the <code>return</code> statement is what makes the value available to the caller.`,
+  },
+
+  {
+    id: 192, category: 'functions', difficulty: 'easy',
+    code:
+`def greet():
+    return "hello"
+
+f = greet
+print(f())`,
+    question: "What does this print?",
+    choices: ["'hello'", 'None', 'TypeError', 'NameError'],
+    answer: 0,
+    explanation: `In Python, functions are <strong>first-class objects</strong> — they can be assigned to variables, passed as arguments, and stored in data structures. <code>f = greet</code> makes <code>f</code> point to the same function object as <code>greet</code>. Calling <code>f()</code> is identical to calling <code>greet()</code>. Notice there are no parentheses in the assignment — <code>f = greet()</code> would call the function and assign its return value instead.`,
+  },
+
+  {
+    id: 193, category: 'functions', difficulty: 'easy',
+    code:
+`def minmax(lst):
+    return min(lst), max(lst)
+
+lo, hi = minmax([3, 1, 4, 1, 5])
+print(lo, hi)`,
+    question: "What does this print?",
+    choices: ['1 5', '3 5', '1 3', '5 1'],
+    answer: 0,
+    explanation: `A function can return multiple values by separating them with a comma — Python packs them into a <strong>tuple</strong>. <code>return min(lst), max(lst)</code> returns <code>(1, 5)</code>. The caller unpacks it with <code>lo, hi = ...</code>. This is equivalent to <code>result = minmax(...); lo = result[0]; hi = result[1]</code> but far more concise.`,
+  },
+
+  {
+    id: 194, category: 'functions', difficulty: 'medium',
+    code:
+`def info(**kwargs):
+    return len(kwargs)
+
+print(info(lang="python", level=3, score=500))`,
+    question: "What does this print?",
+    choices: ['0', '1', '3', 'TypeError'],
+    answer: 2,
+    explanation: `<code>**kwargs</code> collects all keyword arguments into a <strong>dict</strong>. Three keyword arguments are passed: <code>lang</code>, <code>level</code>, <code>score</code>. Inside the function, <code>kwargs</code> is <code>{'lang': 'python', 'level': 3, 'score': 500}</code>, so <code>len(kwargs)</code> is <code>3</code>. You can call this function with any number of keyword arguments, including zero.`,
+  },
+
+  {
+    id: 195, category: 'functions', difficulty: 'medium',
+    code:
+`nums = [1, 2, 3, 4, 5, 6]
+evens = list(filter(lambda x: x % 2 == 0, nums))
+print(evens)`,
+    question: "What does this print?",
+    choices: ['[1, 3, 5]', '[2, 4, 6]', '[True, False, True]', '[0, 0, 0]'],
+    answer: 1,
+    explanation: `<code>filter(func, iterable)</code> lazily yields elements for which <code>func(element)</code> is truthy. Here the lambda returns <code>True</code> for even numbers. <code>list()</code> forces evaluation. The result contains only even numbers. This is equivalent to <code>[x for x in nums if x % 2 == 0]</code> — the list comprehension is generally preferred for readability.`,
+  },
+
+  {
+    id: 196, category: 'functions', difficulty: 'medium',
+    code:
+`keys = ['a', 'b', 'c']
+vals = [1, 2, 3]
+print(dict(zip(keys, vals)))`,
+    question: "What does this print?",
+    choices: ["{'a': 1, 'b': 2, 'c': 3}", "['a', 1, 'b', 2, 'c', 3]", "[('a', 1), ('b', 2)]", 'TypeError'],
+    answer: 0,
+    explanation: `<code>zip(a, b)</code> pairs elements from both iterables: <code>[('a', 1), ('b', 2), ('c', 3)]</code>. Wrapping with <code>dict()</code> interprets each pair as a <code>(key, value)</code> tuple, building a dictionary. This is the idiomatic way to construct a dict from two parallel lists. If the lists differ in length, <code>zip</code> stops at the shorter one.`,
+  },
+
+  {
+    id: 197, category: 'functions', difficulty: 'medium',
+    code:
+`result = [x ** 2 for x in range(5)]
+print(result)`,
+    question: "What does this print?",
+    choices: ['[0, 1, 4, 9, 16]', '[1, 4, 9, 16, 25]', '[0, 1, 2, 3, 4]', '[0, 2, 4, 6, 8]'],
+    answer: 0,
+    explanation: `<code>range(5)</code> produces <code>0, 1, 2, 3, 4</code>. The comprehension squares each: <code>0²=0, 1²=1, 2²=4, 3²=9, 4²=16</code>. List comprehensions are generally faster and more readable than building a list with a <code>for</code> loop and <code>append</code>. The equivalent using <code>map</code> would be <code>list(map(lambda x: x**2, range(5)))</code>.`,
+  },
+
+  {
+    id: 198, category: 'functions', difficulty: 'medium',
+    code:
+`scores = [0, 0, 42, 0]
+print(any(s > 40 for s in scores))`,
+    question: "What does this print?",
+    choices: ['True', 'False', '42', 'None'],
+    answer: 0,
+    explanation: `<code>any(iterable)</code> returns <code>True</code> if <em>at least one</em> element is truthy, and <strong>short-circuits</strong> as soon as it finds one. Here a generator expression is passed — values are tested one by one. At <code>42 > 40</code> it gets <code>True</code> and stops immediately, never evaluating the remaining <code>0</code>. Using a generator (not a list) avoids building the whole sequence in memory first.`,
+  },
+
+  {
+    id: 199, category: 'functions', difficulty: 'hard',
+    code:
+`def double(f):
+    def wrapper(x):
+        return f(x) * 2
+    return wrapper
+
+@double
+def add_one(x):
+    return x + 1
+
+print(add_one(4))`,
+    question: "What does this print?",
+    choices: ['5', '9', '10', '8'],
+    answer: 2,
+    explanation: `<code>@double</code> is syntactic sugar for <code>add_one = double(add_one)</code>. When <code>add_one(4)</code> is called, it actually calls <code>wrapper(4)</code>, which calls the original <code>add_one(4)</code> → <code>5</code>, then multiplies by 2 → <code>10</code>. Decorators wrap functions to add behaviour without modifying the original function body — used heavily in frameworks for auth, logging, caching, and routing.`,
+  },
+
+  {
+    id: 200, category: 'functions', difficulty: 'hard',
+    code:
+`def counter():
+    n = 0
+    while True:
+        yield n
+        n += 1
+
+g = counter()
+print(next(g), next(g), next(g))`,
+    question: "What does this print?",
+    choices: ['0 1 2', '1 2 3', '0 0 0', 'StopIteration'],
+    answer: 0,
+    explanation: `<code>yield</code> turns a function into a <strong>generator</strong>. Each <code>next(g)</code> resumes execution from after the last <code>yield</code>. First call: yields <code>0</code>, pauses. Second: increments to <code>1</code>, yields <code>1</code>. Third: yields <code>2</code>. The generator retains its local state (<code>n</code>) between calls. This infinite generator never raises <code>StopIteration</code> unless you manually <code>close()</code> it or exhaust it in a for loop.`,
+  },
+
+  {
+    id: 201, category: 'functions', difficulty: 'hard',
+    code:
+`from functools import reduce
+result = reduce(lambda a, b: a * b, [1, 2, 3, 4])
+print(result)`,
+    question: "What does this print?",
+    choices: ['10', '24', '12', '6'],
+    answer: 1,
+    explanation: `<code>reduce(f, iterable)</code> applies <code>f</code> cumulatively: <code>f(f(f(1, 2), 3), 4)</code> → <code>((1×2)×3)×4</code> → <code>2×3×4</code> → <code>6×4</code> → <code>24</code>. It computes the product of the list. <code>reduce</code> was removed from Python 3 builtins (it's in <code>functools</code>) because list comprehensions and built-ins like <code>sum()</code> and <code>math.prod()</code> cover most use cases more clearly.`,
+  },
+
+  {
+    id: 202, category: 'functions', difficulty: 'hard',
+    code:
+`def make_adder(n):
+    return lambda x: x + n
+
+add5 = make_adder(5)
+print(add5(3))`,
+    question: "What does this print?",
+    choices: ['8', '5', '3', 'NameError'],
+    answer: 0,
+    explanation: `<code>make_adder(5)</code> returns a lambda that adds <code>5</code> to its argument. The lambda "closes over" <code>n = 5</code> — unlike loop lambdas that share a mutable loop variable, here <code>n</code> is a function parameter that gets a fresh binding on each call to <code>make_adder</code>. So <code>add5(3)</code> computes <code>3 + 5 = 8</code>. This pattern is called a <strong>closure factory</strong>.`,
+  },
+
+  {
+    id: 203, category: 'functions', difficulty: 'hard',
+    code:
+`def outer(x):
+    def inner(y):
+        return x * y
+    return inner
+
+triple = outer(3)
+print(triple(7))`,
+    question: "What does this print?",
+    choices: ['10', '21', '3', '7'],
+    answer: 1,
+    explanation: `<code>outer(3)</code> returns <code>inner</code> with <code>x = 3</code> captured in its closure. Calling <code>triple(7)</code> invokes <code>inner(7)</code>, which computes <code>3 * 7 = 21</code>. This is <strong>partial application</strong> — fixing one argument of a two-argument function to create a new single-argument function. Python's <code>functools.partial</code> provides this more generally.`,
+  },
+
+  {
+    id: 204, category: 'functions', difficulty: 'hard',
+    code:
+`print(all([]))
+print(any([]))`,
+    question: "What does this print?",
+    choices: ['True\nFalse', 'False\nTrue', 'True\nTrue', 'False\nFalse'],
+    answer: 0,
+    explanation: `<code>all([])</code> is <strong>vacuously true</strong> — there are no elements to violate the "all are truthy" condition, so it returns <code>True</code>. <code>any([])</code> is <code>False</code> — there are no elements at all, so certainly no truthy ones. These edge cases matter: an empty permission list should probably fail the <code>any()</code> check, not pass it.`,
+  },
+
+  {
+    id: 205, category: 'functions', difficulty: 'hard',
+    code:
+`items = ['a', 'b', 'c']
+for i, v in enumerate(items, start=10):
+    pass
+print(i, v)`,
+    question: "What does this print?",
+    choices: ['2 c', '10 a', '12 c', '3 c'],
+    answer: 2,
+    explanation: `<code>enumerate(iterable, start=n)</code> pairs each element with a counter starting at <code>n</code>. With <code>start=10</code>: <code>(10, 'a')</code>, <code>(11, 'b')</code>, <code>(12, 'c')</code>. After the loop, <code>i</code> and <code>v</code> hold the values from the <em>last</em> iteration — <code>12</code> and <code>'c'</code>. Loop variables in Python are not scoped to the loop; they leak into the enclosing scope.`,
   },
 
 ];
