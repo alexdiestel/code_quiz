@@ -13,6 +13,14 @@
  * All fields except event_type are optional depending on event type.
  */
 export async function onRequestPost({ request, env }) {
+  // Only accept requests originating from the game itself
+  const origin  = request.headers.get('origin')  || '';
+  const referer = request.headers.get('referer') || '';
+  const allowed = origin.includes('code-quest.dev') || referer.includes('code-quest.dev');
+  if (!allowed) {
+    return new Response('Forbidden', { status: 403 });
+  }
+
   // Only accept JSON
   const ct = request.headers.get('content-type') || '';
   if (!ct.includes('application/json')) {
