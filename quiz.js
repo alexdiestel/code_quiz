@@ -177,9 +177,24 @@ let deck           = [];
 let current        = 0;
 let correctCount   = 0;
 let score          = 0;
+let lives          = 3;
 let answered       = false;
 let results        = []; // 'correct' | 'wrong' | null per deck slot
 let seenIds        = new Set();
+let standaloneMode = false; // true when loaded via ?qid=
+
+const MAX_LIVES = 3;
+
+const HEART_FULL  = `<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"><path d="M305 151.1L320 171.8L335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1L576 231.7C576 343.9 436.1 474.2 363.1 529.9C350.7 539.3 335.5 544 320 544C304.5 544 289.2 539.4 276.9 529.9C203.9 474.2 64 343.9 64 231.7L64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1z"/></svg>`;
+const HEART_EMPTY = `<svg viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg"><path d="M442.9 144C415.6 144 389.9 157.1 373.9 179.2L339.5 226.8C335 233 327.8 236.7 320.1 236.7C312.4 236.7 305.2 233 300.7 226.8L266.3 179.2C250.3 157.1 224.6 144 197.3 144C150.3 144 112.2 182.1 112.2 229.1C112.2 279 144.2 327.5 180.3 371.4C221.4 421.4 271.7 465.4 306.2 491.7C309.4 494.1 314.1 495.9 320.2 495.9C326.3 495.9 331 494.1 334.2 491.7C368.7 465.4 419 421.3 460.1 371.4C496.3 327.5 528.2 279 528.2 229.1C528.2 182.1 490.1 144 443.1 144zM335 151.1C360 116.5 400.2 96 442.9 96C516.4 96 576 155.6 576 229.1C576 297.7 533.1 358 496.9 401.9C452.8 455.5 399.6 502 363.1 529.8C350.8 539.2 335.6 543.9 320 543.9C304.4 543.9 289.2 539.2 276.9 529.8C240.4 502 187.2 455.5 143.1 402C106.9 358.1 64 297.7 64 229.1C64 155.6 123.6 96 197.1 96C239.8 96 280 116.5 305 151.1L320 171.8L335 151.1z"/></svg>`;
+
+const SHARE_ICONS = {
+  x:        `<svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.74l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>`,
+  reddit:   `<svg viewBox="0 0 24 24"><path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z"/></svg>`,
+  whatsapp: `<svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>`,
+  email:    `<svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+  copy:     `<svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>`,
+};
 
 const DIFF_POINTS  = { easy: 100, medium: 250, hard: 500, boss: 1000 };
 
@@ -202,7 +217,9 @@ const statusIcon     = document.getElementById('status-icon');
 const statusText     = document.getElementById('status-text');
 const correctAnswerEl= document.getElementById('correct-answer-display');
 const explanationEl  = document.getElementById('feedback-explanation');
-const nextBtn        = document.getElementById('next-btn');
+const nextBtn             = document.getElementById('next-btn');
+const shareQuestionBtn    = document.getElementById('share-question-btn');
+const shareQuestionLabel  = document.getElementById('share-question-label');
 const endView        = document.getElementById('end-view');
 const endSubtitle    = document.getElementById('end-subtitle');
 const endGrade       = document.getElementById('end-grade');
@@ -210,10 +227,19 @@ const restartBtn     = document.getElementById('restart-btn');
 const scoreDisplay   = document.getElementById('score-display');
 const scorePts       = document.getElementById('score-pts');
 const endScore       = document.getElementById('end-score');
+const livesDisplay   = document.getElementById('lives-display');
+const endTrophy      = document.getElementById('end-trophy');
+const endTitle       = document.getElementById('end-title');
 const siteFooter     = document.querySelector('.site-footer');
 const landingLegal   = document.querySelector('.landing-legal');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+function renderLives() {
+  livesDisplay.innerHTML = Array.from({ length: MAX_LIVES }, (_, i) =>
+    `<span class="heart ${i < lives ? 'heart-full' : 'heart-empty'}">${i < lives ? HEART_FULL : HEART_EMPTY}</span>`
+  ).join('');
+}
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -440,6 +466,8 @@ function startQuiz(animate, keepScore = false) {
   correctCount = 0;
   answered     = false;
   results      = new Array(deck.length).fill(null);
+  lives        = MAX_LIVES;
+  renderLives();
   if (!keepScore) {
     score = 0;
     scorePts.textContent = '0';
@@ -495,10 +523,10 @@ function renderQuestion() {
   hljs.highlightElement(codeDisplay);
 
   choicesEl.innerHTML = '';
-  shuffle(q.choices).forEach(choice => {
+  shuffle(q.choices).forEach((choice, i) => {
     const btn = document.createElement('button');
     btn.className    = 'choice-btn';
-    btn.innerHTML    = escapeHtml(choice).replace(/\n/g, '<br>');
+    btn.innerHTML    = `<span class="choice-key">${i + 1}</span>` + escapeHtml(choice).replace(/\n/g, '<br>');
     btn.dataset.value= choice;
     btn.addEventListener('click', () => handleChoice(btn, q));
     choicesEl.appendChild(btn);
@@ -519,6 +547,11 @@ function handleChoice(btn, q) {
     scorePts.textContent = score.toLocaleString();
   }
   results[current] = correct ? 'correct' : 'wrong';
+
+  if (!correct) {
+    lives = Math.max(0, lives - 1);
+    renderLives();
+  }
 
   track({
     event_type:  'question_answered',
@@ -542,23 +575,41 @@ function handleChoice(btn, q) {
   correctAnswerEl.textContent = q.choices[q.answer];
   explanationEl.innerHTML     = enrichExplanation(q.explanation);
 
-  nextBtn.textContent = (current === deck.length - 1)
-    ? 'See Results \u2192'
-    : 'Next Question \u2192';
+  if (standaloneMode) {
+    nextBtn.textContent = 'Start Quest \u2192';
+  } else if (lives === 0) {
+    nextBtn.textContent = 'See Results \u2192';
+  } else {
+    nextBtn.textContent = (current === deck.length - 1)
+      ? 'See Results \u2192'
+      : 'Next Question \u2192';
+  }
 
   setTimeout(() => feedbackCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
 }
 
-function showEndScreen() {
+function showEndScreen(gameOver = false) {
   // Hide the question/feedback cards — quiz-view (and starmap) stay visible
   questionCard.classList.add('hidden');
   feedbackCard.classList.add('hidden');
   endView.classList.remove('hidden');
 
   const total = deck.length;
-  endSubtitle.textContent = `${correctCount} of ${total} correct`;
+
+  if (gameOver) {
+    endTrophy.textContent   = '[ GAME OVER ]';
+    endTitle.textContent    = 'No Lives Left';
+    endSubtitle.textContent = `${correctCount} of ${current + 1} correct`;
+    restartBtn.textContent  = 'Try Again \u2192';
+  } else {
+    endTrophy.textContent   = '[ COMPLETE ]';
+    endTitle.textContent    = 'Quest Complete!';
+    endSubtitle.textContent = `${correctCount} of ${total} correct`;
+    restartBtn.textContent  = 'Continue Quest \u2192';
+  }
+
   endScore.textContent = score.toLocaleString();
-  const grade = gradeLabel(correctCount, total);
+  const grade = gradeLabel(correctCount, gameOver ? current + 1 : total);
   endGrade.textContent = grade.text;
   endGrade.className   = `end-grade ${grade.cls}`;
 
@@ -724,6 +775,16 @@ document.querySelector('#site-header .logo').addEventListener('click', () => {
 });
 
 nextBtn.addEventListener('click', () => {
+  if (standaloneMode) {
+    standaloneMode = false;
+    history.replaceState(null, '', location.pathname); // clean ?qid= from URL
+    startQuiz(true, false);
+    return;
+  }
+  if (lives === 0) {
+    showEndScreen(true);
+    return;
+  }
   current++;
   if (current >= deck.length) {
     showEndScreen();
@@ -740,7 +801,200 @@ nextBtn.addEventListener('click', () => {
   }
 });
 
-restartBtn.addEventListener('click', () => startQuiz(true, true));
+restartBtn.addEventListener('click', () => {
+  const keepScore = lives > 0; // game over resets score; quest complete carries it
+  startQuiz(true, keepScore);
+});
+
+// ── Keyboard navigation ───────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  // Ignore when typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  // Ignore if quiz isn't active
+  if (quizView.classList.contains('hidden')) return;
+
+  const key = e.key;
+
+  // 1–4: select a choice (only before answering)
+  if (['1','2','3','4'].includes(key) && !answered) {
+    const btns = choicesEl.querySelectorAll('.choice-btn');
+    const idx  = parseInt(key) - 1;
+    if (btns[idx]) btns[idx].click();
+    return;
+  }
+
+  // Enter / Space: advance after answering
+  if ((key === 'Enter' || key === ' ') && answered) {
+    e.preventDefault();
+    if (!endView.classList.contains('hidden')) return; // on end screen, do nothing
+    nextBtn.click();
+  }
+});
+
+// ── Share popup ───────────────────────────────────────────────────────────────
+let _sharePayload = null;
+let _shareAnchor  = null;
+
+const sharePopupEl = (() => {
+  const el = document.createElement('div');
+  el.className = 'share-popup';
+  el.innerHTML =
+    `<button class="share-opt" data-share="x">${SHARE_ICONS.x}<span>X / Twitter</span></button>` +
+    `<button class="share-opt" data-share="reddit">${SHARE_ICONS.reddit}<span>Reddit</span></button>` +
+    `<button class="share-opt" data-share="whatsapp">${SHARE_ICONS.whatsapp}<span>WhatsApp</span></button>` +
+    `<button class="share-opt" data-share="email">${SHARE_ICONS.email}<span>Email</span></button>` +
+    `<hr class="share-divider">` +
+    `<button class="share-opt" data-share="copy">${SHARE_ICONS.copy}<span>Copy link</span></button>`;
+  document.body.appendChild(el);
+  return el;
+})();
+
+function openSharePopup(payload, anchorEl) {
+  _sharePayload = payload;
+  _shareAnchor  = anchorEl;
+
+  const anchor  = anchorEl.getBoundingClientRect();
+  const estH    = 218; // approximate popup height
+  const estW    = 186;
+  const margin  = 8;
+
+  const fitsAbove = anchor.top > estH + margin;
+  const top  = fitsAbove ? anchor.top - estH - margin : anchor.bottom + margin;
+  const left = Math.max(margin, Math.min(anchor.left, window.innerWidth - estW - margin));
+
+  sharePopupEl.style.top  = top  + 'px';
+  sharePopupEl.style.left = left + 'px';
+  sharePopupEl.classList.add('open');
+}
+
+function closeSharePopup() {
+  sharePopupEl.classList.remove('open');
+  _shareAnchor = null;
+}
+
+sharePopupEl.addEventListener('click', e => {
+  const btn = e.target.closest('[data-share]');
+  if (!btn || !_sharePayload) return;
+
+  const { url, text, title, copyValue } = _sharePayload;
+  const action = btn.dataset.share;
+
+  if (action === 'copy') {
+    navigator.clipboard.writeText(copyValue || url).then(() => {
+      const span = btn.querySelector('span');
+      const orig = span.textContent;
+      span.textContent = 'Copied!';
+      setTimeout(() => { span.textContent = orig; closeSharePopup(); }, 1500);
+    });
+    return;
+  }
+
+  const targets = {
+    x:        `https://twitter.com/intent/tweet?text=${encodeURIComponent(text + '\n' + url)}`,
+    reddit:   `https://www.reddit.com/submit?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`,
+    whatsapp: `https://wa.me/?text=${encodeURIComponent(text + '\n' + url)}`,
+    email:    `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + '\n\n' + url)}`,
+  };
+  if (targets[action]) window.open(targets[action], '_blank', 'noopener,noreferrer');
+  closeSharePopup();
+});
+
+// Close on outside click (capture so it fires before the trigger button's click)
+document.addEventListener('click', e => {
+  if (!sharePopupEl.classList.contains('open')) return;
+  if (sharePopupEl.contains(e.target)) return;
+  if (_shareAnchor && _shareAnchor.contains(e.target)) return; // let button handler run
+  closeSharePopup();
+}, true);
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSharePopup(); });
+
+function tryShare(payload, anchorEl) {
+  if (navigator.share) {
+    navigator.share({ title: payload.title, text: payload.text, url: payload.url }).catch(() => {});
+    return;
+  }
+  // Toggle: close if already open from the same button
+  if (sharePopupEl.classList.contains('open') && _shareAnchor === anchorEl) {
+    closeSharePopup();
+    return;
+  }
+  openSharePopup(payload, anchorEl);
+}
+
+// ── Share score (end screen) ──────────────────────────────────────────────────
+const shareBtn = document.getElementById('share-btn');
+
+shareBtn.addEventListener('click', () => {
+  const lang = currentLangConfig ? currentLangConfig.label : 'Code_Quest';
+  tryShare({
+    url:       'https://code-quest.dev',
+    text:      `I scored ${score.toLocaleString()} pts on Code_Quest (${lang}) — can you beat it?`,
+    title:     'Code_Quest Score',
+    copyValue: `I scored ${score.toLocaleString()} pts on Code_Quest (${lang}) — can you beat it?\nhttps://code-quest.dev`,
+  }, shareBtn);
+});
+
+// ── Share question ────────────────────────────────────────────────────────────
+shareQuestionBtn.addEventListener('click', () => {
+  const q = deck[current];
+  if (!q) return;
+  tryShare({
+    url:   `https://code-quest.dev?qid=${q.id}`,
+    text:  'Can you predict the output? Try this code snippet on Code_Quest.',
+    title: 'Code_Quest — Can you predict the output?',
+  }, shareQuestionBtn);
+});
+
+// ── Standalone (?qid=) ────────────────────────────────────────────────────────
+function findQuestionById(id) {
+  for (const lang of Object.values(LANGUAGES)) {
+    const q = lang.questions.find(q => q.id === id);
+    if (q) return { lang, q };
+  }
+  return null;
+}
+
+function initFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const qid = params.get('qid');
+  if (!qid) return;
+
+  const result = findQuestionById(parseInt(qid, 10));
+  if (!result) return; // unknown ID — fall through to normal landing
+
+  const { lang, q } = result;
+  currentLangConfig = lang;
+  applyTheme(lang.theme);
+  standaloneMode = true;
+
+  // Update header labels
+  const logoSub = document.getElementById('logo-sub');
+  if (logoSub) logoSub.textContent = lang.label;
+  if (codeFilename) codeFilename.textContent = lang.filename;
+
+  // Build a single-question deck
+  deck         = [q];
+  current      = 0;
+  correctCount = 0;
+  answered     = false;
+  results      = [null];
+  lives        = MAX_LIVES;
+  renderLives();
+  score = 0;
+  scorePts.textContent = '0';
+
+  // Show quiz immediately (no landing transition)
+  landingView.classList.add('hidden');
+  siteHeader.classList.remove('header-hidden');
+  scoreDisplay.classList.remove('hidden');
+  quizView.classList.remove('hidden');
+  const sidebar = document.querySelector('.quiz-sidebar');
+  if (sidebar) sidebar.classList.add('sidebar-visible');
+
+  renderQuestion();
+  requestAnimationFrame(alignSidebar);
+}
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-// (start screen is already visible by default via HTML)
+initFromUrl(); // handles ?qid= before landing is shown

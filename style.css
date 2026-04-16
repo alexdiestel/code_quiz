@@ -105,9 +105,26 @@ body {
 .logo-sub   { font-size: .73rem; color: var(--text-muted); }
 .score-display {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 4px;
 }
+
+.lives-display {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 10px;
+}
+
+.heart svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  transition: opacity .2s;
+}
+
+.heart-full  svg { fill: #f43f5e; }
+.heart-empty svg { fill: #374151; }
 .score-pts {
   font-family: 'JetBrains Mono', monospace;
   font-size: 1.1rem;
@@ -497,6 +514,21 @@ body {
 .choice-btn.correct  { background: var(--green-bg); border-color: var(--green); color: var(--green); }
 .choice-btn.incorrect{ background: var(--red-bg);   border-color: var(--red);   color: var(--red);   }
 
+.choice-key {
+  display: inline-block;
+  width: 1.4em;
+  text-align: center;
+  font-size: .95rem;
+  font-weight: 700;
+  margin-right: 10px;
+  color: var(--text-dim);
+  opacity: 0.3;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.choice-btn.correct  .choice-key { color: var(--green); opacity: 0.5; }
+.choice-btn.incorrect .choice-key { color: var(--red);  opacity: 0.5; }
+
 /* ── Feedback card ───────────────────────────────────────────────────────── */
 .feedback-card { border-color: var(--border2); transition: border-color .2s; }
 .feedback-card.correct   { border-color: var(--green); }
@@ -700,7 +732,36 @@ body {
   .ad-inner        { gap: 10px; }
 }
 
-.feedback-footer { display: flex; justify-content: flex-end; }
+.feedback-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-share-question {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: .8rem;
+  font-weight: 500;
+  transition: color .15s;
+  white-space: nowrap;
+}
+.btn-share-question svg {
+  width: 13px;
+  height: 13px;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+.btn-share-question:hover { color: var(--text-dim); }
 
 /* ── Buttons ─────────────────────────────────────────────────────────────── */
 .btn {
@@ -771,7 +832,63 @@ body {
 .grade-mid     { color: var(--accent); }
 .grade-low     { color: var(--text-dim); }
 
-.end-actions { display: flex; justify-content: center; }
+.end-actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+
+.btn-share {
+  font-family: 'Inter', sans-serif;
+  font-size: .85rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.btn-share:hover { border-color: var(--primary-lt); color: var(--primary-lt); }
+
+/* ── Share popup ─────────────────────────────────────────────────────────── */
+.share-popup {
+  position: fixed;
+  z-index: 300;
+  background: #111827;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.03);
+  min-width: 172px;
+  opacity: 0;
+  transform: translateY(5px) scale(.97);
+  pointer-events: none;
+  transition: opacity .13s ease, transform .13s ease;
+}
+.share-popup.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.share-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-dim);
+  font-family: 'Inter', sans-serif;
+  font-size: .84rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background .1s, color .1s;
+  white-space: nowrap;
+}
+.share-opt:hover { background: rgba(255,255,255,.06); color: var(--text); }
+.share-opt svg   { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+.share-divider   { border: none; border-top: 1px solid var(--border); margin: 4px 2px; }
 
 /* ── Site footer ─────────────────────────────────────────────────────────── */
 .site-footer {
