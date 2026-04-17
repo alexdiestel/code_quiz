@@ -244,6 +244,22 @@ function renderLives() {
   ).join('');
 }
 
+function animateScore(from, to) {
+  const duration = Math.min(300 + (to - from) * 0.3, 900);
+  const start    = performance.now();
+  function step(now) {
+    const t       = Math.min((now - start) / duration, 1);
+    const eased   = 1 - Math.pow(1 - t, 3); // ease-out cubic
+    const current = Math.round(from + (to - from) * eased);
+    scorePts.textContent = current.toLocaleString();
+    if (t < 1) requestAnimationFrame(step);
+  }
+  scorePts.classList.remove('score-pop');
+  void scorePts.offsetWidth;
+  scorePts.classList.add('score-pop');
+  requestAnimationFrame(step);
+}
+
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -470,12 +486,12 @@ function startQuiz(animate, keepScore = false) {
   correctCount = 0;
   answered     = false;
   results      = new Array(deck.length).fill(null);
-  lives        = MAX_LIVES;
-  renderLives();
   if (!keepScore) {
+    lives = MAX_LIVES;
     score = 0;
     scorePts.textContent = '0';
   }
+  renderLives();
   scoreDisplay.classList.remove('hidden');
 
   endView.classList.add('hidden');
@@ -546,8 +562,9 @@ function handleChoice(btn, q) {
   const correct = btn.dataset.value === q.choices[q.answer];
   if (correct) {
     correctCount++;
+    const prev = score;
     score += DIFF_POINTS[q.difficulty] ?? 0;
-    scorePts.textContent = score.toLocaleString();
+    animateScore(prev, score);
   }
   results[current] = correct ? 'correct' : 'wrong';
 

@@ -131,8 +131,15 @@ body {
   font-weight: 600;
   color: var(--orange);
   letter-spacing: -.02em;
+  display: inline-block;
   transition: color .2s;
 }
+@keyframes score-pop {
+  0%   { transform: scale(1);    color: var(--orange); }
+  25%  { transform: scale(1.22); color: #fde68a; }
+  100% { transform: scale(1);    color: var(--orange); }
+}
+.score-pop { animation: score-pop .5s ease-out forwards; }
 .score-label {
   font-size: .7rem;
   color: var(--text-muted);
