@@ -67,6 +67,7 @@
     .pct-low    { color: #f43f5e; }
 
     .empty { color: #4a5568; font-size: 0.8rem; font-style: italic; text-align: center; padding: 1rem 0; }
+    .total-row td { background: rgba(167,139,250,.07); font-weight: 600; color: #e2e8f0; }
 
     #login {
       max-width: 320px;
@@ -127,12 +128,12 @@
     </div>
     <div class="card">
       <h2>Questions Answered — last 30 days</h2>
-      <table><thead><tr><th>Date</th><th>Lang</th><th>Answered</th></tr></thead>
+      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>Total</th></tr></thead>
       <tbody id="questions-table"></tbody></table>
     </div>
     <div class="card">
       <h2>Quiz Starts — last 30 days</h2>
-      <table><thead><tr><th>Date</th><th>Lang</th><th>Starts</th></tr></thead>
+      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>Total</th></tr></thead>
       <tbody id="starts-table"></tbody></table>
     </div>
     <div class="card">
@@ -173,10 +174,10 @@
     document.getElementById('dashboard').style.display = 'block';
     document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleString();
 
-    fillTable('users-table',       data.unique_users_per_day,  ['date','count']);
-    fillTable('questions-table',   data.questions_per_day,     ['date','lang','count']);
-    fillTable('starts-table',      data.starts_per_day,        ['date','lang','count']);
-    fillTable('completions-table', data.completions_per_day,   ['date','count']);
+    fillTable('users-table',       data.unique_users_per_day, ['date','count']);
+    fillLangPivotTable('questions-table', data.questions_per_day);
+    fillLangPivotTable('starts-table',    data.starts_per_day);
+    fillTable('completions-table', data.completions_per_day,  ['date','count']);
     fillQuestionTable(data.per_question);
   }
 
@@ -186,6 +187,35 @@
     tb.innerHTML = rows.map(r =>
       `<tr>${cols.map(c => `<td>${r[c] ?? '—'}</td>`).join('')}</tr>`
     ).join('');
+  }
+
+  function fillLangPivotTable(id, rows) {
+    const tb = document.getElementById(id);
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="empty">No data yet</td></tr>'; return; }
+
+    // Pivot: date → { python: n, cpp: n }
+    const map = {};
+    for (const r of rows) {
+      if (!map[r.date]) map[r.date] = { python: 0, cpp: 0 };
+      map[r.date][r.lang] = (map[r.date][r.lang] || 0) + r.count;
+    }
+
+    const dates = Object.keys(map).sort((a, b) => b.localeCompare(a));
+
+    let totPy = 0, totCpp = 0;
+    for (const d of dates) { totPy += map[d].python || 0; totCpp += map[d].cpp || 0; }
+
+    const mkRow = (label, py, cpp, isTotal) => {
+      const tot = py + cpp;
+      const f   = (n) => isTotal ? n : (n > 0 ? n : '—');
+      return `<tr${isTotal ? ' class="total-row"' : ''}>`
+        + `<td>${label}</td><td>${f(py)}</td><td>${f(cpp)}</td><td>${f(tot)}</td>`
+        + `</tr>`;
+    };
+
+    tb.innerHTML =
+      mkRow('Total', totPy, totCpp, true) +
+      dates.map(d => mkRow(d, map[d].python || 0, map[d].cpp || 0, false)).join('');
   }
 
   function fillQuestionTable(rows) {
