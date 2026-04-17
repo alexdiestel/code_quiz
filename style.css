@@ -113,7 +113,7 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .shield svg {
