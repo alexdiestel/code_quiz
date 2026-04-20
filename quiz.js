@@ -1117,7 +1117,11 @@ function buildSettingsPanel(langSlug) {
   body.innerHTML = `<div class="settings-pills">${pills}</div>`;
   body.querySelectorAll('.topic-pill').forEach(btn => {
     btn.addEventListener('click', () => {
-      const key = `${btn.dataset.lang}:${btn.dataset.cat}`;
+      const key        = `${btn.dataset.lang}:${btn.dataset.cat}`;
+      const totalCats  = Object.keys(lang.categories).length;
+      const disabledForLang = [...disabledCategories].filter(k => k.startsWith(btn.dataset.lang + ':')).length;
+      const isLastActive = !disabledCategories.has(key) && disabledForLang === totalCats - 1;
+      if (isLastActive) return;
       if (disabledCategories.has(key)) {
         disabledCategories.delete(key);
         btn.classList.add('active');
