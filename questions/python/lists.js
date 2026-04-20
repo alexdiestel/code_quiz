@@ -1,4 +1,4 @@
-// lists.js — 38 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166
+// lists.js — 46 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,241,242,243,244,245,246,247,248
 const PY_LISTS = [
   {
     id: 1, category: 'lists', difficulty: 'easy',
@@ -406,6 +406,97 @@ print(b)`,
     choices: ['[1, 2, 3, 4, 5]', 'None', '[5, 3, 1, 4, 2]', 'TypeError'],
     answer: 1,
     explanation: `<code>list.sort()</code> sorts in-place and always returns <code>None</code>. Calling it a second time on the already-sorted list still returns <code>None</code> — there is no "sorted list" return value, ever. Capturing the result of any in-place method (<code>sort</code>, <code>append</code>, <code>reverse</code>) is almost always a bug.`,
+  },
+  {
+    id: 241, category: 'lists', difficulty: 'medium',
+    code: `grid = [[0] * 3] * 3
+grid[0][1] = 9
+print(grid)`,
+    question: "What does this print?",
+    choices: [
+      "[[0, 9, 0], [0, 0, 0], [0, 0, 0]]",
+      "[[0, 9, 0], [0, 9, 0], [0, 9, 0]]",
+      "[[9, 9, 9], [9, 9, 9], [9, 9, 9]]",
+      "[[0, 0, 0], [0, 0, 0], [0, 0, 0]]",
+    ],
+    answer: 1,
+    explanation: `<code>[[0]*3]*3</code> creates three references to the <em>same inner list</em>. Mutating <code>grid[0][1]</code> changes that shared list, so all three rows reflect the change. To get independent rows use a comprehension: <code>[[0]*3 for _ in range(3)]</code>.`,
+  },
+  {
+    id: 242, category: 'lists', difficulty: 'easy',
+    code: `a = [1, 2, 3]
+b = [4, 5]
+a.extend(b)
+print(a)`,
+    question: "What does this print?",
+    choices: ["[1, 2, 3, [4, 5]]", "[1, 2, 3, 4, 5]", "[4, 5, 1, 2, 3]", "[[1, 2, 3], [4, 5]]"],
+    answer: 1,
+    explanation: `<code>extend()</code> appends each element of the iterable individually, unlike <code>append()</code> which would add the whole list as a single nested element. The result is a flat list containing all five integers.`,
+  },
+  {
+    id: 243, category: 'lists', difficulty: 'easy',
+    code: `x = [10, 20, 30, 40]
+x.insert(2, 99)
+print(x)`,
+    question: "What does this print?",
+    choices: ["[10, 20, 99, 30, 40]", "[10, 99, 20, 30, 40]", "[10, 20, 30, 99, 40]", "[99, 10, 20, 30, 40]"],
+    answer: 0,
+    explanation: `<code>insert(i, val)</code> inserts <code>val</code> <em>before</em> index <code>i</code>. Index 2 was <code>30</code>, so <code>99</code> is placed before it. All elements from index 2 onwards shift right by one.`,
+  },
+  {
+    id: 244, category: 'lists', difficulty: 'easy',
+    code: `nums = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+result = [x for x in nums if x % 3 == 0]
+print(result)`,
+    question: "What does this print?",
+    choices: ["[3, 6, 9]", "[1, 4, 7]", "[0, 3, 6, 9]", "[2, 5, 8]"],
+    answer: 0,
+    explanation: `The list comprehension filters for values divisible by 3 (<code>% 3 == 0</code>). Among 1–9, those are 3, 6, and 9. The condition acts as a filter — only elements that satisfy it are included in the output list.`,
+  },
+  {
+    id: 245, category: 'lists', difficulty: 'medium',
+    code: `a = [1, 2, 3]
+b = [4, 5]
+print(list(zip(a, b)))`,
+    question: "What does this print?",
+    choices: ["[(1, 4), (2, 5), (3, None)]", "[(1, 4), (2, 5)]", "[(1, 4), (2, 5), (3,)]", "[(4, 1), (5, 2)]"],
+    answer: 1,
+    explanation: `<code>zip()</code> stops at the shortest iterable. Since <code>b</code> has only 2 elements, the output contains only 2 tuples — the unmatched <code>3</code> is simply dropped. Use <code>itertools.zip_longest</code> to fill missing values instead.`,
+  },
+  {
+    id: 246, category: 'lists', difficulty: 'easy',
+    code: `items = ['a', 'b', 'c']
+for i, v in enumerate(items, 1):
+    print(i, v)`,
+    question: "What does this print?",
+    choices: [
+      "0 a\n1 b\n2 c",
+      "1 a\n2 b\n3 c",
+      "a 1\nb 2\nc 3",
+      "1 0\n2 1\n3 2",
+    ],
+    answer: 1,
+    explanation: `<code>enumerate(iterable, start)</code> pairs each element with a counter beginning at <code>start</code>. With <code>start=1</code> the counter runs 1, 2, 3 rather than the default 0, 1, 2. The tuple is unpacked into <code>i</code> (index) and <code>v</code> (value).`,
+  },
+  {
+    id: 247, category: 'lists', difficulty: 'easy',
+    code: `x = [1, 2, 3, 4, 5]
+x.pop()
+x.pop(0)
+print(x)`,
+    question: "What does this print?",
+    choices: ["[2, 3, 4]", "[1, 2, 3, 4]", "[2, 3, 4, 5]", "[1, 2, 3]"],
+    answer: 0,
+    explanation: `<code>pop()</code> with no argument removes the <em>last</em> element (5), leaving <code>[1,2,3,4]</code>. <code>pop(0)</code> removes the element at index 0 (1), leaving <code>[2,3,4]</code>. Both calls modify the list in-place.`,
+  },
+  {
+    id: 248, category: 'lists', difficulty: 'hard',
+    code: `result = [j for i in range(3) for j in range(i)]
+print(result)`,
+    question: "What does this print?",
+    choices: ["[0, 0, 1]", "[0, 1, 2]", "[0, 1, 0, 1, 2]", "[]"],
+    answer: 0,
+    explanation: `The outer loop runs <code>i = 0, 1, 2</code>. For <code>i=0</code>: <code>range(0)</code> is empty. For <code>i=1</code>: <code>range(1)</code> → <code>[0]</code>. For <code>i=2</code>: <code>range(2)</code> → <code>[0, 1]</code>. Combined: <code>[0, 0, 1]</code>. Each inner loop produces values from 0 up to (but not including) the outer index.`,
   },
 
 ];

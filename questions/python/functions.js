@@ -1,4 +1,4 @@
-// functions.js — 37 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205
+// functions.js — 45 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,233,234,235,236,237,238,239,240
 const PY_FUNCTIONS = [
   {
     id: 41, category: 'functions', difficulty: 'easy',
@@ -455,6 +455,108 @@ print(i, v)`,
     choices: ['2 c', '10 a', '12 c', '3 c'],
     answer: 2,
     explanation: `<code>enumerate(iterable, start=n)</code> pairs each element with a counter starting at <code>n</code>. With <code>start=10</code>: <code>(10, 'a')</code>, <code>(11, 'b')</code>, <code>(12, 'c')</code>. After the loop, <code>i</code> and <code>v</code> hold the values from the <em>last</em> iteration — <code>12</code> and <code>'c'</code>. Loop variables in Python are not scoped to the loop; they leak into the enclosing scope.`,
+  },
+  {
+    id: 233, category: 'functions', difficulty: 'easy',
+    code: `def total(*args):
+    return sum(args)
+
+print(total(1, 2, 3, 4))`,
+    question: "What does this print?",
+    choices: ["10", "(1, 2, 3, 4)", "[1, 2, 3, 4]", "TypeError"],
+    answer: 0,
+    explanation: `<code>*args</code> collects all positional arguments into a tuple. Here <code>args</code> is <code>(1, 2, 3, 4)</code>. <code>sum()</code> accepts any <strong>iterable</strong>, including tuples, so the result is 10.`,
+  },
+  {
+    id: 234, category: 'functions', difficulty: 'medium',
+    code: `def count_up(n):
+    for i in range(n):
+        yield i
+
+gen = count_up(3)
+print(next(gen))
+print(next(gen))`,
+    question: "What does this print?",
+    choices: ["0\n1", "0\n1\n2", "1\n2", "0"],
+    answer: 0,
+    explanation: `<code>yield</code> turns a function into a generator. Each <code>next()</code> call resumes execution until the next <code>yield</code>. The first call yields 0 and pauses; the second yields 1. A fourth call after all values are exhausted would raise <code>StopIteration</code>.`,
+  },
+  {
+    id: 235, category: 'functions', difficulty: 'medium',
+    code: `def make_multiplier(n):
+    def multiply(x):
+        return x * n
+    return multiply
+
+triple = make_multiplier(3)
+print(triple(5))`,
+    question: "What does this print?",
+    choices: ["15", "5", "3", "8"],
+    answer: 0,
+    explanation: `<code>multiply</code> is a closure — it captures <code>n</code> from the enclosing scope and retains access to it even after <code>make_multiplier</code> returns. <code>triple</code> is a function with <code>n</code> permanently bound to 3, so <code>triple(5)</code> returns 15.`,
+  },
+  {
+    id: 236, category: 'functions', difficulty: 'medium',
+    code: `def counter():
+    count = 0
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+c = counter()
+print(c())
+print(c())
+print(c())`,
+    question: "What does this print?",
+    choices: ["1\n2\n3", "0\n1\n2", "1\n1\n1", "UnboundLocalError"],
+    answer: 0,
+    explanation: `<code>nonlocal</code> lets an inner function modify a variable in its enclosing (non-global) scope. Without it, <code>count += 1</code> would treat <code>count</code> as a new local variable and raise <code>UnboundLocalError</code>. Each call increments the shared <code>count</code>.`,
+  },
+  {
+    id: 237, category: 'functions', difficulty: 'hard',
+    code: `funcs = [lambda: i for i in range(3)]
+print(funcs[0]())
+print(funcs[1]())`,
+    question: "What does this print?",
+    choices: ["2\n2", "0\n1", "0\n0", "1\n2"],
+    answer: 0,
+    explanation: `All three lambdas close over the same variable <code>i</code>, not its value at creation time. After the loop finishes <code>i</code> is 2, and every lambda returns 2 when called. To capture the current value use a default argument: <code>lambda i=i: i</code>.`,
+  },
+  {
+    id: 238, category: 'functions', difficulty: 'medium',
+    code: `words = ["banana", "fig", "apple", "date"]
+print(sorted(words, key=len))`,
+    question: "What does this print?",
+    choices: [
+      "['fig', 'date', 'apple', 'banana']",
+      "['apple', 'banana', 'date', 'fig']",
+      "['fig', 'apple', 'date', 'banana']",
+      "['banana', 'apple', 'date', 'fig']",
+    ],
+    answer: 0,
+    explanation: `<code>key=len</code> sorts by string length: fig (3), date (4), apple (5), banana (6). Python's sort is <strong>stable</strong> — words of equal length keep their original relative order.`,
+  },
+  {
+    id: 239, category: 'functions', difficulty: 'medium',
+    code: `nums = [1, 2, 3, 4]
+result = list(map(lambda x: x ** 2, nums))
+print(result)`,
+    question: "What does this print?",
+    choices: ["[1, 4, 9, 16]", "[1, 2, 3, 4]", "[2, 4, 6, 8]", "[2, 3, 4, 5]"],
+    answer: 0,
+    explanation: `<code>map(func, iterable)</code> applies <code>func</code> to each element lazily. Wrapping with <code>list()</code> forces evaluation. Each element is squared: 1²=1, 2²=4, 3²=9, 4²=16.`,
+  },
+  {
+    id: 240, category: 'functions', difficulty: 'hard',
+    code: `gen = (x * 2 for x in range(3))
+print(next(gen))
+print(sum(gen))`,
+    question: "What does this print?",
+    choices: ["0\n6", "0\n8", "0\n10", "0\n4"],
+    answer: 0,
+    explanation: `<code>next(gen)</code> advances the <strong>generator expression</strong> once: <code>0 * 2 = 0</code>. The generator is now past the first item. <code>sum(gen)</code> consumes the remainder: <code>1*2 + 2*2 = 2 + 4 = 6</code>. Generators are stateful and can only be iterated once.`,
   },
 
 ];

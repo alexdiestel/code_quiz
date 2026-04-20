@@ -81,11 +81,32 @@
       <p id="hero-sub">In space no one can hear you print()</p>
 
       <div id="lang-buttons">
-        <button class="lang-btn" id="python-btn" data-lang="python">Python</button>
-        <button class="lang-btn" id="cpp-btn"    data-lang="cpp">C++</button>
+        <div class="lang-btn-group">
+          <button class="lang-btn" id="python-btn" data-lang="python">Python</button>
+          <button class="lang-cog" data-lang="python" title="Python topics">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.26 7.26 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.26 7.26 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.26 7.26 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg>
+          </button>
+        </div>
+        <div class="lang-btn-group">
+          <button class="lang-btn" id="cpp-btn" data-lang="cpp">C++</button>
+          <button class="lang-cog" data-lang="cpp" title="C++ topics">
+            <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.26 7.26 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54a7.26 7.26 0 0 0-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.63-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54a7.26 7.26 0 0 0 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.03-1.58zM12 15.6a3.6 3.6 0 1 1 0-7.2 3.6 3.6 0 0 1 0 7.2z"/></svg>
+          </button>
+        </div>
       </div>
 
     </div>
+
+  <!-- Settings overlay -->
+  <div id="settings-overlay" class="settings-overlay hidden">
+    <div class="settings-card">
+      <div class="settings-header">
+        <span class="settings-title" id="settings-title">Topics</span>
+        <button class="settings-close" id="settings-close">✕</button>
+      </div>
+      <div id="settings-body"></div>
+    </div>
+  </div>
 
     <nav class="landing-legal">
       <a href="impressum.html">Impressum</a>
@@ -108,6 +129,7 @@
         <div class="question-meta">
           <span class="difficulty-badge easy" id="difficulty-badge">Easy</span>
           <span class="category-tag" id="category-tag"></span>
+          <span class="question-id" id="question-id">qid: 0</span>
           <span class="question-points" id="question-points">100 pts</span>
         </div>
         <p class="question-text" id="question-text"></p>
@@ -199,6 +221,7 @@
   <script src="questions/python/types.js"></script>
   <script src="questions/python/functions.js"></script>
   <script src="questions/python/memory.js"></script>
+  <script src="questions/python/decorators.js"></script>
   <script src="questions/python/boss.js"></script>
   <!-- C++ questions -->
   <script src="questions/cpp/output.js"></script>

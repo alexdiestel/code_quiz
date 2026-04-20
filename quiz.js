@@ -95,6 +95,66 @@ const GLOSSARY = {
   'non-empty string':
     'A string with at least one character. Any non-empty string is truthy in Python — ' +
     'even " " (a space) or "False". Only "" (empty string) is falsy.',
+
+  'f-string':
+    'Formatted string literal (f"..."). Expressions inside {} are evaluated at runtime. ' +
+    'Introduced in Python 3.6 and now the preferred way to embed values in strings.',
+
+  'falsy':
+    'A value Python treats as False in a boolean context. ' +
+    'Falsy values: None, False, 0, 0.0, "", [], {}, set(). Everything else is truthy.',
+
+  'closure':
+    'A function that remembers variables from the enclosing scope where it was defined, ' +
+    'even after that scope has finished executing. The captured variable is called a "free variable".',
+
+  'late binding':
+    'Python looks up variables captured in closures at call time, not at definition time. ' +
+    'In a loop, all lambdas share the same variable reference and see its final value.',
+
+  'list comprehension':
+    'A concise syntax for building lists: [expr for var in iterable if condition]. ' +
+    'Faster and more readable than an equivalent for-loop with append().',
+
+  'dict comprehension':
+    'A concise syntax for building dicts: {k: v for k, v in iterable}. ' +
+    'Like a list comprehension but produces key–value pairs.',
+
+  'generator':
+    'A function that uses yield to produce values one at a time instead of all at once. ' +
+    'Calling it returns a generator object; values are computed lazily on demand.',
+
+  'hashable':
+    'An object is hashable if it has a fixed hash value for its lifetime. ' +
+    'Only hashable types can be dict keys or set members. Integers, strings, and tuples are hashable; lists are not.',
+
+  'short-circuits':
+    '"and" stops and returns the first falsy value; "or" stops and returns the first truthy value. ' +
+    'The right-hand side is never evaluated if the result is already determined.',
+
+  'vacuously true':
+    'A statement about every member of an empty collection is considered true by convention, ' +
+    'because there are no counterexamples. all([]) is True for this reason.',
+
+  'view object':
+    'dict.keys(), dict.values(), and dict.items() return live view objects, not copies. ' +
+    'They reflect changes to the dictionary in real time.',
+
+  'value equality':
+    'Checking whether two objects have the same value, using ==. ' +
+    'Distinct from identity (is), which checks whether they are the same object in memory.',
+
+  'pass-by-value':
+    'The caller\'s variable is unaffected because the function receives a copy of the value. ' +
+    'Modifying the parameter inside the function leaves the original unchanged.',
+
+  'true division':
+    'Regular / division that always produces a float. ' +
+    '7 / 2 = 3.5 in Python 3. Use // for floor (integer) division.',
+
+  'C3 linearisation':
+    'The algorithm Python uses to determine method resolution order (MRO) in multiple inheritance. ' +
+    'It ensures each class appears before its parents and left-to-right order is respected.',
 };
 
 // ── Tooltip ───────────────────────────────────────────────────────────────────
@@ -186,7 +246,8 @@ let lives          = 3;
 let answered       = false;
 let results        = []; // 'correct' | 'wrong' | null per deck slot
 let seenIds        = new Set();
-let standaloneMode = false; // true when loaded via ?qid=
+let standaloneMode     = false; // true when loaded via ?qid=
+let disabledCategories = new Set(); // "lang:category" keys
 
 const MAX_LIVES = 3;
 
@@ -459,7 +520,10 @@ function renderStarmap() {
 
 // ── Quiz flow ─────────────────────────────────────────────────────────────────
 function selectDeck() {
-  const questions = currentLangConfig.questions;
+  const questions = currentLangConfig.questions.filter(q =>
+    q.difficulty === 'boss' ||
+    !disabledCategories.has(`${currentLangConfig.slug}:${q.category}`)
+  );
   const pick = (diff, n) => {
     const pool   = questions.filter(q => q.difficulty === diff);
     let unseen   = pool.filter(q => !seenIds.has(q.id));
@@ -527,6 +591,7 @@ function renderQuestion() {
   diffBadge.className   = `difficulty-badge ${q.difficulty}`;
   document.getElementById('question-points').textContent =
     `+${(DIFF_POINTS[q.difficulty] ?? 0).toLocaleString()} pts`;
+  document.getElementById('question-id').textContent = `qid: ${q.id}`;
 
   const cat = currentLangConfig.categories[q.category];
   categoryTag.textContent       = cat ? cat.label : q.category;
@@ -1026,5 +1091,59 @@ function initFromUrl() {
   requestAnimationFrame(alignSidebar);
 }
 
+// ── Settings panel ────────────────────────────────────────────────────────────
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('cq_disabled') || '[]');
+    disabledCategories = new Set(saved);
+  } catch { disabledCategories = new Set(); }
+}
+
+function saveSettings() {
+  localStorage.setItem('cq_disabled', JSON.stringify([...disabledCategories]));
+}
+
+function buildSettingsPanel(langSlug) {
+  const lang = LANGUAGES[langSlug];
+  if (!lang) return;
+  document.getElementById('settings-title').textContent = `${lang.label} — Topics`;
+  const body = document.getElementById('settings-body');
+  const pills = Object.entries(lang.categories).map(([key, cat]) => {
+    const active = !disabledCategories.has(`${lang.slug}:${key}`);
+    return `<button class="topic-pill${active ? ' active' : ''}"
+              data-lang="${lang.slug}" data-cat="${key}"
+              style="--pill-color:${cat.color}">${cat.label}</button>`;
+  }).join('');
+  body.innerHTML = `<div class="settings-pills">${pills}</div>`;
+  body.querySelectorAll('.topic-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = `${btn.dataset.lang}:${btn.dataset.cat}`;
+      if (disabledCategories.has(key)) {
+        disabledCategories.delete(key);
+        btn.classList.add('active');
+      } else {
+        disabledCategories.add(key);
+        btn.classList.remove('active');
+      }
+      saveSettings();
+    });
+  });
+}
+
+const settingsOverlay = document.getElementById('settings-overlay');
+const settingsClose   = document.getElementById('settings-close');
+
+document.querySelectorAll('.lang-cog').forEach(cog => {
+  cog.addEventListener('click', () => {
+    buildSettingsPanel(cog.dataset.lang);
+    settingsOverlay.classList.remove('hidden');
+  });
+});
+settingsClose.addEventListener('click', () => settingsOverlay.classList.add('hidden'));
+settingsOverlay.addEventListener('click', e => {
+  if (e.target === settingsOverlay) settingsOverlay.classList.add('hidden');
+});
+
 // ── Boot ──────────────────────────────────────────────────────────────────────
+loadSettings();
 initFromUrl(); // handles ?qid= before landing is shown

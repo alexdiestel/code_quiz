@@ -57,6 +57,11 @@ const LANGUAGES = {
         description: 'Mutability, aliasing, and object references',
         color:       '#f43f5e',
       },
+      decorators: {
+        label:       'Decorators',
+        description: '@property, @classmethod, @staticmethod, and custom decorators',
+        color:       '#ec4899',
+      },
     },
     questions: [
       ...PY_LISTS,
@@ -64,6 +69,7 @@ const LANGUAGES = {
       ...PY_TYPES,
       ...PY_FUNCTIONS,
       ...PY_MEMORY,
+      ...PY_DECORATORS,
       ...PY_BOSS,
     ],
   },

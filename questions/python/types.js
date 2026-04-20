@@ -1,5 +1,6 @@
-// types.js — 47 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
-//                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137,183,184,185,186,187,188,189,190
+// types.js — 54 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
+//                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137,183,184,185,186,187,188,189,190,
+//                                  257,258,259,260,261,262,263
 const PY_TYPES = [
   {
     id: 4, category: 'types', difficulty: 'easy',
@@ -448,6 +449,78 @@ print(q, r)`,
     choices: ['3 2', '3.4 0', '2 3', '3 3'],
     answer: 0,
     explanation: `<code>divmod(a, b)</code> returns a tuple <code>(a // b, a % b)</code> — the quotient and remainder in one call. <code>17 // 5 = 3</code> and <code>17 % 5 = 2</code>. Useful when you need both values without computing each separately. Works on floats too: <code>divmod(7.5, 2.5)</code> → <code>(3.0, 0.0)</code>.`,
+  },
+  {
+    id: 257, category: 'types', difficulty: 'easy',
+    code: `values = [0, "", None, False, [], 42]
+print(sum(1 for v in values if v))`,
+    question: "What does this print?",
+    choices: ["1", "2", "3", "6"],
+    answer: 0,
+    explanation: `In a boolean context, <code>0</code>, <code>""</code>, <code>None</code>, <code>False</code>, and <code>[]</code> are all falsy. Only <code>42</code> is truthy, so the generator yields one <code>1</code> and the sum is <code>1</code>. Knowing Python's falsy values is essential for idiomatic conditionals.`,
+  },
+  {
+    id: 258, category: 'types', difficulty: 'easy',
+    code: `print(True + True + False)`,
+    question: "What does this print?",
+    choices: ["2", "True", "1", "TypeError"],
+    answer: 0,
+    explanation: `In Python, <code>bool</code> is a subclass of <code>int</code>. <code>True == 1</code> and <code>False == 0</code>. Arithmetic on bools works as integer arithmetic: <code>1 + 1 + 0 = 2</code>. The result is an <code>int</code>, not a <code>bool</code>.`,
+  },
+  {
+    id: 259, category: 'types', difficulty: 'medium',
+    code: `print(int("0b1010", 2))
+print(int("ff", 16))`,
+    question: "What does this print?",
+    choices: ["10\n255", "0b1010\nff", "2\n16", "ValueError"],
+    answer: 0,
+    explanation: `<code>int(s, base)</code> parses a string as an integer in the given base. <code>"0b1010"</code> in base 2 is 10. <code>"ff"</code> in base 16 is 255. The <code>0b</code> prefix is accepted in base 2; <code>0x</code> is accepted in base 16.`,
+  },
+  {
+    id: 260, category: 'types', difficulty: 'medium',
+    code: `x = 5
+print(type(x) == int)
+print(isinstance(x, (int, float)))`,
+    question: "What does this print?",
+    choices: ["True\nTrue", "True\nFalse", "False\nTrue", "False\nFalse"],
+    answer: 0,
+    explanation: `<code>type(x) == int</code> is an exact type check — it returns <code>False</code> for subclasses. <code>isinstance(x, (int, float))</code> checks whether <code>x</code> is an instance of <em>any</em> of the given types, including subclasses. In most code, <code>isinstance</code> is preferred because it respects inheritance.`,
+  },
+  {
+    id: 261, category: 'types', difficulty: 'medium',
+    code: `a, *b, c = [1, 2, 3, 4, 5]
+print(a, b, c)`,
+    question: "What does this print?",
+    choices: ["1 [2, 3, 4] 5", "1 2 5", "[1] [2, 3, 4] [5]", "1 (2, 3, 4) 5"],
+    answer: 0,
+    explanation: `The starred expression <code>*b</code> captures all "middle" elements as a list. <code>a</code> gets the first element (1), <code>c</code> gets the last (5), and <code>b</code> collects everything in between as a list. Extended unpacking works with any iterable.`,
+  },
+  {
+    id: 262, category: 'types', difficulty: 'medium',
+    code: `a = {1, 2, 3, 4}
+b = {3, 4, 5, 6}
+print(a & b)
+print(a - b)`,
+    question: "What does this print?",
+    choices: ["{3, 4}\n{1, 2}", "{1, 2, 3, 4, 5, 6}\n{}", "{3, 4, 5, 6}\n{1, 2}", "{3, 4}\n{5, 6}"],
+    answer: 0,
+    explanation: `<code>&</code> is set intersection — elements in both sets. <code>a & b = {3, 4}</code>. <code>-</code> is set difference — elements in the left set but not the right. <code>a - b = {1, 2}</code>. Sets also support <code>|</code> (union) and <code>^</code> (symmetric difference).`,
+  },
+  {
+    id: 263, category: 'types', difficulty: 'hard',
+    code: `keys = ['a', 'b', 'c']
+d = dict.fromkeys(keys, [])
+d['a'].append(1)
+print(d)`,
+    question: "What does this print?",
+    choices: [
+      "{'a': [1], 'b': [], 'c': []}",
+      "{'a': [1], 'b': [1], 'c': [1]}",
+      "{'a': [], 'b': [], 'c': []}",
+      "KeyError",
+    ],
+    answer: 1,
+    explanation: `<code>dict.fromkeys(keys, value)</code> maps every key to the <em>same</em> value object. All three keys share one list. Appending to <code>d['a']</code> mutates that shared list, so all three values change. To get independent lists use a comprehension: <code>{k: [] for k in keys}</code>.`,
   },
 
 ];

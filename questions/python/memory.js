@@ -1,4 +1,4 @@
-// memory.js — 31 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149,206,207,208,209,210,211,212,213,214,215,216,217
+// memory.js — 38 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149,206,207,208,209,210,211,212,213,214,215,216,217,264,265,266,267,268,269,270
 const PY_MEMORY = [
   {
     id: 8, category: 'memory', difficulty: 'medium',
@@ -359,6 +359,99 @@ print(add_item('a'), add_item('b'))`,
     choices: ['1 1', '1 2', '2 2', 'TypeError'],
     answer: 1,
     explanation: `The default dict <code>{}</code> is created <em>once</em> when the function is defined and reused on every call. After <code>add_item('a')</code> the shared dict is <code>{'a': True}</code>, length 1. After <code>add_item('b')</code> it becomes <code>{'a': True, 'b': True}</code>, length 2. This is the same mutable-default trap as <code>lst=[]</code>, applied to dicts. Fix: use <code>d=None</code> and create a fresh dict inside if needed.`,
+  },
+  {
+    id: 264, category: 'memory', difficulty: 'hard',
+    code: `a = 256
+b = 256
+print(a is b)
+
+c = 257
+d = 257
+print(c is d)`,
+    question: "What does this print?",
+    choices: ["True\nTrue", "True\nFalse", "False\nFalse", "False\nTrue"],
+    answer: 1,
+    explanation: `CPython caches small integers from -5 to 256. Assignments to values in that range reuse the same object, so <code>a is b</code> is <code>True</code>. Above 256, new objects are created each time, so <code>c is d</code> is <code>False</code>. Always use <code>==</code> for value comparison — <code>is</code> tests identity, not equality.`,
+  },
+  {
+    id: 265, category: 'memory', difficulty: 'medium',
+    code: `import copy
+
+a = [[1, 2], [3, 4]]
+b = copy.copy(a)
+b[0].append(99)
+print(a[0])`,
+    question: "What does this print?",
+    choices: ["[1, 2]", "[1, 2, 99]", "[[1, 2, 99], [3, 4]]", "None"],
+    answer: 1,
+    explanation: `<code>copy.copy()</code> makes a <em>shallow</em> copy: the outer list is new, but the inner lists are still shared references. Mutating <code>b[0]</code> (appending 99) also changes <code>a[0]</code> because both point to the same inner list. Use <code>copy.deepcopy()</code> to copy nested structures independently.`,
+  },
+  {
+    id: 266, category: 'memory', difficulty: 'medium',
+    code: `import copy
+
+a = [[1, 2], [3, 4]]
+b = copy.deepcopy(a)
+b[0].append(99)
+print(a[0])`,
+    question: "What does this print?",
+    choices: ["[1, 2, 99]", "[1, 2]", "[[1, 2], [3, 4]]", "None"],
+    answer: 1,
+    explanation: `<code>copy.deepcopy()</code> recursively copies every nested object, so <code>b</code>'s inner lists are completely independent from <code>a</code>'s. Mutating <code>b[0]</code> has no effect on <code>a[0]</code>, which remains <code>[1, 2]</code>.`,
+  },
+  {
+    id: 267, category: 'memory', difficulty: 'medium',
+    code: `a = [1, 2, 3]
+b = a
+del a
+print(b)`,
+    question: "What does this print?",
+    choices: ["[1, 2, 3]", "NameError: name 'a' is not defined", "None", "[]"],
+    answer: 0,
+    explanation: `<code>del a</code> removes the name <code>a</code> from the local scope — it does not destroy the list object. The list still has a reference count of 1 via <code>b</code>. Python's garbage collector frees an object only when no names (or containers) reference it.`,
+  },
+  {
+    id: 268, category: 'memory', difficulty: 'hard',
+    code: `t = ([1, 2], [3, 4])
+t[0].append(99)
+print(t)`,
+    question: "What does this print?",
+    choices: ["([1, 2, 99], [3, 4])", "TypeError: 'tuple' object does not support item assignment", "([1, 2], [3, 4])", "([1, 2, 99], [3, 4, 99])"],
+    answer: 0,
+    explanation: `Tuples are immutable — you cannot rebind <code>t[0]</code> to a different object. But the list <em>inside</em> the tuple is mutable. <code>t[0].append(99)</code> mutates the list in-place without changing what <code>t[0]</code> points to. The tuple's references stay the same; the contents of those references can still change.`,
+  },
+  {
+    id: 269, category: 'memory', difficulty: 'hard',
+    code: `x = 10
+
+def change():
+    global x
+    x = 99
+
+change()
+print(x)`,
+    question: "What does this print?",
+    choices: ["99", "10", "None", "UnboundLocalError"],
+    answer: 0,
+    explanation: `Without <code>global x</code>, assigning inside the function would create a new local variable, leaving the outer <code>x</code> unchanged. The <code>global</code> declaration tells Python to look up and modify the name in the module (global) scope. After the call, the global <code>x</code> is 99.`,
+  },
+  {
+    id: 270, category: 'memory', difficulty: 'hard',
+    code: `a = [1, 2, 3]
+b = a
+a = a + [4]
+print(a)
+print(b)`,
+    question: "What does this print?",
+    choices: [
+      "[1, 2, 3, 4]\n[1, 2, 3]",
+      "[1, 2, 3, 4]\n[1, 2, 3, 4]",
+      "[1, 2, 3]\n[1, 2, 3, 4]",
+      "[1, 2, 3]\n[1, 2, 3]",
+    ],
+    answer: 0,
+    explanation: `<code>a + [4]</code> creates a <em>new</em> list and rebinds <code>a</code> to it. <code>b</code> still points to the original list <code>[1, 2, 3]</code>. Compare with <code>a.extend([4])</code> or <code>a += [4]</code>, which mutate in-place and would change what <code>b</code> sees too.`,
   },
 
 ];

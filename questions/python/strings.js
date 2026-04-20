@@ -1,4 +1,4 @@
-// strings.js — 37 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182
+// strings.js — 45 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,249,250,251,252,253,254,255,256
 const PY_STRINGS = [
   {
     id: 3, category: 'strings', difficulty: 'easy',
@@ -375,6 +375,77 @@ print(s[::-1] == s)`,
     choices: ['True', 'False', 'None', 'TypeError'],
     answer: 1,
     explanation: `<code>s[::-1]</code> reverses the string: <code>"tseuq"</code>. Comparing <code>"tseuq"</code> with <code>"quest"</code> → <code>False</code>. A string equals its own reversal only if it is a palindrome (e.g. <code>"racecar"</code> or <code>"level"</code>). This is a compact Python idiom for palindrome detection.`,
+  },
+  {
+    id: 249, category: 'strings', difficulty: 'easy',
+    code: `words = ['one', 'two', 'three']
+print(', '.join(words))`,
+    question: "What does this print?",
+    choices: ["one, two, three", "['one', 'two', 'three']", "one two three", "onettwothree"],
+    answer: 0,
+    explanation: `<code>str.join(iterable)</code> concatenates elements of the iterable with the string as separator. The separator goes <em>between</em> items — not before the first or after the last. <code>', '.join(['a','b','c'])</code> → <code>'a, b, c'</code>.`,
+  },
+  {
+    id: 250, category: 'strings', difficulty: 'easy',
+    code: `s = "a:b:c:d"
+print(s.split(":", 2))`,
+    question: "What does this print?",
+    choices: ["['a', 'b', 'c:d']", "['a', 'b', 'c', 'd']", "['a:b', 'c:d']", "['a', 'b:c:d']"],
+    answer: 0,
+    explanation: `<code>split(sep, maxsplit)</code> splits at most <code>maxsplit</code> times. With <code>maxsplit=2</code>, Python makes two splits, leaving the rest of the string intact in the last element. The result has at most <code>maxsplit + 1</code> elements.`,
+  },
+  {
+    id: 251, category: 'strings', difficulty: 'easy',
+    code: `s = "xxhelloxx"
+print(s.strip("x"))`,
+    question: "What does this print?",
+    choices: ["hello", "xxhelloxx", "helloxx", "xxhello"],
+    answer: 0,
+    explanation: `<code>strip(chars)</code> removes <em>leading and trailing</em> characters that appear in <code>chars</code>. It strips all matching characters from both ends, not just one. Here every leading and trailing <code>'x'</code> is removed, leaving <code>'hello'</code>.`,
+  },
+  {
+    id: 252, category: 'strings', difficulty: 'medium',
+    code: `print("abc" < "abd")`,
+    question: "What does this print?",
+    choices: ["True", "False", "TypeError", "None"],
+    answer: 0,
+    explanation: `String comparison is lexicographic: Python compares character by character left-to-right. <code>'a'=='a'</code>, <code>'b'=='b'</code>, then <code>'c' < 'd'</code> (ord 99 < 100), so the whole comparison is <code>True</code>. This is how dictionary ordering works too.`,
+  },
+  {
+    id: 253, category: 'strings', difficulty: 'medium',
+    code: `s = "mississippi"
+print(s.count("ss"))`,
+    question: "What does this print?",
+    choices: ["2", "3", "4", "1"],
+    answer: 0,
+    explanation: `<code>str.count(sub)</code> counts non-overlapping occurrences of <code>sub</code>. In <code>"mississippi"</code>: <code>"miss<u>ss</u>ippi"</code> — the first <code>"ss"</code> is at index 2, the second at index 5 (after the first consumed both s's). Non-overlapping means once a match is found, the search resumes after it.`,
+  },
+  {
+    id: 254, category: 'strings', difficulty: 'medium',
+    code: `s = "aabbaa"
+print(s.replace("aa", "x", 1))`,
+    question: "What does this print?",
+    choices: ["xbbaa", "xbbx", "aabbx", "xbb"],
+    answer: 0,
+    explanation: `<code>replace(old, new, count)</code> replaces at most <code>count</code> occurrences from left to right. Only the first <code>"aa"</code> (at the start) is replaced, leaving the trailing <code>"aa"</code> untouched. Omitting <code>count</code> replaces all occurrences.`,
+  },
+  {
+    id: 255, category: 'strings', difficulty: 'easy',
+    code: `x = 3.14159
+print(f"{x:.2f}")`,
+    question: "What does this print?",
+    choices: ["3.14", "3.1", "3.14159", "3.15"],
+    answer: 0,
+    explanation: `The format spec <code>.2f</code> means fixed-point notation with 2 decimal places. Python rounds the value to fit: <code>3.14159</code> rounded to 2 places is <code>3.14</code>. F-string format specs follow Python's mini-language: <code>width.precisiontype</code>.`,
+  },
+  {
+    id: 256, category: 'strings', difficulty: 'medium',
+    code: `s = "  Hello, World!  "
+print(s.strip().lower().replace(",", ""))`,
+    question: "What does this print?",
+    choices: ["hello world!", "Hello World!", "  hello world!  ", "hello, world!"],
+    answer: 0,
+    explanation: `Method calls chain left to right. <code>strip()</code> removes whitespace → <code>"Hello, World!"</code>. <code>lower()</code> lowercases → <code>"hello, world!"</code>. <code>replace(",", "")</code> removes the comma → <code>"hello world!"</code>. Each call returns a new string (strings are immutable).`,
   },
 
 ];
