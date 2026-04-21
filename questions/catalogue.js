@@ -86,6 +86,57 @@ const LANGUAGES = {
     ],
   },
 
+  // ── JavaScript ───────────────────────────────────────────────────────────
+  javascript: {
+    label:    'JavaScript',
+    slug:     'javascript',
+    filename: 'snippet.js',
+    hlClass:  'language-javascript',
+    theme: {
+      bg:          '#0a0e1a',
+      primary:     '#ca8a04',
+      primaryLt:   '#fde047',
+      primaryDark: '#a16207',
+      accent:      '#facc15',
+      glowRgb:     '202 138 4',
+    },
+    categories: {
+      types: {
+        label:       'Types & Coercion',
+        description: 'typeof, equality, NaN, and type conversion',
+        color:       '#f59e0b',
+      },
+      functions: {
+        label:       'Functions',
+        description: 'Hoisting, closures, arrow functions, and IIFE',
+        color:       '#10b981',
+      },
+      arrays: {
+        label:       'Arrays',
+        description: 'map, filter, reduce, destructuring, and spread',
+        color:       '#06b6d4',
+      },
+      scope: {
+        label:       'Scope',
+        description: 'var/let/const, TDZ, block scope, and closures',
+        color:       '#a78bfa',
+      },
+      objects: {
+        label:       'Objects',
+        description: 'Shorthand, optional chaining, prototype, and destructuring',
+        color:       '#f43f5e',
+      },
+    },
+    questions: [
+      ...JS_TYPES,
+      ...JS_FUNCTIONS,
+      ...JS_ARRAYS,
+      ...JS_SCOPE,
+      ...JS_OBJECTS,
+      ...JS_BOSS,
+    ],
+  },
+
   // ── C++ ───────────────────────────────────────────────────────────────────
   cpp: {
     label:    'C++',
