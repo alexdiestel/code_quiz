@@ -128,12 +128,12 @@
     </div>
     <div class="card">
       <h2>Questions Answered — last 30 days</h2>
-      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>Total</th></tr></thead>
+      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>JS</th><th>Total</th></tr></thead>
       <tbody id="questions-table"></tbody></table>
     </div>
     <div class="card">
       <h2>Quiz Starts — last 30 days</h2>
-      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>Total</th></tr></thead>
+      <table><thead><tr><th>Date</th><th>Python</th><th>C++</th><th>JS</th><th>Total</th></tr></thead>
       <tbody id="starts-table"></tbody></table>
     </div>
     <div class="card">
@@ -191,31 +191,31 @@
 
   function fillLangPivotTable(id, rows) {
     const tb = document.getElementById(id);
-    if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="empty">No data yet</td></tr>'; return; }
+    if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="empty">No data yet</td></tr>'; return; }
 
-    // Pivot: date → { python: n, cpp: n }
+    // Pivot: date → { python: n, cpp: n, javascript: n }
     const map = {};
     for (const r of rows) {
-      if (!map[r.date]) map[r.date] = { python: 0, cpp: 0 };
+      if (!map[r.date]) map[r.date] = { python: 0, cpp: 0, javascript: 0 };
       map[r.date][r.lang] = (map[r.date][r.lang] || 0) + r.count;
     }
 
     const dates = Object.keys(map).sort((a, b) => b.localeCompare(a));
 
-    let totPy = 0, totCpp = 0;
-    for (const d of dates) { totPy += map[d].python || 0; totCpp += map[d].cpp || 0; }
+    let totPy = 0, totCpp = 0, totJs = 0;
+    for (const d of dates) { totPy += map[d].python || 0; totCpp += map[d].cpp || 0; totJs += map[d].javascript || 0; }
 
-    const mkRow = (label, py, cpp, isTotal) => {
-      const tot = py + cpp;
+    const mkRow = (label, py, cpp, js, isTotal) => {
+      const tot = py + cpp + js;
       const f   = (n) => isTotal ? n : (n > 0 ? n : '—');
       return `<tr${isTotal ? ' class="total-row"' : ''}>`
-        + `<td>${label}</td><td>${f(py)}</td><td>${f(cpp)}</td><td>${f(tot)}</td>`
+        + `<td>${label}</td><td>${f(py)}</td><td>${f(cpp)}</td><td>${f(js)}</td><td>${f(tot)}</td>`
         + `</tr>`;
     };
 
     tb.innerHTML =
-      mkRow('Total', totPy, totCpp, true) +
-      dates.map(d => mkRow(d, map[d].python || 0, map[d].cpp || 0, false)).join('');
+      mkRow('Total', totPy, totCpp, totJs, true) +
+      dates.map(d => mkRow(d, map[d].python || 0, map[d].cpp || 0, map[d].javascript || 0, false)).join('');
   }
 
   function fillQuestionTable(rows) {
