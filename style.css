@@ -542,6 +542,40 @@ body {
   white-space: nowrap;
 }
 
+/* ── Streak multiplier badge ────────────────────────────────────────────────── */
+@keyframes mult-glow-15 {
+  0%, 100% { text-shadow: 0 0 4px #fef08a55; }
+  50%       { text-shadow: 0 0 8px #fef08a88; }
+}
+@keyframes mult-glow-2 {
+  0%, 100% { text-shadow: 0 0 6px #fde047aa, 0 0 14px #fde04755; }
+  50%       { text-shadow: 0 0 10px #fde047cc, 0 0 22px #fde04799; }
+}
+@keyframes mult-glow-25 {
+  0%, 100% { text-shadow: 0 0 6px #fb923ccc, 0 0 16px #fb923c88, 0 0 28px #f97316aa; }
+  50%       { text-shadow: 0 0 10px #fb923c, 0 0 24px #f97316cc, 0 0 40px #ea580c88; }
+}
+@keyframes mult-glow-3 {
+  0%, 100% { text-shadow: 0 0 6px #ef4444, 0 0 18px #dc2626cc, 0 0 36px #b91c1c99; }
+  50%       { text-shadow: 0 0 12px #ef4444, 0 0 30px #dc2626, 0 0 56px #b91c1ccc; }
+}
+.streak-mult {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+  cursor: default;
+  border-bottom: none;
+  transition: color .3s;
+}
+.streak-mult.tooltip-term         { border-bottom: none; }
+.streak-mult.tooltip-term:hover   { border-bottom: none; }
+.streak-mult[data-level="1"]      { color: #6b7280; }
+.streak-mult[data-level="1.5"]    { color: #fef08a; animation: mult-glow-15 2.2s ease-in-out infinite; }
+.streak-mult[data-level="2"]      { color: #fde047; animation: mult-glow-2  1.8s ease-in-out infinite; }
+.streak-mult[data-level="2.5"]    { color: #fb923c; animation: mult-glow-25 1.3s ease-in-out infinite; }
+.streak-mult[data-level="3"]      { color: #ef4444; animation: mult-glow-3  1.0s ease-in-out infinite; }
+
 /* ── Question text ───────────────────────────────────────────────────────── */
 .question-text {
   font-size: .98rem;
@@ -921,7 +955,15 @@ body {
   letter-spacing: .05em;
 }
 .end-title    { font-size: 2rem; font-weight: 800; margin-bottom: 6px; letter-spacing: -.03em; }
-.end-subtitle { color: var(--text-dim); margin-bottom: 16px; font-size: 1.05rem; }
+.end-subtitle { color: var(--text-dim); margin-bottom: 8px; font-size: 1.05rem; }
+.end-streak {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  color: var(--text-muted);
+  opacity: 0.55;
+  margin-bottom: 16px;
+}
+.end-streak-hot { color: #fde047; opacity: 0.85; }
 .end-score {
   font-family: 'JetBrains Mono', monospace;
   font-size: 2.6rem;

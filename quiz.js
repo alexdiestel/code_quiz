@@ -248,6 +248,8 @@ let results        = []; // 'correct' | 'wrong' | null per deck slot
 let seenIds        = new Set();
 let standaloneMode     = false; // true when loaded via ?qid=
 let disabledCategories = new Set(); // "lang:category" keys
+let streak         = 0;
+let longestStreak  = 0;
 
 const MAX_LIVES = 3;
 
@@ -262,6 +264,19 @@ const SHARE_ICONS = {
 };
 
 const DIFF_POINTS  = { easy: 100, medium: 250, hard: 500, boss: 1000 };
+
+function getMultiplier() {
+  return Math.min(1 + streak * 0.5, 3);
+}
+
+function updateMultiplierBadge() {
+  const el = document.getElementById('streak-mult');
+  if (!el) return;
+  const mult = getMultiplier();
+  el.textContent   = `×${mult % 1 === 0 ? mult : mult.toFixed(1)}`;
+  el.dataset.level = mult % 1 === 0 ? String(mult) : mult.toFixed(1);
+  el.classList.remove('hidden');
+}
 
 // ── DOM refs ──────────────────────────────────────────────────────────────────
 const landingView    = document.getElementById('landing-view');
@@ -386,15 +401,34 @@ const STARFIELD = [
   [ 52, 0.9, 14.3,  -0.4, 0.40],  // x≈620
 ];
 
-function starFieldHTML() {
-  return STARFIELD.map(([cy, r, dur, begin, op]) => `
+function starFieldHTML(mult = 1) {
+  // 5 levels: ×1, ×1.5, ×2, ×2.5, ×3
+  const idx      = Math.round((mult - 1) / 0.5);
+  const speedF   = [1, 0.78, 0.56, 0.38, 0.25][idx]; // lower = faster
+  const stretchX = [1, 2,    4,    6,    9   ][idx];  // horizontal stretch
+  return STARFIELD.map(([cy, r, dur, begin, op]) => {
+    const d  = (dur   * speedF).toFixed(2);
+    const b  = (begin * speedF).toFixed(2);
+    const rx = (r * stretchX).toFixed(1);
+    if (stretchX > 1) {
+      return `
+    <ellipse cx="640" cy="${cy}" rx="${rx}" ry="${r}" fill="#c8d8f0">
+      <animateTransform attributeName="transform" type="translate"
+        from="0,0" to="-660,0" dur="${d}s" begin="${b}s" repeatCount="indefinite"/>
+      <animate attributeName="opacity"
+        values="0;${op};${op};0" keyTimes="0;0.08;0.92;1"
+        dur="${d}s" begin="${b}s" repeatCount="indefinite"/>
+    </ellipse>`;
+    }
+    return `
     <circle cx="640" cy="${cy}" r="${r}" fill="#c8d8f0">
       <animateTransform attributeName="transform" type="translate"
-        from="0,0" to="-660,0" dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/>
+        from="0,0" to="-660,0" dur="${d}s" begin="${b}s" repeatCount="indefinite"/>
       <animate attributeName="opacity"
         values="0;${op};${op};0" keyTimes="0;0.12;0.88;1"
-        dur="${dur}s" begin="${begin}s" repeatCount="indefinite"/>
-    </circle>`).join('');
+        dur="${d}s" begin="${b}s" repeatCount="indefinite"/>
+    </circle>`;
+  }).join('');
 }
 
 // Returns line endpoints offset by r px from each dot center along the segment angle.
@@ -431,7 +465,7 @@ function renderStarmap() {
   `;
 
   // Stars drifting right → left
-  html += starFieldHTML();
+  html += starFieldHTML(getMultiplier());
 
   // Background path — individual dashed segments, offset from dot centers
   for (let i = 0; i < n - 1; i++) {
@@ -545,11 +579,14 @@ function selectDeck() {
 }
 
 function startQuiz(animate, keepScore = false) {
-  deck         = selectDeck();
-  current      = 0;
-  correctCount = 0;
-  answered     = false;
-  results      = new Array(deck.length).fill(null);
+  deck          = selectDeck();
+  current       = 0;
+  correctCount  = 0;
+  answered      = false;
+  results       = new Array(deck.length).fill(null);
+  streak        = 0;
+  longestStreak = 0;
+  updateMultiplierBadge();
   if (!keepScore) {
     lives = MAX_LIVES;
     score = 0;
@@ -618,6 +655,7 @@ function renderQuestion() {
 
   feedbackCard.classList.add('hidden');
   feedbackCard.classList.remove('correct', 'incorrect');
+  updateMultiplierBadge();
 }
 
 function handleChoice(btn, q) {
@@ -627,9 +665,14 @@ function handleChoice(btn, q) {
   const correct = btn.dataset.value === q.choices[q.answer];
   if (correct) {
     correctCount++;
+    const mult = getMultiplier(); // capture before streak update
+    streak++;
+    if (streak > longestStreak) longestStreak = streak;
     const prev = score;
-    score += DIFF_POINTS[q.difficulty] ?? 0;
+    score += (DIFF_POINTS[q.difficulty] ?? 0) * mult;
     animateScore(prev, score);
+  } else {
+    streak = 0;
   }
   results[current] = correct ? 'correct' : 'wrong';
 
@@ -704,6 +747,11 @@ function showEndScreen(gameOver = false) {
   }
 
   endScore.textContent = score.toLocaleString();
+  const endStreakEl = document.getElementById('end-streak');
+  if (endStreakEl) {
+    endStreakEl.textContent = longestStreak > 0 ? `longest streak: ${longestStreak}` : '';
+    endStreakEl.className   = `end-streak${longestStreak >= 6 ? ' end-streak-hot' : ''}`;
+  }
   const grade = gradeLabel(correctCount, gameOver ? current + 1 : total);
   endGrade.textContent = grade.text;
   endGrade.className   = `end-grade ${grade.cls}`;
@@ -918,11 +966,17 @@ document.addEventListener('keydown', e => {
     return;
   }
 
-  // Enter / Space: advance after answering
-  if ((key === 'Enter' || key === ' ') && answered) {
-    e.preventDefault();
-    if (!endView.classList.contains('hidden')) return; // on end screen, do nothing
-    nextBtn.click();
+  // Enter / Space: advance after answering or continue from end screen
+  if (key === 'Enter' || key === ' ') {
+    if (!endView.classList.contains('hidden')) {
+      e.preventDefault();
+      restartBtn.click();
+      return;
+    }
+    if (answered) {
+      e.preventDefault();
+      nextBtn.click();
+    }
   }
 });
 
