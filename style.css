@@ -766,7 +766,8 @@ body {
 .tooltip-popup {
   position: fixed;
   z-index: 9999;
-  width: 248px;
+  width: max-content;
+  max-width: 248px;
   background: #1a2236;
   color: var(--text-dim);
   border: 1px solid var(--border2);
@@ -1148,7 +1149,7 @@ body {
   .answer-label { width: 100%; }
 
   /* Tooltip: narrower so it fits without edge-clipping */
-  .tooltip-popup { width: 200px; font-size: .76rem; }
+  .tooltip-popup { max-width: 200px; font-size: .76rem; }
 
 }
 
