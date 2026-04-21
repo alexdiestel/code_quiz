@@ -1,4 +1,4 @@
-// functions.js — 45 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,233,234,235,236,237,238,239,240
+// functions.js — 51 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,233,234,235,236,237,238,239,240,315,316,317,318,319,320
 const PY_FUNCTIONS = [
   {
     id: 41, category: 'functions', difficulty: 'easy',
@@ -557,6 +557,80 @@ print(sum(gen))`,
     choices: ["0\n6", "0\n8", "0\n10", "0\n4"],
     answer: 0,
     explanation: `<code>next(gen)</code> advances the <strong>generator expression</strong> once: <code>0 * 2 = 0</code>. The generator is now past the first item. <code>sum(gen)</code> consumes the remainder: <code>1*2 + 2*2 = 2 + 4 = 6</code>. Generators are stateful and can only be iterated once.`,
+  },
+  {
+    id: 315, category: 'functions', difficulty: 'medium',
+    code: `def apply(func, values):
+    return [func(v) for v in values]
+
+print(apply(abs, [-1, -2, 3]))`,
+    question: "What does this print?",
+    choices: ["[1, 2, 3]", "[-1, -2, 3]", "[1, 2, -3]", "TypeError"],
+    answer: 0,
+    explanation: `Functions are <strong>first-class objects</strong> in Python — they can be passed as arguments, returned from other functions, or stored in variables. <code>abs</code> is passed without parentheses (that would call it); <code>apply</code> calls it on each value inside the comprehension.`,
+  },
+  {
+    id: 316, category: 'functions', difficulty: 'medium',
+    code: `def outer(x):
+    def inner(y):
+        return x + y
+    return inner
+
+add5 = outer(5)
+print(add5(3))
+print(add5(10))`,
+    question: "What does this print?",
+    choices: ["8\n15", "5\n5", "3\n10", "TypeError"],
+    answer: 0,
+    explanation: `<code>outer(5)</code> returns <code>inner</code> with <code>x=5</code> captured in a <strong>closure</strong>. <code>add5</code> is now a function that always adds 5 to its argument. Each call to <code>add5</code> uses the same captured <code>x</code>. This pattern is called <strong>partial application</strong> — fixing some arguments of a function.`,
+  },
+  {
+    id: 317, category: 'functions', difficulty: 'easy',
+    code: `def greet(name, greeting="Hello"):
+    return f"{greeting}, {name}!"
+
+print(greet("Alice"))
+print(greet("Bob", "Hi"))`,
+    question: "What does this print?",
+    choices: ["Hello, Alice!\nHi, Bob!", "Hello, Alice!\nHello, Bob!", "Hi, Alice!\nHi, Bob!", "TypeError"],
+    answer: 0,
+    explanation: `Default parameter values are used when the caller omits the argument. <code>greet("Alice")</code> uses the default <code>greeting="Hello"</code>. <code>greet("Bob", "Hi")</code> overrides it. Default values are evaluated once at function definition — using mutable defaults (like <code>[]</code>) is a classic trap.`,
+  },
+  {
+    id: 318, category: 'functions', difficulty: 'medium',
+    code: `def f(*args, **kwargs):
+    print(args)
+    print(kwargs)
+
+f(1, 2, x=3, y=4)`,
+    question: "What does this print?",
+    choices: ["(1, 2)\n{'x': 3, 'y': 4}", "[1, 2]\n{'x': 3, 'y': 4}", "(1, 2)\n[('x', 3), ('y', 4)]", "TypeError"],
+    answer: 0,
+    explanation: `<code>*args</code> collects extra positional arguments into a <strong>tuple</strong>. <code>**kwargs</code> collects extra keyword arguments into a <strong>dict</strong>. Together they let a function accept any combination of arguments — the basis of many wrapper and decorator patterns.`,
+  },
+  {
+    id: 319, category: 'functions', difficulty: 'hard',
+    code: `from functools import reduce
+
+nums = [1, 2, 3, 4, 5]
+result = reduce(lambda acc, x: acc + x, nums, 0)
+print(result)`,
+    question: "What does this print?",
+    choices: ["15", "0", "120", "TypeError"],
+    answer: 0,
+    explanation: `<code>reduce(f, iterable, initial)</code> applies <code>f</code> cumulatively: <code>((((0+1)+2)+3)+4)+5 = 15</code>. The third argument is the initial accumulator value. Without it, the first element is used as the seed. <code>reduce</code> is the functional equivalent of a running total loop.`,
+  },
+  {
+    id: 320, category: 'functions', difficulty: 'hard',
+    code: `def make_adder(n):
+    return lambda x: x + n
+
+adders = [make_adder(i) for i in range(3)]
+print([f(10) for f in adders])`,
+    question: "What does this print?",
+    choices: ["[10, 11, 12]", "[12, 12, 12]", "[0, 1, 2]", "[10, 10, 10]"],
+    answer: 0,
+    explanation: `Each call to <code>make_adder(i)</code> creates a new <strong>closure</strong> that captures its own <code>n</code>. This avoids the <strong>late binding</strong> trap: because <code>n</code> is a function parameter (not a loop variable), each lambda captures a different value — 0, 1, 2. The result is three distinct adder functions.`,
   },
 
 ];

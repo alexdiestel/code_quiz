@@ -62,6 +62,16 @@ const LANGUAGES = {
         description: '@property, @classmethod, @staticmethod, and custom decorators',
         color:       '#ec4899',
       },
+      classes: {
+        label:       'Classes & OOP',
+        description: 'Inheritance, dunder methods, properties, and metaclasses',
+        color:       '#14b8a6',
+      },
+      exceptions: {
+        label:       'Exceptions',
+        description: 'try/except/finally, raising, custom exceptions, and context managers',
+        color:       '#f97316',
+      },
     },
     questions: [
       ...PY_LISTS,
@@ -70,6 +80,8 @@ const LANGUAGES = {
       ...PY_FUNCTIONS,
       ...PY_MEMORY,
       ...PY_DECORATORS,
+      ...PY_CLASSES,
+      ...PY_EXCEPTIONS,
       ...PY_BOSS,
     ],
   },

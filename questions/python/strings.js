@@ -1,4 +1,4 @@
-// strings.js — 45 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,249,250,251,252,253,254,255,256
+// strings.js — 51 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,249,250,251,252,253,254,255,256,304,305,306,307,308,309
 const PY_STRINGS = [
   {
     id: 3, category: 'strings', difficulty: 'easy',
@@ -446,6 +446,65 @@ print(s.strip().lower().replace(",", ""))`,
     choices: ["hello world!", "Hello World!", "  hello world!  ", "hello, world!"],
     answer: 0,
     explanation: `Method calls chain left to right. <code>strip()</code> removes whitespace → <code>"Hello, World!"</code>. <code>lower()</code> lowercases → <code>"hello, world!"</code>. <code>replace(",", "")</code> removes the comma → <code>"hello world!"</code>. Each call returns a new string (strings are immutable).`,
+  },
+  {
+    id: 304, category: 'strings', difficulty: 'medium',
+    code: `s = "abcdef"
+print(s[::2])
+print(s[::-1])`,
+    question: "What does this print?",
+    choices: ["ace\nfedcba", "bdf\nabcdef", "ace\nabcdef", "abcdef\nfedcba"],
+    answer: 0,
+    explanation: `<code>s[::2]</code> takes every second character starting from index 0: <code>a</code>, <code>c</code>, <code>e</code>. <code>s[::-1]</code> uses a <strong>step</strong> of <code>-1</code> to reverse the string — one of the most compact Python idioms.`,
+  },
+  {
+    id: 305, category: 'strings', difficulty: 'easy',
+    code: `words = "the quick brown fox"
+print(words.title())`,
+    question: "What does this print?",
+    choices: ["The Quick Brown Fox", "THE QUICK BROWN FOX", "the quick brown fox", "The quick brown fox"],
+    answer: 0,
+    explanation: `<code>str.title()</code> capitalises the first letter of every word and lowercases the rest. It differs from <code>capitalize()</code> (only first char of the whole string) and <code>upper()</code> (all caps).`,
+  },
+  {
+    id: 306, category: 'strings', difficulty: 'medium',
+    code: `s = "hello world"
+print(s.find("world"))
+print(s.find("xyz"))`,
+    question: "What does this print?",
+    choices: ["6\n-1", "6\n0", "5\n-1", "True\nFalse"],
+    answer: 0,
+    explanation: `<code>str.find(sub)</code> returns the lowest index where <code>sub</code> begins, or <code>-1</code> if not found. <code>"world"</code> starts at index 6 (after the space). Unlike <code>index()</code>, <code>find()</code> never raises an exception on a missing substring.`,
+  },
+  {
+    id: 307, category: 'strings', difficulty: 'medium',
+    code: `name = "alice"
+print(f"Hello, {name.capitalize()}!")
+print(f"{'x' * 5:>8}")`,
+    question: "What does this print?",
+    choices: ["Hello, Alice!\n   xxxxx", "Hello, Alice!\nxxxxx   ", "Hello, alice!\n   xxxxx", "Hello, ALICE!\n   xxxxx"],
+    answer: 0,
+    explanation: `<code>{name.capitalize()}</code> evaluates <code>"alice".capitalize()</code> → <code>"Alice"</code> inside the f-string. <code>{'x'*5:>8}</code> right-aligns the 5-character string <code>"xxxxx"</code> in a field of width 8, padding with 3 spaces on the left.`,
+  },
+  {
+    id: 308, category: 'strings', difficulty: 'easy',
+    code: `s = "banana"
+print(s.startswith("ban"))
+print(s.endswith("ana"))`,
+    question: "What does this print?",
+    choices: ["True\nTrue", "True\nFalse", "False\nTrue", "False\nFalse"],
+    answer: 0,
+    explanation: `<code>startswith()</code> and <code>endswith()</code> return booleans and are case-sensitive. <code>"banana"</code> starts with <code>"ban"</code> and ends with <code>"ana"</code>, so both are <code>True</code>. Both accept a tuple of prefixes/suffixes to test multiple options at once.`,
+  },
+  {
+    id: 309, category: 'strings', difficulty: 'hard',
+    code: `import re
+s = "cat bat sat"
+print(re.findall(r"[a-z]at", s))`,
+    question: "What does this print?",
+    choices: ["['cat', 'bat', 'sat']", "['at', 'at', 'at']", "['c', 'b', 's']", "['cat bat sat']"],
+    answer: 0,
+    explanation: `<code>re.findall(pattern, string)</code> returns all non-overlapping matches as a list. The pattern <code>[a-z]at</code> matches any lowercase letter followed by <code>"at"</code>. Each of <code>"cat"</code>, <code>"bat"</code>, and <code>"sat"</code> matches, so all three are returned.`,
   },
 
 ];

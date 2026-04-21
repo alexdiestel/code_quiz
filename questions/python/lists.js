@@ -1,4 +1,4 @@
-// lists.js — 46 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,241,242,243,244,245,246,247,248
+// lists.js — 52 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,241,242,243,244,245,246,247,248,298,299,300,301,302,303
 const PY_LISTS = [
   {
     id: 1, category: 'lists', difficulty: 'easy',
@@ -497,6 +497,72 @@ print(result)`,
     choices: ["[0, 0, 1]", "[0, 1, 2]", "[0, 1, 0, 1, 2]", "[]"],
     answer: 0,
     explanation: `The outer loop runs <code>i = 0, 1, 2</code>. For <code>i=0</code>: <code>range(0)</code> is empty. For <code>i=1</code>: <code>range(1)</code> → <code>[0]</code>. For <code>i=2</code>: <code>range(2)</code> → <code>[0, 1]</code>. Combined: <code>[0, 0, 1]</code>. Each inner loop produces values from 0 up to (but not including) the outer index.`,
+  },
+  {
+    id: 298, category: 'lists', difficulty: 'medium',
+    code: `a = [1, 2, 3, 4, 5]
+b = a[1:4]
+b[0] = 99
+print(a)`,
+    question: "What does this print?",
+    choices: ["[1, 2, 3, 4, 5]", "[1, 99, 3, 4, 5]", "[99, 2, 3, 4, 5]", "[1, 99, 99, 99, 5]"],
+    answer: 0,
+    explanation: `Slicing a list creates a <strong>shallow copy</strong> — <code>b</code> is a new list containing the same integer objects. Reassigning <code>b[0] = 99</code> rebinds an element of <code>b</code> but does not touch <code>a</code>. If the elements were mutable objects (e.g. lists), mutating them through <code>b</code> would affect <code>a</code>.`,
+  },
+  {
+    id: 299, category: 'lists', difficulty: 'easy',
+    code: `x = [3, 1, 4, 1, 5, 9]
+print(x.count(1))
+print(x.index(4))`,
+    question: "What does this print?",
+    choices: ["2\n2", "1\n2", "2\n3", "1\n3"],
+    answer: 0,
+    explanation: `<code>list.count(v)</code> returns the number of times <code>v</code> appears. <code>1</code> appears at indices 1 and 3, so the count is 2. <code>list.index(v)</code> returns the index of the <em>first</em> occurrence of <code>v</code>. <code>4</code> is at index 2.`,
+  },
+  {
+    id: 300, category: 'lists', difficulty: 'medium',
+    code: `pairs = [(2, 'b'), (1, 'a'), (3, 'c')]
+pairs.sort(key=lambda p: p[0])
+print(pairs)`,
+    question: "What does this print?",
+    choices: [
+      "[(1, 'a'), (2, 'b'), (3, 'c')]",
+      "[(2, 'b'), (1, 'a'), (3, 'c')]",
+      "[('a', 1), ('b', 2), ('c', 3)]",
+      "[(3, 'c'), (2, 'b'), (1, 'a')]",
+    ],
+    answer: 0,
+    explanation: `The <code>key</code> function extracts a comparison value from each element. <code>lambda p: p[0]</code> sorts by the first element of each tuple. The sort is <strong>stable</strong> and <strong>in-place</strong>. Using a key avoids writing a full comparator and is more efficient than sorting the full tuple directly.`,
+  },
+  {
+    id: 301, category: 'lists', difficulty: 'hard',
+    code: `matrix = [[1,2,3],[4,5,6],[7,8,9]]
+flat = [x for row in matrix for x in row]
+print(flat[4])`,
+    question: "What does this print?",
+    choices: ["5", "4", "6", "2"],
+    answer: 0,
+    explanation: `The nested comprehension iterates outer-then-inner: <code>1,2,3,4,5,6,7,8,9</code>. Index 4 is the fifth element: <code>5</code>. Reading the comprehension left-to-right matches the loop nesting order — <code>for row in matrix</code> is the outer loop, <code>for x in row</code> is the inner loop.`,
+  },
+  {
+    id: 302, category: 'lists', difficulty: 'medium',
+    code: `a = [1, 2, 3]
+b = a * 2
+b.append(7)
+print(a)`,
+    question: "What does this print?",
+    choices: ["[1, 2, 3]", "[1, 2, 3, 1, 2, 3]", "[1, 2, 3, 7]", "[1, 2, 3, 1, 2, 3, 7]"],
+    answer: 0,
+    explanation: `<code>a * 2</code> creates a brand-new list <code>[1,2,3,1,2,3]</code> and assigns it to <code>b</code>. <code>a</code> and <code>b</code> are independent — appending to <code>b</code> does not affect <code>a</code>. (If the elements were mutable, they would still be shared references, but <code>append</code> only changes the list structure, not the elements.)`,
+  },
+  {
+    id: 303, category: 'lists', difficulty: 'easy',
+    code: `x = [10, 20, 30, 40, 50]
+print(x[1:4:2])`,
+    question: "What does this print?",
+    choices: ["[20, 40]", "[20, 30, 40]", "[10, 30, 50]", "[20, 30]"],
+    answer: 0,
+    explanation: `The slice <code>[1:4:2]</code> starts at index 1 (<code>20</code>), stops before index 4, and takes every 2nd element. So it picks index 1 (<code>20</code>) and index 3 (<code>40</code>). The <strong>step</strong> of 2 skips index 2 entirely.`,
   },
 
 ];

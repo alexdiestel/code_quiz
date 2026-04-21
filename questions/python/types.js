@@ -1,6 +1,6 @@
-// types.js — 54 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
+// types.js — 59 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
 //                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137,183,184,185,186,187,188,189,190,
-//                                  257,258,259,260,261,262,263
+//                                  257,258,259,260,261,262,263,310,311,312,313,314
 const PY_TYPES = [
   {
     id: 4, category: 'types', difficulty: 'easy',
@@ -521,6 +521,59 @@ print(d)`,
     ],
     answer: 1,
     explanation: `<code>dict.fromkeys(keys, value)</code> maps every key to the <em>same</em> value object. All three keys share one list. Appending to <code>d['a']</code> mutates that shared list, so all three values change. To get independent lists use a comprehension: <code>{k: [] for k in keys}</code>.`,
+  },
+  {
+    id: 310, category: 'types', difficulty: 'easy',
+    code: `d = {'a': 1, 'b': 2, 'c': 3}
+print(list(d.keys()))
+print(list(d.values()))`,
+    question: "What does this print?",
+    choices: ["['a', 'b', 'c']\n[1, 2, 3]", "[1, 2, 3]\n['a', 'b', 'c']", "dict_keys(['a','b','c'])\ndict_values([1,2,3])", "['a', 1, 'b', 2, 'c', 3]"],
+    answer: 0,
+    explanation: `<code>dict.keys()</code> and <code>dict.values()</code> return <strong>view objects</strong> that reflect the current state of the dict. Wrapping them in <code>list()</code> creates a plain list snapshot. In Python 3.7+ dicts preserve insertion order, so the output order matches the definition order.`,
+  },
+  {
+    id: 311, category: 'types', difficulty: 'medium',
+    code: `t = (1, 2, 3)
+print(t + (4, 5))
+print(t)`,
+    question: "What does this print?",
+    choices: ["(1, 2, 3, 4, 5)\n(1, 2, 3)", "(1, 2, 3, 4, 5)\n(1, 2, 3, 4, 5)", "[1, 2, 3, 4, 5]\n(1, 2, 3)", "TypeError"],
+    answer: 0,
+    explanation: `Tuples are <strong>immutable</strong> — <code>t + (4, 5)</code> creates a brand-new tuple and leaves <code>t</code> unchanged. This is the same principle as string concatenation: the original is never modified, a new object is returned.`,
+  },
+  {
+    id: 312, category: 'types', difficulty: 'medium',
+    code: `a = {1, 2, 3}
+b = {3, 4, 5}
+print(a | b)
+print(a ^ b)`,
+    question: "What does this print?",
+    choices: ["{1, 2, 3, 4, 5}\n{1, 2, 4, 5}", "{3}\n{1, 2, 4, 5}", "{1, 2, 3, 4, 5}\n{3}", "{1, 2, 4, 5}\n{3}"],
+    answer: 0,
+    explanation: `<code>|</code> is set union — all elements from both sets. <code>^</code> is symmetric difference — elements in one set but not both (i.e. everything except the <strong>intersection</strong> <code>{3}</code>). Sets automatically deduplicate, so <code>{3}</code> appears only once in the union.`,
+  },
+  {
+    id: 313, category: 'types', difficulty: 'easy',
+    code: `x = None
+print(x is None)
+print(x == None)
+print(bool(x))`,
+    question: "What does this print?",
+    choices: ["True\nTrue\nFalse", "False\nTrue\nFalse", "True\nFalse\nFalse", "True\nTrue\nTrue"],
+    answer: 0,
+    explanation: `<code>None</code> is a singleton — there is exactly one <code>None</code> object in a Python process, so <code>is None</code> and <code>== None</code> both return <code>True</code>. <code>bool(None)</code> is <code>False</code> because <code>None</code> is <strong>falsy</strong>. Style guides prefer <code>is None</code> over <code>== None</code>.`,
+  },
+  {
+    id: 314, category: 'types', difficulty: 'hard',
+    code: `d = {}
+for i in range(5):
+    d[i % 3] = i
+print(d)`,
+    question: "What does this print?",
+    choices: ["{0: 3, 1: 4, 2: 2}", "{0: 0, 1: 1, 2: 2}", "{0: 3, 1: 4, 2: 5}", "{0: 0, 1: 1, 2: 2, 0: 3, 1: 4}"],
+    answer: 0,
+    explanation: `Each iteration overwrites the <strong>key</strong> with the latest value. Keys are <code>0,1,2,0,1</code> and values are <code>0,1,2,3,4</code>. Key 0 is overwritten by 3, key 1 by 4, key 2 stays at 2. Dicts cannot have duplicate keys — assigning to an existing key updates the value in-place.`,
   },
 
 ];
