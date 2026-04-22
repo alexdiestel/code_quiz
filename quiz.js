@@ -282,6 +282,7 @@ function updateMultiplierBadge() {
 const landingView    = document.getElementById('landing-view');
 const heroLogo       = document.getElementById('hero-logo');
 const heroSub        = document.getElementById('hero-sub');
+const heroFlavor     = document.getElementById('hero-flavor');
 const langButtons    = document.getElementById('lang-buttons');
 const codeFilename   = document.getElementById('code-filename');
 const siteHeader     = document.getElementById('site-header');
@@ -792,8 +793,9 @@ function selectLanguage(lang) {
   if (siteFooter)    siteFooter.style.visibility    = 'hidden';
   if (landingLegal)  landingLegal.style.visibility  = 'hidden';
 
-  // Step 1 — fade out subtitle and button
+  // Step 1 — fade out subtitle, flavor, and buttons
   heroSub.classList.add('fade-out');
+  heroFlavor.classList.add('fade-out');
   langButtons.classList.add('fade-out');
 
   setTimeout(() => {
@@ -905,6 +907,7 @@ document.querySelector('#site-header .logo').addEventListener('click', () => {
   // Reset landing to initial state
   heroLogo.style.visibility = '';
   heroSub.classList.remove('fade-out');
+  heroFlavor.classList.remove('fade-out');
   langButtons.classList.remove('fade-out');
   if (landingLegal) landingLegal.style.visibility = '';
   landingView.style.cssText = '';

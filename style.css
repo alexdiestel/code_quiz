@@ -314,7 +314,11 @@ body {
   display: block;
   width: 100%;
 }
+/* .lang-cog hidden until topics filter is re-enabled */
 .lang-cog {
+  display: none;
+}
+.lang-cog-DISABLED {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -421,6 +425,21 @@ body {
   transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
+/* ── Hero flavor text ──────────────────────────────────────────────────────── */
+#hero-flavor {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  line-height: 1.65;
+  max-width: 480px;
+  text-align: justify;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+#hero-flavor code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 /* ── Language buttons ──────────────────────────────────────────────────────── */
 #lang-buttons {
   display: flex;
@@ -469,6 +488,7 @@ body {
 
 /* fade-out helpers applied by JS */
 #hero-sub.fade-out,
+#hero-flavor.fade-out,
 #lang-buttons.fade-out {
   opacity: 0;
   transform: translateY(10px);
@@ -1158,5 +1178,6 @@ body {
   #hero-content { gap: 16px; }
   #hero-logo    { font-size: clamp(1.8rem, 6vw, 2.8rem); }
   #hero-sub     { font-size: .85rem; }
+  #hero-flavor  { display: none; }
   .lang-btn     { padding: 8px 0; }
 }
