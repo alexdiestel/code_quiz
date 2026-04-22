@@ -1,4 +1,4 @@
-// lists.js — 52 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,241,242,243,244,245,246,247,248,298,299,300,301,302,303
+// lists.js — 60 questions — IDs: 1,2,11,15,17,23,24,25,26,27,28,29,69,70,71,72,121,122,123,124,125,126,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,241,242,243,244,245,246,247,248,298,299,300,301,302,303
 const PY_LISTS = [
   {
     id: 1, category: 'lists', difficulty: 'easy',
@@ -563,6 +563,94 @@ print(x[1:4:2])`,
     choices: ["[20, 40]", "[20, 30, 40]", "[10, 30, 50]", "[20, 30]"],
     answer: 0,
     explanation: `The slice <code>[1:4:2]</code> starts at index 1 (<code>20</code>), stops before index 4, and takes every 2nd element. So it picks index 1 (<code>20</code>) and index 3 (<code>40</code>). The <strong>step</strong> of 2 skips index 2 entirely.`,
+  },
+
+  {
+    id: 321, category: 'lists', difficulty: 'easy',
+    code: `a = [0] * 3
+a[1] = 5
+print(a)`,
+    question: "What does this print?",
+    choices: ['[0, 5, 0]', '[5, 5, 5]', '[0, 0, 0]', '[5, 0, 0]'],
+    answer: 0,
+    explanation: `<code>[0] * 3</code> creates a list of three independent integer references. Integers are immutable, so <code>a[1] = 5</code> rebinds only that slot — the others are unaffected. This differs from <code>[[]] * 3</code>, where all three slots would share the <em>same</em> list object and a mutation via one slot would be visible through all three.`,
+  },
+
+  {
+    id: 322, category: 'lists', difficulty: 'easy',
+    code: `a = [1, 2, 3, 4, 5]
+print(a[-2])`,
+    question: "What does this print?",
+    choices: ['4', '5', '2', '3'],
+    answer: 0,
+    explanation: `Negative indices count from the end. <code>a[-1]</code> is the last element (<code>5</code>), <code>a[-2]</code> is the second-to-last (<code>4</code>). This is equivalent to <code>a[len(a) - 2]</code>. Negative indexing is one of Python's most readable features — it eliminates the need to compute the last index manually.`,
+  },
+
+  {
+    id: 323, category: 'lists', difficulty: 'easy',
+    code: `a = [1, 2]
+b = [1, 2]
+a.append([3, 4])
+b.extend([3, 4])
+print(len(a), len(b))`,
+    question: "What does this print?",
+    choices: ['3 4', '4 4', '3 3', '4 3'],
+    answer: 0,
+    explanation: `<code>append</code> adds its argument as a single element — appending the list <code>[3, 4]</code> gives <code>[1, 2, [3, 4]]</code> (3 elements). <code>extend</code> iterates over its argument and adds each item individually — extending with <code>[3, 4]</code> gives <code>[1, 2, 3, 4]</code> (4 elements). Use <code>extend</code> to concatenate; use <code>append</code> to nest.`,
+  },
+
+  {
+    id: 324, category: 'lists', difficulty: 'easy',
+    code: `print(3 in [1, 2, 3], 4 in [1, 2, 3])`,
+    question: "What does this print?",
+    choices: ['True False', 'False True', 'True True', 'False False'],
+    answer: 0,
+    explanation: `The <code>in</code> operator does a linear search through the list, returning <code>True</code> if any element compares equal to the target. <code>3</code> is in the list so the first expression is <code>True</code>; <code>4</code> is not, so the second is <code>False</code>. For large collections, consider a <code>set</code> — membership testing is O(1) instead of O(n).`,
+  },
+
+  {
+    id: 325, category: 'lists', difficulty: 'medium',
+    code: `a = [[]] * 3
+a[0].append(1)
+print(a)`,
+    question: "What does this print?",
+    choices: ['[[1], [1], [1]]', '[[1], [], []]', '[[], [], []]', 'TypeError'],
+    answer: 0,
+    explanation: `<code>[[]] * 3</code> creates a list containing three references to the <em>same</em> inner list object. Appending to <code>a[0]</code> mutates that single object — and all three slots see the change. To create independent inner lists, use a list comprehension: <code>[[] for _ in range(3)]</code>.`,
+  },
+
+  {
+    id: 326, category: 'lists', difficulty: 'medium',
+    code: `a = [3, 1, 2]
+b = sorted(a)
+a.sort()
+print(a, b, a is b)`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3] [1, 2, 3] False', '[1, 2, 3] [3, 1, 2] False', '[1, 2, 3] [1, 2, 3] True', '[3, 1, 2] [1, 2, 3] False'],
+    answer: 0,
+    explanation: `<code>sorted()</code> returns a new sorted list, leaving the original unchanged. <code>.sort()</code> sorts in-place and returns <code>None</code>. After both calls, <code>a</code> is sorted (<code>[1, 2, 3]</code>) and <code>b</code> is also <code>[1, 2, 3]</code> — but they are different objects (<code>a is b</code> is <code>False</code>). Prefer <code>sorted()</code> when you need the original preserved.`,
+  },
+
+  {
+    id: 327, category: 'lists', difficulty: 'medium',
+    code: `colors = ['r', 'g', 'b']
+for i, c in enumerate(colors, start=1):
+    print(i, c)`,
+    question: "What does this print?",
+    choices: ['1 r\n2 g\n3 b', '0 r\n1 g\n2 b', 'r 1\ng 2\nb 3', '1\nr\n2\ng\n3\nb'],
+    answer: 0,
+    explanation: `<code>enumerate(iterable, start=n)</code> wraps an iterable and yields <code>(index, value)</code> tuples where the index begins at <code>n</code>. The default <code>start=0</code> gives the usual 0-based index. Using <code>start=1</code> gives 1-based numbering, useful for display purposes without arithmetic.`,
+  },
+
+  {
+    id: 328, category: 'lists', difficulty: 'medium',
+    code: `a = [5, 2, 8, 1, 9, 3]
+print(sorted(a)[:3])
+print(sorted(a, reverse=True)[:3])`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3]\n[9, 8, 5]', '[5, 2, 8]\n[9, 8, 5]', '[1, 2, 3]\n[5, 8, 9]', '[9, 8, 5]\n[1, 2, 3]'],
+    answer: 0,
+    explanation: `<code>sorted(a)</code> returns the list sorted ascending; slicing <code>[:3]</code> takes the three smallest. <code>sorted(a, reverse=True)</code> sorts descending; <code>[:3]</code> takes the three largest. The original <code>a</code> is untouched both times. This is the idiomatic way to find top-N values in Python.`,
   },
 
 ];

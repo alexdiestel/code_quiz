@@ -1,4 +1,4 @@
-// functions.js — 12 questions — IDs: 2016-2027
+// functions.js — 15 questions — IDs: 2016-2027
 const JS_FUNCTIONS = [
   {
     id: 2016, category: 'functions', difficulty: 'medium',
@@ -142,5 +142,46 @@ console.log(outer());`,
     choices: ['30', '20', '40', '10'],
     answer: 0,
     explanation: `<code>inner()</code> has its own <code>x = 20</code> which <strong>shadows</strong> the outer <code>x = 10</code>. Inside <code>inner</code>, <code>x</code> refers to the local one: returns <code>20</code>. Back in <code>outer</code>, <code>x</code> still refers to the outer <code>10</code>. <code>10 + 20 = 30</code>. Shadowing is legal but can make code harder to follow.`,
+  },
+
+  {
+    id: 2054, category: 'functions', difficulty: 'medium',
+    code: `function add(x, arr = []) {
+  arr.push(x);
+  return arr;
+}
+console.log(add(1));
+console.log(add(2));`,
+    question: "What does this print?",
+    choices: ['[1]\n[2]', '[1]\n[1, 2]', '[1]\n[2, 2]', 'TypeError'],
+    answer: 0,
+    explanation: `JavaScript default parameters are <strong>re-evaluated on each call</strong>. Every time <code>add</code> is called without a second argument, a brand new <code>[]</code> is created. This is the opposite of Python, where a mutable default is evaluated once and shared across calls — one of Python's most famous gotchas. In JS, mutable defaults are safe.`,
+  },
+
+  {
+    id: 2055, category: 'functions', difficulty: 'medium',
+    code: `function sum(first, ...rest) {
+  return first + rest.reduce((a, b) => a + b, 0);
+}
+console.log(sum(1, 2, 3, 4));`,
+    question: "What does this print?",
+    choices: ['10', '1', '9', 'TypeError'],
+    answer: 0,
+    explanation: `The rest parameter (<code>...rest</code>) collects all arguments after <code>first</code> into a real array: <code>[2, 3, 4]</code>. <code>reduce</code> sums that to <code>9</code>. Adding <code>first</code> (1) gives <code>10</code>. Unlike the legacy <code>arguments</code> object, rest parameters are actual arrays with all Array methods available.`,
+  },
+
+  {
+    id: 2056, category: 'functions', difficulty: 'hard',
+    code: `function* gen() {
+  yield 1;
+  yield 2;
+}
+const g = gen();
+console.log([...g]);
+console.log([...g]);`,
+    question: "What does this print?",
+    choices: ['[1, 2]\n[]', '[1, 2]\n[1, 2]', '[1]\n[2]', 'TypeError'],
+    answer: 0,
+    explanation: `A generator can only be iterated <strong>once</strong>. The first spread consumes both yielded values, leaving the generator in a done state. The second spread immediately sees a done iterator and produces an empty array. To iterate multiple times, call <code>gen()</code> again to get a fresh generator instance.`,
   },
 ];

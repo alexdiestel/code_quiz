@@ -1,4 +1,4 @@
-// types.js — 15 questions — IDs: 2001-2015
+// types.js — 18 questions — IDs: 2001-2015
 const JS_TYPES = [
   {
     id: 2001, category: 'types', difficulty: 'easy',
@@ -135,5 +135,33 @@ console.log(!!"hello");`,
     choices: ['false\nfalse\ntrue', 'true\nfalse\ntrue', 'false\nfalse\nfalse', 'true\ntrue\ntrue'],
     answer: 0,
     explanation: `<code>!!</code> is the double-negation idiom for converting any value to a boolean. <strong>Falsy</strong> values in JS: <code>false</code>, <code>0</code>, <code>""</code>, <code>null</code>, <code>undefined</code>, <code>NaN</code>. Everything else is truthy. <code>""</code> and <code>0</code> are falsy → <code>false</code>. <code>"hello"</code> is truthy → <code>true</code>.`,
+  },
+
+  {
+    id: 2051, category: 'types', difficulty: 'easy',
+    code: `function greet() {}
+console.log(typeof greet, typeof greet());`,
+    question: "What does this print?",
+    choices: ['function undefined', 'function null', 'object undefined', 'function function'],
+    answer: 0,
+    explanation: `<code>typeof greet</code> (without parentheses) inspects the function object — its type is <code>"function"</code>. <code>greet()</code> calls it; with no <code>return</code> statement it returns <code>undefined</code>, so <code>typeof greet()</code> is <code>"undefined"</code>. A common bug is accidentally calling a function where you meant to pass it as a value.`,
+  },
+
+  {
+    id: 2052, category: 'types', difficulty: 'medium',
+    code: `console.log(0 == "0", 0 == "", "0" == "");`,
+    question: "What does this print?",
+    choices: ['true true false', 'true true true', 'false false false', 'true false false'],
+    answer: 0,
+    explanation: `Abstract equality (<code>==</code>) coerces both sides. <code>0 == "0"</code>: string coerces to number, 0 == 0 = true. <code>0 == ""</code>: empty string coerces to 0, true. <code>"0" == ""</code>: both are strings, compared directly — they differ, false. This non-transitivity (0 equals "0" and 0 equals "" but "0" does not equal "") is the canonical argument for always using <code>===</code>.`,
+  },
+
+  {
+    id: 2053, category: 'types', difficulty: 'hard',
+    code: `console.log(+"3", +" ", +null, +undefined);`,
+    question: "What does this print?",
+    choices: ['3 0 0 NaN', '3 NaN 0 0', '3 0 null NaN', 'NaN NaN NaN NaN'],
+    answer: 0,
+    explanation: `The unary <code>+</code> operator applies the Abstract ToNumber conversion. <code>+"3"</code> = 3. <code>+" "</code>: whitespace-only strings coerce to 0. <code>+null</code> = 0 (null has a numeric form). <code>+undefined</code> = NaN — undefined has no numeric equivalent. Knowing these edge cases is essential when receiving external data that may be null or undefined.`,
   },
 ];

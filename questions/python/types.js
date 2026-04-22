@@ -1,4 +1,4 @@
-// types.js — 59 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
+// types.js — 67 questions — IDs: 4,5,6,7,10,13,19,35,36,37,38,39,40,54,55,56,57,58,59,60,61,65,66,67,68,
 //                                  79,80,81,82,83,84,85,86,132,133,134,135,136,137,183,184,185,186,187,188,189,190,
 //                                  257,258,259,260,261,262,263,310,311,312,313,314
 const PY_TYPES = [
@@ -574,6 +574,88 @@ print(d)`,
     choices: ["{0: 3, 1: 4, 2: 2}", "{0: 0, 1: 1, 2: 2}", "{0: 3, 1: 4, 2: 5}", "{0: 0, 1: 1, 2: 2, 0: 3, 1: 4}"],
     answer: 0,
     explanation: `Each iteration overwrites the <strong>key</strong> with the latest value. Keys are <code>0,1,2,0,1</code> and values are <code>0,1,2,3,4</code>. Key 0 is overwritten by 3, key 1 by 4, key 2 stays at 2. Dicts cannot have duplicate keys — assigning to an existing key updates the value in-place.`,
+  },
+
+  {
+    id: 337, category: 'types', difficulty: 'easy',
+    code: `print(7 // 2, 7 % 2, -7 // 2, -7 % 2)`,
+    question: "What does this print?",
+    choices: ['3 1 -4 1', '3 1 -3 -1', '3 1 -3 1', '3 1 -4 -1'],
+    answer: 0,
+    explanation: `Python's <code>//</code> performs <strong>floor division</strong> — it rounds toward negative infinity (not toward zero). <code>-7 // 2</code> is <code>-4</code> (not <code>-3</code>). The <code>%</code> remainder always has the same sign as the divisor: <code>-7 % 2 = 1</code> because <code>-7 = (-4)*2 + 1</code>. This differs from C/C++ where truncation is toward zero.`,
+  },
+
+  {
+    id: 338, category: 'types', difficulty: 'easy',
+    code: `print(True + True, False * 5, True + 1)`,
+    question: "What does this print?",
+    choices: ['2 0 2', 'True True True', '1 0 1', 'TypeError'],
+    answer: 0,
+    explanation: `In Python, <code>bool</code> is a subclass of <code>int</code>: <code>True == 1</code> and <code>False == 0</code>. Booleans participate in arithmetic: <code>True + True</code> = 2, <code>False * 5</code> = 0, <code>True + 1</code> = 2. The result is always an <code>int</code>, not a <code>bool</code>. This allows tricks like <code>sum(x > 0 for x in lst)</code> to count matching items.`,
+  },
+
+  {
+    id: 339, category: 'types', difficulty: 'easy',
+    code: `x = None
+print(x is None, x == None, bool(x))`,
+    question: "What does this print?",
+    choices: ['True True False', 'True False False', 'True True True', 'False True False'],
+    answer: 0,
+    explanation: `<code>None</code> is a singleton — there is exactly one <code>None</code> object in a Python process. Both <code>is None</code> (identity check) and <code>== None</code> (equality check) return <code>True</code>. However, <code>is None</code> is preferred style since it cannot be fooled by <code>__eq__</code> overrides. <code>bool(None)</code> is <code>False</code> — <code>None</code> is falsy.`,
+  },
+
+  {
+    id: 340, category: 'types', difficulty: 'easy',
+    code: `print(0.1 + 0.2 == 0.3)`,
+    question: "What does this print?",
+    choices: ['False', 'True', 'TypeError', '0.30000000000000004'],
+    answer: 0,
+    explanation: `<code>0.1</code> and <code>0.2</code> cannot be represented exactly in binary floating-point. Their sum is <code>0.30000000000000004</code>, which is not equal to the binary approximation of <code>0.3</code>. To compare floats, use <code>math.isclose(a, b)</code> or round to a fixed precision. This is not a Python bug — it is a property of IEEE 754 double-precision arithmetic used by almost every language.`,
+  },
+
+  {
+    id: 341, category: 'types', difficulty: 'medium',
+    code: `a = b = c = []
+a.append(1)
+print(b, c)`,
+    question: "What does this print?",
+    choices: ['[1] [1]', '[] []', '[1] []', '[] [1]'],
+    answer: 0,
+    explanation: `<code>a = b = c = []</code> assigns all three names to the <em>same</em> list object. This is chained assignment, not three separate list creations. Mutating via any of the names affects the shared object — so appending through <code>a</code> is visible through <code>b</code> and <code>c</code>. To create three independent lists: <code>a, b, c = [], [], []</code>.`,
+  },
+
+  {
+    id: 342, category: 'types', difficulty: 'medium',
+    code: `t = (1, 2)
+t += (3,)
+print(t, type(t).__name__)`,
+    question: "What does this print?",
+    choices: ['(1, 2, 3) tuple', '(1, 2, (3,)) tuple', 'TypeError', '(1, 2, 3) list'],
+    answer: 0,
+    explanation: `Tuples are immutable — you cannot modify them in place. <code>t += (3,)</code> is equivalent to <code>t = t + (3,)</code>: it creates a <em>new</em> tuple <code>(1, 2, 3)</code> and rebinds <code>t</code> to it. The original <code>(1, 2)</code> is discarded. Unlike <code>list += [3]</code>, no mutation occurs — a new object is always created.`,
+  },
+
+  {
+    id: 343, category: 'types', difficulty: 'medium',
+    code: `class A: pass
+class B(A): pass
+b = B()
+print(type(b) is A, isinstance(b, A))`,
+    question: "What does this print?",
+    choices: ['False True', 'True True', 'False False', 'True False'],
+    answer: 0,
+    explanation: `<code>type(b)</code> returns the exact class of <code>b</code> — which is <code>B</code>, not <code>A</code>. So <code>type(b) is A</code> is <code>False</code>. <code>isinstance(b, A)</code> walks the inheritance chain and returns <code>True</code> because <code>B</code> is a subclass of <code>A</code>. Always prefer <code>isinstance</code> over <code>type() is</code> when checking for compatibility — it respects inheritance.`,
+  },
+
+  {
+    id: 344, category: 'types', difficulty: 'medium',
+    code: `data = [1, 2, 3, 4, 5]
+if (n := len(data)) > 3:
+    print(f"{n} items")`,
+    question: "What does this print?",
+    choices: ['5 items', '3 items', 'True items', 'Nothing'],
+    answer: 0,
+    explanation: `The walrus operator (<code>:=</code>, Python 3.8+) assigns and returns a value in a single expression. <code>n := len(data)</code> assigns <code>5</code> to <code>n</code> and uses that value in the condition. Since <code>5 > 3</code>, the branch executes and prints using the already-computed <code>n</code>. This avoids computing the length twice and makes the intent explicit.`,
   },
 
 ];

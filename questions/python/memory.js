@@ -1,4 +1,4 @@
-// memory.js — 38 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149,206,207,208,209,210,211,212,213,214,215,216,217,264,265,266,267,268,269,270
+// memory.js — 43 questions — IDs: 8,9,21,46,47,48,49,50,93,94,95,96,97,144,145,146,147,148,149,206,207,208,209,210,211,212,213,214,215,216,217,264,265,266,267,268,269,270,353,354,355,356,357
 const PY_MEMORY = [
   {
     id: 8, category: 'memory', difficulty: 'medium',
@@ -452,6 +452,71 @@ print(b)`,
     ],
     answer: 0,
     explanation: `<code>a + [4]</code> creates a <em>new</em> list and rebinds <code>a</code> to it. <code>b</code> still points to the original list <code>[1, 2, 3]</code>. Compare with <code>a.extend([4])</code> or <code>a += [4]</code>, which mutate in-place and would change what <code>b</code> sees too.`,
+  },
+
+  {
+    id: 353, category: 'memory', difficulty: 'medium',
+    code: `a = [1, [2, 3]]
+b = list(a)
+b[1].append(4)
+print(a)`,
+    question: "What does this print?",
+    choices: ['[1, [2, 3, 4]]', '[1, [2, 3]]', '[1, [2, 3], 4]', 'TypeError'],
+    answer: 0,
+    explanation: `<code>list(a)</code> constructs a new list with the same elements — a <strong>shallow copy</strong>. The outer list is new, but <code>b[1]</code> is the same list object as <code>a[1]</code>. Appending through <code>b</code> is visible through <code>a</code>. Use <code>copy.deepcopy(a)</code> to fully decouple nested structures.`,
+  },
+
+  {
+    id: 354, category: 'memory', difficulty: 'medium',
+    code: `a = "hello"
+b = "hel" + "lo"
+print(a is b)`,
+    question: "What does this print?",
+    choices: ['True', 'False', 'None', 'TypeError'],
+    answer: 0,
+    explanation: `CPython <strong>interns</strong> string literals that look like identifiers and folds compile-time constants. <code>"hel" + "lo"</code> is evaluated at compile time to the literal <code>"hello"</code>, which shares the interned object with <code>a</code>. Do not rely on <code>is</code> for string equality — use <code>==</code>. The behaviour can differ across Python implementations and runtime-constructed strings.`,
+  },
+
+  {
+    id: 355, category: 'memory', difficulty: 'hard',
+    code: `a = [None] * 3
+b = [[] for _ in range(3)]
+a[0] = 1
+b[0].append(1)
+print(a)
+print(b)`,
+    question: "What does this print?",
+    choices: ['[1, None, None]\n[[1], [], []]', '[1, 1, 1]\n[[1], [1], [1]]', '[1, None, None]\n[[1], [1], [1]]', '[None, None, None]\n[[1], [], []]'],
+    answer: 0,
+    explanation: `<code>[None] * 3</code> creates three slots all pointing to the <code>None</code> singleton. Reassigning <code>a[0] = 1</code> only rebinds that slot — no aliasing issue. <code>[[] for _ in range(3)]</code> creates three <em>distinct</em> empty list objects. Each <code>[]</code> is independent, so appending to <code>b[0]</code> does not affect <code>b[1]</code> or <code>b[2]</code>. Contrast with <code>[[]] * 3</code> which shares one list.`,
+  },
+
+  {
+    id: 356, category: 'memory', difficulty: 'hard',
+    code: `class Resource:
+    def __del__(self):
+        print("cleaned up")
+
+r = Resource()
+del r
+print("after del")`,
+    question: "What does this print?",
+    choices: ['cleaned up\nafter del', 'after del\ncleaned up', 'after del', 'cleaned up'],
+    answer: 0,
+    explanation: `<code>del r</code> removes the name from the namespace. If no other references exist, CPython's reference counter drops to zero and the object is immediately destroyed, calling <code>__del__</code> before the next line executes. This is deterministic in CPython but not guaranteed by the language spec — PyPy and other implementations may defer cleanup.`,
+  },
+
+  {
+    id: 357, category: 'memory', difficulty: 'hard',
+    code: `s = set()
+t = (1, 2, 3)
+s.add(t)
+print(len(s))
+print(t in s)`,
+    question: "What does this print?",
+    choices: ['1\nTrue', '3\nTrue', '1\nFalse', 'TypeError'],
+    answer: 0,
+    explanation: `Tuples are <strong>hashable</strong> (as long as all their elements are hashable) and can be added to sets or used as dict keys. <code>s.add(t)</code> adds the tuple as a single element — the set has length 1. <code>t in s</code> checks membership by hash and equality. Contrast with lists, which are mutable and raise <code>TypeError: unhashable type: 'list'</code> when added to a set.`,
   },
 
 ];

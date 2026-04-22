@@ -1,5 +1,5 @@
-// pointers.js — 12 questions — IDs: 1011,1012,1013,1014,1015,1036,1037,1038,1039,1040,1041,1042
-// Difficulties: medium×3, hard×2
+// pointers.js â€” 15 questions â€” IDs: 1011,1012,1013,1014,1015,1036,1037,1038,1039,1040,1041,1042,1057,1058,1059
+// Difficulties: mediumÃ—3, hardÃ—2
 const CPP_POINTERS = [
 
   {
@@ -16,7 +16,7 @@ int main() {
     question: "What does this print?",
     choices: ['&x', '42', '0', 'Memory address'],
     answer: 1,
-    explanation: `<code>p</code> is a pointer that holds the memory address of <code>x</code> (<code>&x</code>). The dereference operator <code>*p</code> follows that address and reads the value stored there — which is <code>42</code>. Printing <code>p</code> directly (without <code>*</code>) would print the raw memory address.`
+    explanation: `<code>p</code> is a pointer that holds the memory address of <code>x</code> (<code>&x</code>). The dereference operator <code>*p</code> follows that address and reads the value stored there â€” which is <code>42</code>. Printing <code>p</code> directly (without <code>*</code>) would print the raw memory address.`
   },
 
   {
@@ -34,7 +34,7 @@ int main() {
     question: "What does this print?",
     choices: ['10', '20', '0', 'Undefined'],
     answer: 1,
-    explanation: `<code>r</code> is a <strong>reference</strong> — an alias for <code>x</code>, not a copy. There is no separate variable; <code>r</code> and <code>x</code> refer to the same memory location. Writing <code>r = 20</code> writes directly to <code>x</code>. Unlike pointers, references cannot be null and cannot be reseated to point elsewhere after initialisation.`
+    explanation: `<code>r</code> is a <strong>reference</strong> â€” an alias for <code>x</code>, not a copy. There is no separate variable; <code>r</code> and <code>x</code> refer to the same memory location. Writing <code>r = 20</code> writes directly to <code>x</code>. Unlike pointers, references cannot be null and cannot be reseated to point elsewhere after initialisation.`
   },
 
   {
@@ -71,7 +71,7 @@ int main() {
     question: "What does this print?",
     choices: ['10', '20', '30', 'Undefined'],
     answer: 1,
-    explanation: `<code>p</code> starts pointing at <code>arr[0]</code> (value <code>10</code>). <code>p++</code> advances the pointer by <code>sizeof(int)</code> bytes (typically 4), so it now points to <code>arr[1]</code>. Dereferencing gives <code>20</code>. Pointer arithmetic always scales by the size of the pointed-to type — incrementing an <code>int*</code> moves 4 bytes, incrementing a <code>double*</code> moves 8.`
+    explanation: `<code>p</code> starts pointing at <code>arr[0]</code> (value <code>10</code>). <code>p++</code> advances the pointer by <code>sizeof(int)</code> bytes (typically 4), so it now points to <code>arr[1]</code>. Dereferencing gives <code>20</code>. Pointer arithmetic always scales by the size of the pointed-to type â€” incrementing an <code>int*</code> moves 4 bytes, incrementing a <code>double*</code> moves 8.`
   },
 
   {
@@ -89,7 +89,7 @@ int main() {
     question: "What does this print?",
     choices: ['5 8', '8 8', '5 3', '8 5'],
     answer: 1,
-    explanation: `<code>p</code> holds the address of <code>x</code>. <code>*p += 3</code> modifies the value <em>at that address</em> — which is <code>x</code> itself. After the operation, the location holds <code>8</code>. Both <code>x</code> and <code>*p</code> name the same memory cell, so both print <code>8</code>.`
+    explanation: `<code>p</code> holds the address of <code>x</code>. <code>*p += 3</code> modifies the value <em>at that address</em> â€” which is <code>x</code> itself. After the operation, the location holds <code>8</code>. Both <code>x</code> and <code>*p</code> name the same memory cell, so both print <code>8</code>.`
   },
 
   {
@@ -108,7 +108,7 @@ int main() {
     question: "What does this print?",
     choices: ['6', '5', '1', 'Undefined'],
     answer: 0,
-    explanation: `<code>&x</code> passes the address of <code>x</code> to <code>inc</code>. Inside <code>inc</code>, <code>(*p)++</code> dereferences the pointer and increments the value at that address — which is <code>x</code> itself. The parentheses around <code>*p</code> are essential: <code>*p++</code> would increment the pointer, not the pointed-to value.`,
+    explanation: `<code>&x</code> passes the address of <code>x</code> to <code>inc</code>. Inside <code>inc</code>, <code>(*p)++</code> dereferences the pointer and increments the value at that address â€” which is <code>x</code> itself. The parentheses around <code>*p</code> are essential: <code>*p++</code> would increment the pointer, not the pointed-to value.`,
   },
 
   {
@@ -129,7 +129,7 @@ int main() {
     question: "What does this print?",
     choices: ['2 1', '1 2', '1 1', '2 2'],
     answer: 0,
-    explanation: `<code>a</code> and <code>b</code> are references — aliases for <code>x</code> and <code>y</code>. Modifying them directly modifies the originals. Unlike <strong>pass-by-value</strong> (which operates on copies), pass-by-reference lets a function change the caller's variables. This is the canonical in-place swap pattern.`,
+    explanation: `<code>a</code> and <code>b</code> are references â€” aliases for <code>x</code> and <code>y</code>. Modifying them directly modifies the originals. Unlike <strong>pass-by-value</strong> (which operates on copies), pass-by-reference lets a function change the caller's variables. This is the canonical in-place swap pattern.`,
   },
 
   {
@@ -145,7 +145,7 @@ int main() {
     question: "What does this print?",
     choices: ['1', '0', 'true', 'nullptr'],
     answer: 0,
-    explanation: `<code>nullptr</code> (introduced in C++11) is a type-safe null pointer constant. Comparing a null pointer to <code>nullptr</code> returns <code>true</code>, which prints as <code>1</code> (bool printed without <code>boolalpha</code>). Always initialise pointers to <code>nullptr</code> if not immediately assigned — dereferencing a null pointer is undefined behaviour.`,
+    explanation: `<code>nullptr</code> (introduced in C++11) is a type-safe null pointer constant. Comparing a null pointer to <code>nullptr</code> returns <code>true</code>, which prints as <code>1</code> (bool printed without <code>boolalpha</code>). Always initialise pointers to <code>nullptr</code> if not immediately assigned â€” dereferencing a null pointer is undefined behaviour.`,
   },
 
   {
@@ -163,7 +163,7 @@ int main() {
     question: "What does this print?",
     choices: ['10 10', '5 10', '10 5', '5 5'],
     answer: 0,
-    explanation: `<code>ref = b</code> copies the <em>value</em> of <code>b</code> into <code>a</code> (via the reference) — it does NOT make <code>ref</code> an alias for <code>b</code>. References cannot be reseated after initialisation. So <code>a</code> becomes 10 and <code>b</code> stays 10. Both print <code>10</code>.`,
+    explanation: `<code>ref = b</code> copies the <em>value</em> of <code>b</code> into <code>a</code> (via the reference) â€” it does NOT make <code>ref</code> an alias for <code>b</code>. References cannot be reseated after initialisation. So <code>a</code> becomes 10 and <code>b</code> stays 10. Both print <code>10</code>.`,
   },
 
   {
@@ -180,7 +180,7 @@ int main() {
     question: "What does this print?",
     choices: ['30', '20', '10', '12'],
     answer: 0,
-    explanation: `<code>arr</code> decays to a pointer to its first element. <code>p + 2</code> advances the pointer by <code>2 * sizeof(int)</code> bytes, pointing to <code>arr[2]</code>. Dereferencing gives <code>30</code>. Pointer arithmetic always scales by the pointed-to type size — <code>p + n</code> is equivalent to <code>&arr[n]</code>.`,
+    explanation: `<code>arr</code> decays to a pointer to its first element. <code>p + 2</code> advances the pointer by <code>2 * sizeof(int)</code> bytes, pointing to <code>arr[2]</code>. Dereferencing gives <code>30</code>. Pointer arithmetic always scales by the pointed-to type size â€” <code>p + n</code> is equivalent to <code>&arr[n]</code>.`,
   },
 
   {
@@ -216,7 +216,61 @@ int main() {
     question: "What does this print?",
     choices: ['10', '5', 'Compile error', 'Undefined'],
     answer: 0,
-    explanation: `<code>const int* p</code> means "pointer to a const int" — you can't modify <code>x</code> <em>through</em> <code>p</code>, but <code>x</code> itself is not const and can be changed directly. After <code>x = 10</code>, <code>p</code> still points to the same variable, so <code>*p</code> reads the updated value: <code>10</code>.`,
+    explanation: `<code>const int* p</code> means "pointer to a const int" â€” you can't modify <code>x</code> <em>through</em> <code>p</code>, but <code>x</code> itself is not const and can be changed directly. After <code>x = 10</code>, <code>p</code> still points to the same variable, so <code>*p</code> reads the updated value: <code>10</code>.`,
+  },
+
+
+  {
+    id: 1057, category: 'pointers', difficulty: 'medium',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    int a = 10;
+    int& b = a;
+    b = 20;
+    cout << a << " " << b;
+}`,
+    question: "What does this print?",
+    choices: ['20 20', '10 20', '20 10', '10 10'],
+    answer: 0,
+    explanation: `A reference is an <strong>alias</strong> — <code>b</code> and <code>a</code> refer to the exact same memory location. Any write through <code>b</code> is a write to <code>a</code>. Once bound, a reference cannot be reseated to point at something else (unlike a pointer). This makes references safer than pointers for aliasing use cases but less flexible.`,
+  },
+
+  {
+    id: 1058, category: 'pointers', difficulty: 'medium',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    int arr[] = {1, 2, 3, 4, 5};
+    int* p = arr + 2;
+    cout << *(p - 1) << " " << *p << " " << *(p + 1);
+}`,
+    question: "What does this print?",
+    choices: ['2 3 4', '1 2 3', '3 4 5', '0 2 4'],
+    answer: 0,
+    explanation: `<code>arr + 2</code> points to the element at index 2 (value <code>3</code>). Pointer arithmetic steps by the element size: <code>p - 1</code> is index 1 (value <code>2</code>), <code>p + 1</code> is index 3 (value <code>4</code>). This is the foundation of how arrays work in C and C++ — the name <code>arr</code> decays to a pointer to its first element.`,
+  },
+
+  {
+    id: 1059, category: 'pointers', difficulty: 'hard',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    int* p = nullptr;
+    cout << (p == nullptr) << " "
+         << (p == 0)       << " "
+         << (!p);
+}`,
+    question: "What does this print?",
+    choices: ['1 1 1', '1 0 1', '0 0 0', '1 1 0'],
+    answer: 0,
+    explanation: `<code>nullptr</code>, <code>0</code>, and <code>NULL</code> are all valid null pointer values and compare equal to each other. <code>!p</code> is <code>true</code> (printed as <code>1</code>) because a null pointer is falsy. Prefer <code>nullptr</code> in modern C++: it has type <code>std::nullptr_t</code> and avoids ambiguity in overload resolution (e.g. <code>f(0)</code> could call <code>f(int)</code> or <code>f(void*)</code>).`,
   },
 
 ];

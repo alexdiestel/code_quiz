@@ -1,4 +1,4 @@
-// functions.js — 51 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,233,234,235,236,237,238,239,240,315,316,317,318,319,320
+// functions.js — 59 questions — IDs: 16,18,20,41,42,43,44,45,63,64,87,88,89,90,91,92,138,139,140,141,142,143,191,192,193,194,195,196,197,198,199,200,201,202,203,204,205,233,234,235,236,237,238,239,240,315,316,317,318,319,320,345,346,347,348,349,350,351,352
 const PY_FUNCTIONS = [
   {
     id: 41, category: 'functions', difficulty: 'easy',
@@ -631,6 +631,119 @@ print([f(10) for f in adders])`,
     choices: ["[10, 11, 12]", "[12, 12, 12]", "[0, 1, 2]", "[10, 10, 10]"],
     answer: 0,
     explanation: `Each call to <code>make_adder(i)</code> creates a new <strong>closure</strong> that captures its own <code>n</code>. This avoids the <strong>late binding</strong> trap: because <code>n</code> is a function parameter (not a loop variable), each lambda captures a different value — 0, 1, 2. The result is three distinct adder functions.`,
+  },
+
+  {
+    id: 345, category: 'functions', difficulty: 'easy',
+    code: `def stats(nums):
+    return min(nums), max(nums)
+
+result = stats([3, 1, 4, 1, 5])
+print(type(result).__name__)`,
+    question: "What does this print?",
+    choices: ['tuple', 'list', 'dict', 'int'],
+    answer: 0,
+    explanation: `Returning multiple values with commas packs them into a <strong>tuple</strong>. <code>return min(nums), max(nums)</code> is identical to <code>return (min(nums), max(nums))</code>. Assigning to a single variable captures the whole tuple; use <code>lo, hi = stats(nums)</code> to unpack it.`,
+  },
+
+  {
+    id: 346, category: 'functions', difficulty: 'easy',
+    code: `def add(a, b, c):
+    return a + b + c
+
+nums = [1, 2, 3]
+print(add(*nums))`,
+    question: "What does this print?",
+    choices: ['6', '[1, 2, 3]', 'TypeError', '(1, 2, 3)'],
+    answer: 0,
+    explanation: `The <code>*</code> operator in a function call <strong>unpacks</strong> the list into positional arguments. <code>add(*[1, 2, 3])</code> is equivalent to <code>add(1, 2, 3)</code>. This is useful for passing a variable-length list to a function that expects fixed positional arguments.`,
+  },
+
+  {
+    id: 347, category: 'functions', difficulty: 'medium',
+    code: `def connect(*, host, port=80):
+    return f"{host}:{port}"
+
+print(connect(host="localhost"))`,
+    question: "What does this print?",
+    choices: ['localhost:80', 'localhost', '80', 'TypeError'],
+    answer: 0,
+    explanation: `A bare <code>*</code> in the parameter list marks all following parameters as <strong>keyword-only</strong> — they cannot be passed positionally. <code>connect("localhost")</code> would raise <code>TypeError</code>; the caller must write <code>host="localhost"</code>. Default values still work, so <code>port</code> falls back to 80.`,
+  },
+
+  {
+    id: 348, category: 'functions', difficulty: 'medium',
+    code: `def greet(name, greeting):
+    return f"{greeting}, {name}!"
+
+params = {"name": "Alice", "greeting": "Hi"}
+print(greet(**params))`,
+    question: "What does this print?",
+    choices: ['Hi, Alice!', 'Alice, Hi!', 'TypeError', 'KeyError'],
+    answer: 0,
+    explanation: `The <code>**</code> operator in a function call <strong>unpacks a dict</strong> into keyword arguments. Each key becomes a parameter name and its value becomes the argument. This is the dict counterpart of <code>*</code> for sequences — useful for constructing dynamic argument sets at runtime.`,
+  },
+
+  {
+    id: 349, category: 'functions', difficulty: 'medium',
+    code: `nums = range(10)
+result = list(map(lambda x: x**2, filter(lambda x: x % 2 == 0, nums)))
+print(result)`,
+    question: "What does this print?",
+    choices: ['[0, 4, 16, 36, 64]', '[0, 1, 4, 9, 16]', '[4, 16, 36, 64]', '[0, 4, 16, 36]'],
+    answer: 0,
+    explanation: `<code>filter</code> first selects even numbers from 0-9: <code>0, 2, 4, 6, 8</code>. <code>map</code> then squares each: <code>0, 4, 16, 36, 64</code>. Both are lazy — no work happens until <code>list()</code> forces evaluation. The list comprehension equivalent is <code>[x**2 for x in range(10) if x % 2 == 0]</code>.`,
+  },
+
+  {
+    id: 350, category: 'functions', difficulty: 'medium',
+    code: `def evens(n):
+    for i in range(n):
+        if i % 2 == 0:
+            yield i
+
+g = evens(6)
+print(list(g))
+print(list(g))`,
+    question: "What does this print?",
+    choices: ['[0, 2, 4]\n[]', '[0, 2, 4]\n[0, 2, 4]', '[]\n[0, 2, 4]', '[0, 2, 4]\n[0, 2, 4, 6]'],
+    answer: 0,
+    explanation: `Generators are <strong>stateful and single-use</strong>. The first <code>list(g)</code> exhausts the generator. The second call finds it at its end and returns an empty list. To iterate again, create a new generator with another call to <code>evens(6)</code>.`,
+  },
+
+  {
+    id: 351, category: 'functions', difficulty: 'hard',
+    code: `def inner():
+    yield 1
+    yield 2
+
+def outer():
+    yield from inner()
+    yield 3
+
+print(list(outer()))`,
+    question: "What does this print?",
+    choices: ['[1, 2, 3]', '[[1, 2], 3]', '[1, 2]', '[3]'],
+    answer: 0,
+    explanation: `<code>yield from iterable</code> delegates to a sub-generator, transparently forwarding all its yielded values. <code>yield from inner()</code> yields <code>1</code> then <code>2</code>, then control returns to <code>outer</code> which yields <code>3</code>. It is cleaner than a <code>for</code> loop with <code>yield</code> and also propagates <code>send()</code> and <code>throw()</code> correctly.`,
+  },
+
+  {
+    id: 352, category: 'functions', difficulty: 'hard',
+    code: `def accumulator():
+    total = 0
+    while True:
+        value = yield total
+        total += value
+
+g = accumulator()
+next(g)
+print(g.send(10))
+print(g.send(5))`,
+    question: "What does this print?",
+    choices: ['10\n15', '0\n10', '10\n10', '0\n15'],
+    answer: 0,
+    explanation: `<code>next(g)</code> starts the generator and runs it to the first <code>yield</code>, which yields <code>total=0</code> (discarded). <code>g.send(10)</code> resumes with <code>value=10</code>, adds to total (now 10), loops back, and yields <code>10</code>. <code>g.send(5)</code> sets <code>value=5</code>, total becomes 15, and yields <code>15</code>. <code>send()</code> is the two-way communication channel of generators.`,
   },
 
 ];

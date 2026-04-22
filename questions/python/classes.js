@@ -1,7 +1,7 @@
-// classes.js — 15 questions — IDs: 271-285
+// classes.js — 22 questions — IDs: 271-285, 358-364
 const PY_CLASSES = [
   {
-    id: 271, category: 'classes', difficulty: 'easy',
+    id: 271, category: 'classes', difficulty: 'medium',
     code: `class Dog:
     def __init__(self, name):
         self.name = name
@@ -17,7 +17,7 @@ print(d.bark())`,
     explanation: `<code>__init__</code> stores <code>name</code> as an instance attribute on <code>self</code>. When <code>bark()</code> is called, <code>self.name</code> resolves to <code>"Rex"</code>. Every method receives the instance as its first argument — by convention named <code>self</code>.`,
   },
   {
-    id: 272, category: 'classes', difficulty: 'easy',
+    id: 272, category: 'classes', difficulty: 'medium',
     code: `class Counter:
     count = 0
 
@@ -35,7 +35,7 @@ print(Counter.count)`,
     explanation: `<code>count</code> is a <strong>class variable</strong> shared by all instances. Both <code>a.increment()</code> and <code>b.increment()</code> modify <code>Counter.count</code> directly, so it ends up as 2. If <code>self.count += 1</code> were used instead, it would create a new instance variable and leave the class variable at 0.`,
   },
   {
-    id: 273, category: 'classes', difficulty: 'easy',
+    id: 273, category: 'classes', difficulty: 'medium',
     code: `class Animal:
     def speak(self):
         return "..."
@@ -52,7 +52,7 @@ print(c.speak())`,
     explanation: `<code>Cat</code> inherits from <code>Animal</code> but <strong>overrides</strong> the <code>speak</code> method. Python always calls the most derived version first — the child class method takes precedence over the parent's.`,
   },
   {
-    id: 274, category: 'classes', difficulty: 'easy',
+    id: 274, category: 'classes', difficulty: 'medium',
     code: `class Point:
     def __init__(self, x, y):
         self.x = x
@@ -274,5 +274,145 @@ print(m.value)`,
     choices: ["42", "None", "<Descriptor object>", "AttributeError"],
     answer: 0,
     explanation: `A descriptor is any object that defines <code>__get__</code> (and optionally <code>__set__</code>/<code>__delete__</code>). When a descriptor is stored as a class attribute, Python calls its <code>__get__</code> on every attribute access. This is the mechanism behind <code>@property</code>, <code>@classmethod</code>, and <code>@staticmethod</code>.`,
+  },
+
+  {
+    id: 358, category: 'classes', difficulty: 'medium',
+    code: `class Item:
+    def __repr__(self):
+        return "Item(repr)"
+    def __str__(self):
+        return "Item(str)"
+
+i = Item()
+print(str(i))
+print(repr(i))`,
+    question: "What does this print?",
+    choices: ['Item(str)\nItem(repr)', 'Item(repr)\nItem(str)', 'Item(str)\nItem(str)', 'Item(repr)\nItem(repr)'],
+    answer: 0,
+    explanation: `<code>__str__</code> is called by <code>str()</code> and <code>print()</code> — for human-readable output. <code>__repr__</code> is called by <code>repr()</code> — for an unambiguous developer-facing representation. If only <code>__repr__</code> is defined, it also serves as the fallback for <code>str()</code>. The reverse is not true.`,
+  },
+
+  {
+    id: 359, category: 'classes', difficulty: 'medium',
+    code: `class Date:
+    def __init__(self, year, month, day):
+        self.year = year
+        self.month = month
+        self.day = day
+
+    @classmethod
+    def from_string(cls, s):
+        y, m, d = map(int, s.split("-"))
+        return cls(y, m, d)
+
+d = Date.from_string("2024-01-15")
+print(d.year)`,
+    question: "What does this print?",
+    choices: ['2024', '1', '15', 'AttributeError'],
+    answer: 0,
+    explanation: `<code>@classmethod</code> factories are the standard alternative constructor pattern. <code>cls</code> refers to the class — calling <code>cls(y, m, d)</code> is equivalent to <code>Date(y, m, d)</code>. Using <code>cls</code> instead of a hardcoded name allows subclasses to inherit the factory and receive the correct subclass type back.`,
+  },
+
+  {
+    id: 360, category: 'classes', difficulty: 'medium',
+    code: `class Box:
+    def __init__(self):
+        self._size = 1
+
+    @property
+    def size(self):
+        return self._size
+
+    @size.setter
+    def size(self, val):
+        self._size = val if val > 0 else 1
+
+b = Box()
+b.size = -5
+print(b.size)`,
+    question: "What does this print?",
+    choices: ['1', '-5', '0', 'AttributeError'],
+    answer: 0,
+    explanation: `The <code>@size.setter</code> intercepts assignment and enforces validation — negative values are clamped to 1. The actual value lives in the private <code>_size</code> attribute. This pattern keeps the API clean (simple assignment syntax) while hiding validation logic. Without the setter, <code>b.size = -5</code> would raise <code>AttributeError: can't set attribute</code>.`,
+  },
+
+  {
+    id: 361, category: 'classes', difficulty: 'medium',
+    code: `class Bag:
+    def __init__(self, items):
+        self.items = items
+
+    def __contains__(self, item):
+        return item in self.items
+
+b = Bag([1, 2, 3])
+print(2 in b)
+print(5 in b)`,
+    question: "What does this print?",
+    choices: ['True\nFalse', 'False\nTrue', 'True\nTrue', 'TypeError'],
+    answer: 0,
+    explanation: `Defining <code>__contains__</code> makes the <code>in</code> operator work on your class. <code>2 in b</code> calls <code>b.__contains__(2)</code>. If <code>__contains__</code> is absent but <code>__iter__</code> is defined, Python falls back to iterating and comparing element by element. Without either, <code>in</code> raises <code>TypeError</code>.`,
+  },
+
+  {
+    id: 362, category: 'classes', difficulty: 'hard',
+    code: `class Point:
+    __slots__ = ('x', 'y')
+
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+p = Point(1, 2)
+try:
+    p.z = 3
+except AttributeError:
+    print("no z")
+print(p.x)`,
+    question: "What does this print?",
+    choices: ['no z\n1', '1\nno z', 'no z', '1'],
+    answer: 0,
+    explanation: `<code>__slots__</code> declares a fixed set of allowed instance attributes, preventing dynamic creation of new ones. <code>p.z = 3</code> raises <code>AttributeError</code> because <code>'z'</code> is not in <code>__slots__</code>. As a side effect, <code>__slots__</code> removes the per-instance <code>__dict__</code>, which saves memory — useful when creating millions of small objects.`,
+  },
+
+  {
+    id: 363, category: 'classes', difficulty: 'hard',
+    code: `from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: float
+    y: float
+
+p = Point(1.0, 2.0)
+print(p.x + p.y)
+print(repr(p))`,
+    question: "What does this print?",
+    choices: ['3.0\nPoint(x=1.0, y=2.0)', '3.0\n<Point object>', '3.0\nPoint(1.0, 2.0)', 'TypeError'],
+    answer: 0,
+    explanation: `<code>@dataclass</code> auto-generates <code>__init__</code>, <code>__repr__</code>, and <code>__eq__</code> from the class-level field annotations. The generated <code>__repr__</code> uses the format <code>ClassName(field=value, ...)</code>. This eliminates boilerplate for data-holding classes while remaining fully compatible with regular class features.`,
+  },
+
+  {
+    id: 364, category: 'classes', difficulty: 'boss',
+    code: `class Plugin:
+    registry = []
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        Plugin.registry.append(cls.__name__)
+
+class Alpha(Plugin):
+    pass
+
+class Beta(Plugin):
+    pass
+
+print(Plugin.registry)`,
+    question: "What does this print?",
+    choices: ["['Alpha', 'Beta']", "['Plugin', 'Alpha', 'Beta']", '[]', "['Alpha']"],
+    answer: 0,
+    explanation: `<code>__init_subclass__</code> is called automatically on the <em>base class</em> whenever a new <em>subclass</em> is defined — at class-creation time, not at instantiation. It is a clean hook for plugin registration, auto-wiring, or validation without needing a metaclass. <code>Plugin</code> itself does not trigger it, so it does not appear in the registry.`,
   },
 ];

@@ -176,6 +176,7 @@
 <script src="questions/cpp/types.js"></script>
 <script src="questions/cpp/pointers.js"></script>
 <script src="questions/cpp/control.js"></script>
+<script src="questions/cpp/functions.js"></script>
 <script src="questions/cpp/boss.js"></script>
 <script src="questions/js/types.js"></script>
 <script src="questions/js/functions.js"></script>
@@ -253,28 +254,45 @@
   }
 
   function buildCatalogueTables() {
+    const DIFFS = ['easy', 'medium', 'hard', 'boss'];
     const grid = document.getElementById('catalogue-grid');
     grid.innerHTML = Object.values(LANGUAGES).map(cfg => {
       const total = cfg.questions.length;
-      const diffCounts = { easy: 0, medium: 0, hard: 0, boss: 0 };
-      cfg.questions.forEach(q => { if (q.difficulty in diffCounts) diffCounts[q.difficulty]++; });
+
+      // per-category per-difficulty counts
+      const counts = {};
+      const colTotals = { easy: 0, medium: 0, hard: 0, boss: 0 };
+      for (const key of Object.keys(cfg.categories)) counts[key] = { easy: 0, medium: 0, hard: 0, boss: 0 };
+      cfg.questions.forEach(q => {
+        if (counts[q.category]) counts[q.category][q.difficulty] = (counts[q.category][q.difficulty] || 0) + 1;
+        if (q.difficulty in colTotals) colTotals[q.difficulty]++;
+      });
+
+      const f = n => n > 0 ? `<span class="pill ${n > 0 ? '' : ''}" style="font-size:.7rem">${n}</span>` : '<span style="color:#2d3748;font-size:.75rem">—</span>';
+      const diffCell = (d, n) => n > 0 ? `<span class="pill ${d}" style="font-size:.68rem;padding:.1rem .35rem">${n}</span>` : '<span style="color:#2d3748">—</span>';
 
       const catRows = Object.entries(cfg.categories).map(([key, cat]) => {
-        const n = cfg.questions.filter(q => q.category === key).length;
-        return `<tr><td>${cat.label || key}</td><td>${n}</td></tr>`;
+        const row = counts[key] || {};
+        const rowTotal = DIFFS.reduce((s, d) => s + (row[d] || 0), 0);
+        return `<tr>
+          <td>${cat.label || key}</td>
+          ${DIFFS.map(d => `<td style="text-align:center">${diffCell(d, row[d] || 0)}</td>`).join('')}
+          <td>${rowTotal}</td>
+        </tr>`;
       }).join('');
 
-      const diffRow = ['easy','medium','hard','boss'].map(d =>
-        diffCounts[d] ? `<span class="pill ${d}">${diffCounts[d]} ${d}</span>` : ''
-      ).filter(Boolean).join(' ');
+      const totalRow = `<tr class="total-row">
+        <td>Total</td>
+        ${DIFFS.map(d => `<td style="text-align:center">${colTotals[d] > 0 ? colTotals[d] : '—'}</td>`).join('')}
+        <td>${total}</td>
+      </tr>`;
 
       return `<div class="card">
         <h2>${cfg.label} — ${total} questions</h2>
         <table>
-          <thead><tr><th>Category</th><th>Questions</th></tr></thead>
-          <tbody>${catRows}</tbody>
+          <thead><tr><th>Category</th><th style="text-align:center"><span class="pill easy">easy</span></th><th style="text-align:center"><span class="pill medium">med</span></th><th style="text-align:center"><span class="pill hard">hard</span></th><th style="text-align:center"><span class="pill boss">boss</span></th><th>Total</th></tr></thead>
+          <tbody>${catRows}${totalRow}</tbody>
         </table>
-        <div style="margin-top:.75rem;display:flex;gap:.4rem;flex-wrap:wrap">${diffRow}</div>
       </div>`;
     }).join('');
   }

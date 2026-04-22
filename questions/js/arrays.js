@@ -1,4 +1,4 @@
-// arrays.js — 10 questions — IDs: 2028-2037
+// arrays.js — 13 questions — IDs: 2028-2037
 const JS_ARRAYS = [
   {
     id: 2028, category: 'arrays', difficulty: 'easy',
@@ -97,5 +97,35 @@ console.log(c.length);`,
     choices: ['4\n3', '3\n3', '4\n4', '3\n4'],
     answer: 0,
     explanation: `<code>b = a</code> copies the reference — both <code>a</code> and <code>b</code> point to the same array. Pushing to <code>b</code> mutates the shared array, so <code>a.length</code> becomes 4. <code>c = [...a]</code> creates a shallow copy (a new array), so it is unaffected by the push and stays at length 3.`,
+  },
+
+  {
+    id: 2057, category: 'arrays', difficulty: 'medium',
+    code: `const a = Array.from({length: 3}, (_, i) => i * 2);
+console.log(a);`,
+    question: "What does this print?",
+    choices: ['[0, 2, 4]', '[0, 1, 2]', '[2, 4, 6]', '[undefined, undefined, undefined]'],
+    answer: 0,
+    explanation: `<code>Array.from</code> accepts an array-like object with a <code>length</code> property. The second argument is a map function called with <code>(value, index)</code> — since the slots are empty, <code>value</code> is <code>undefined</code>, but the index <code>i</code> is useful. Here it produces <code>[0*2, 1*2, 2*2]</code> = <code>[0, 2, 4]</code>. This is a clean way to generate numeric sequences.`,
+  },
+
+  {
+    id: 2058, category: 'arrays', difficulty: 'medium',
+    code: `const a = [1, [2, [3, [4]]]];
+console.log(a.flat().length, a.flat(Infinity).length);`,
+    question: "What does this print?",
+    choices: ['3 4', '2 4', '4 4', '3 3'],
+    answer: 0,
+    explanation: `<code>flat()</code> defaults to depth 1, flattening one level: <code>[1, 2, [3, [4]]]</code> — 3 elements. <code>flat(Infinity)</code> recursively flattens all levels: <code>[1, 2, 3, 4]</code> — 4 elements. Depth 1 is often all you need for arrays of arrays; use <code>Infinity</code> cautiously since deeply nested structures are unusual.`,
+  },
+
+  {
+    id: 2059, category: 'arrays', difficulty: 'hard',
+    code: `const arr = [1, 2, NaN, 4];
+console.log(arr.indexOf(NaN), arr.findIndex(x => isNaN(x)));`,
+    question: "What does this print?",
+    choices: ['-1 2', '2 2', '-1 -1', 'NaN 2'],
+    answer: 0,
+    explanation: `<code>indexOf</code> uses strict equality (<code>===</code>). Since <code>NaN !== NaN</code>, it can never find NaN — returns <code>-1</code>. <code>findIndex</code> calls a callback for each element; <code>isNaN(NaN)</code> returns <code>true</code>, so it correctly identifies the NaN at index 2. Always use <code>findIndex</code> (or <code>Array.prototype.includes</code>) when searching for NaN.`,
   },
 ];

@@ -1,4 +1,4 @@
-// strings.js — 51 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,249,250,251,252,253,254,255,256,304,305,306,307,308,309
+// strings.js — 59 questions — IDs: 3,12,14,22,30,31,32,33,34,62,73,74,75,76,77,78,127,128,129,130,131,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,249,250,251,252,253,254,255,256,304,305,306,307,308,309
 const PY_STRINGS = [
   {
     id: 3, category: 'strings', difficulty: 'easy',
@@ -505,6 +505,90 @@ print(re.findall(r"[a-z]at", s))`,
     choices: ["['cat', 'bat', 'sat']", "['at', 'at', 'at']", "['c', 'b', 's']", "['cat bat sat']"],
     answer: 0,
     explanation: `<code>re.findall(pattern, string)</code> returns all non-overlapping matches as a list. The pattern <code>[a-z]at</code> matches any lowercase letter followed by <code>"at"</code>. Each of <code>"cat"</code>, <code>"bat"</code>, and <code>"sat"</code> matches, so all three are returned.`,
+  },
+
+  {
+    id: 329, category: 'strings', difficulty: 'easy',
+    code: `s = "hello"
+try:
+    s[0] = "H"
+except TypeError:
+    print("immutable")`,
+    question: "What does this print?",
+    choices: ['immutable', 'Hello', 'AttributeError', 'hello'],
+    answer: 0,
+    explanation: `Strings in Python are <strong>immutable</strong> — you cannot modify characters in-place. Attempting to assign to an index raises <code>TypeError</code>. To produce a modified string, you create a new one: <code>"H" + s[1:]</code> or <code>s.replace("h", "H")</code>. This immutability means strings can be used safely as dictionary keys and set elements.`,
+  },
+
+  {
+    id: 330, category: 'strings', difficulty: 'easy',
+    code: `s = "  hello world  "
+print(s.strip().title())`,
+    question: "What does this print?",
+    choices: ['Hello World', 'hello world', '  Hello World  ', 'HELLO WORLD'],
+    answer: 0,
+    explanation: `<code>.strip()</code> removes leading and trailing whitespace, giving <code>"hello world"</code>. <code>.title()</code> capitalises the first letter of each word. Method calls chain left-to-right, each operating on the result of the previous call. The original string is never modified — new strings are returned at each step.`,
+  },
+
+  {
+    id: 331, category: 'strings', difficulty: 'easy',
+    code: `s = "banana"
+print(s.count("a"), s.count("na"))`,
+    question: "What does this print?",
+    choices: ['3 2', '3 3', '2 2', '3 1'],
+    answer: 0,
+    explanation: `<code>.count(sub)</code> counts non-overlapping occurrences of <code>sub</code>. <code>"banana"</code> has three <code>"a"</code>s (at positions 1, 3, 5). For <code>"na"</code>: the non-overlapping matches are at positions 2–3 and 4–5 — two matches. If you need overlapping matches you'd need a regex with lookahead.`,
+  },
+
+  {
+    id: 332, category: 'strings', difficulty: 'easy',
+    code: `parts = ["Hello", "World", "Python"]
+print(" ".join(parts))
+print("-".join(parts))`,
+    question: "What does this print?",
+    choices: ['Hello World Python\nHello-World-Python', 'Hello World Python\nHelloWorldPython', 'HelloWorldPython\nHello-World-Python', 'TypeError'],
+    answer: 0,
+    explanation: `<code>sep.join(iterable)</code> concatenates strings from the iterable, inserting <code>sep</code> between each pair. It's the inverse of <code>str.split(sep)</code>. This is the idiomatic Python way to build a string from a list — it's faster than repeated <code>+</code> concatenation because it allocates memory only once.`,
+  },
+
+  {
+    id: 333, category: 'strings', difficulty: 'medium',
+    code: `s = "a,b,,c"
+print(s.split(","))
+print(s.split(",", 2))`,
+    question: "What does this print?",
+    choices: ["['a', 'b', '', 'c']\n['a', 'b', ',c']", "['a', 'b', 'c']\n['a', 'b', 'c']", "['a', 'b', '', 'c']\n['a', 'b', 'c']", "['a','b','c']\n['a','b',',c']"],
+    answer: 0,
+    explanation: `<code>split(sep)</code> with no limit splits at every occurrence, including consecutive separators which produce empty strings. <code>split(sep, maxsplit=2)</code> performs at most 2 splits; the remainder of the string (including any unsplit commas) becomes the last element: <code>",c"</code>. Unlike <code>str.split()</code> with no argument (splits on whitespace and ignores empty strings), specifying a separator preserves empty fields.`,
+  },
+
+  {
+    id: 334, category: 'strings', difficulty: 'medium',
+    code: `s = "Python"
+print(s[2:-1], s[::-1])`,
+    question: "What does this print?",
+    choices: ['tho nohtyP', 'tho Python', 'yth nohtyP', 'tho Pytho'],
+    answer: 0,
+    explanation: `<code>s[2:-1]</code> slices from index 2 up to (not including) the last character: <code>"P","y","t","h","o","n"</code> → indices 2–4 = <code>"tho"</code>. <code>s[::-1]</code> reverses the string using a step of <code>-1</code>: <code>"nohtyP"</code>. String slicing is one of Python's most expressive features.`,
+  },
+
+  {
+    id: 335, category: 'strings', difficulty: 'medium',
+    code: `print("apple" < "banana", "Z" < "a")`,
+    question: "What does this print?",
+    choices: ['True True', 'True False', 'False True', 'False False'],
+    answer: 0,
+    explanation: `String comparison is <strong>lexicographic</strong> — character by character using Unicode code points. <code>"apple" < "banana"</code>: <code>'a'</code> (97) < <code>'b'</code> (98), so <code>True</code>. <code>"Z" < "a"</code>: uppercase letters have smaller code points than lowercase (<code>'Z'</code> is 90, <code>'a'</code> is 97), so <code>True</code>. This surprises people expecting case-insensitive comparison.`,
+  },
+
+  {
+    id: 336, category: 'strings', difficulty: 'medium',
+    code: `template = "{name} scored {score:.1f}%"
+print(template.format(name="Alice", score=98.567))`,
+    question: "What does this print?",
+    choices: ['Alice scored 98.6%', 'Alice scored 98.567%', 'Alice scored 98.5%', 'ValueError'],
+    answer: 0,
+    explanation: `The <code>:.1f</code> format spec means: display as a <strong>fixed-point float</strong> with 1 decimal place. <code>98.567</code> rounded to 1 decimal is <code>98.6</code>. Format specs use the same mini-language as f-strings: <code>f"{98.567:.1f}"</code> produces the same result. The <code>.format()</code> method works on any string object, useful when the template is stored separately from the data.`,
   },
 
 ];

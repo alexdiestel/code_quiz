@@ -1,4 +1,4 @@
-// scope.js — 8 questions — IDs: 2038-2045
+// scope.js — 12 questions — IDs: 2038-2045
 const JS_SCOPE = [
   {
     id: 2038, category: 'scope', difficulty: 'easy',
@@ -104,5 +104,53 @@ test();`,
     choices: ['"outer"\n"inner"\n"outer"', '"outer"\n"inner"\n"inner"', '"inner"\n"inner"\n"outer"', 'ReferenceError'],
     answer: 0,
     explanation: `<code>let</code> is block-scoped. The <code>x</code> inside the <code>if</code> block is a new variable that only exists within those braces. It shadows the outer <code>x</code> only within that block. Before and after the block, the outer <code>x = "outer"</code> is in scope. Each pair of braces creates a new scope for <code>let</code> and <code>const</code>.`,
+  },
+
+  {
+    id: 2060, category: 'scope', difficulty: 'easy',
+    code: `const funcs = [];
+for (let i = 0; i < 3; i++) {
+  funcs.push(() => i);
+}
+console.log(funcs[0](), funcs[1](), funcs[2]());`,
+    question: "What does this print?",
+    choices: ['0 1 2', '3 3 3', '2 2 2', '0 0 0'],
+    answer: 0,
+    explanation: `<code>let</code> in a <code>for</code> loop creates a <strong>new binding per iteration</strong>. Each arrow function closes over its own <code>i</code> (0, 1, and 2 respectively), so they return different values. With <code>var</code> instead, all functions would share the same <code>i</code> and return 3. This is one of the most important practical differences between <code>var</code> and <code>let</code>.`,
+  },
+
+  {
+    id: 2061, category: 'scope', difficulty: 'medium',
+    code: `if (true) {
+  var count = 5;
+  let limit = 10;
+}
+console.log(typeof count, typeof limit);`,
+    question: "What does this print?",
+    choices: ['"number" "undefined"', '"undefined" "undefined"', '"number" "number"', 'ReferenceError'],
+    answer: 0,
+    explanation: `<code>var</code> is function-scoped (or global if at top level) and leaks out of blocks like <code>if</code>, <code>for</code>, etc. <code>count</code> is accessible after the block. <code>let</code> is block-scoped and does not exist outside the braces — but <code>typeof</code> on a completely out-of-scope identifier safely returns <code>"undefined"</code> without throwing (unlike accessing it directly, which would throw ReferenceError).`,
+  },
+
+  {
+    id: 2062, category: 'scope', difficulty: 'medium',
+    code: `const obj = { x: 1 };
+obj.x = 2;
+obj.y = 3;
+console.log(obj.x, obj.y);`,
+    question: "What does this print?",
+    choices: ['2 3', '1 undefined', 'TypeError', '1 3'],
+    answer: 0,
+    explanation: `<code>const</code> prevents <strong>rebinding</strong> the variable — you cannot do <code>obj = {}</code>. But it does not make the object itself immutable. Properties can be freely added, modified, or deleted. To make an object's properties read-only, use <code>Object.freeze(obj)</code>. For deep immutability you need a recursive freeze or an immutability library.`,
+  },
+
+  {
+    id: 2063, category: 'scope', difficulty: 'hard',
+    code: `console.log(x);
+let x = 5;`,
+    question: "What does this print?",
+    choices: ['ReferenceError', 'undefined', '5', 'null'],
+    answer: 0,
+    explanation: `<code>let</code> declarations are hoisted to the top of their block but not initialised — they enter a <strong>Temporal Dead Zone (TDZ)</strong> from the start of the block until the declaration is reached. Accessing a <code>let</code> variable in the TDZ throws a <code>ReferenceError</code>. This is different from <code>var</code>, which is hoisted and initialised to <code>undefined</code>, so reading it before its declaration gives <code>undefined</code> instead of an error.`,
   },
 ];

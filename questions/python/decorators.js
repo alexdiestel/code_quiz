@@ -1,7 +1,7 @@
-// decorators.js — 12 questions — IDs: 221-232
+// decorators.js — 14 questions — IDs: 221-232, 369-370
 const PY_DECORATORS = [
   {
-    id: 221, category: 'decorators', difficulty: 'easy',
+    id: 221, category: 'decorators', difficulty: 'hard',
     code: `def loud(func):
     def wrapper():
         return func().upper()
@@ -18,7 +18,7 @@ print(greet())`,
     explanation: `<code>@loud</code> is shorthand for <code>greet = loud(greet)</code>. Calling <code>greet()</code> actually runs <code>wrapper()</code>, which calls the original function and applies <code>.upper()</code> to the result. The original function is wrapped, not replaced.`,
   },
   {
-    id: 222, category: 'decorators', difficulty: 'easy',
+    id: 222, category: 'decorators', difficulty: 'hard',
     code: `class Circle:
     def __init__(self, radius):
         self._radius = radius
@@ -35,7 +35,7 @@ print(c.radius)`,
     explanation: `<code>@property</code> turns a method into a computed attribute. Accessing <code>c.radius</code> calls the getter and returns its value — no parentheses needed at the call site. Without <code>@property</code>, <code>c.radius</code> would return the method object itself.`,
   },
   {
-    id: 223, category: 'decorators', difficulty: 'easy',
+    id: 223, category: 'decorators', difficulty: 'hard',
     code: `class MathUtils:
     @staticmethod
     def square(x):
@@ -48,7 +48,7 @@ print(MathUtils.square(4))`,
     explanation: `<code>@staticmethod</code> defines a method that belongs to the class but receives no implicit first argument. Unlike regular methods (which receive <code>self</code>) or class methods (which receive <code>cls</code>), static methods are plain functions namespaced inside the class.`,
   },
   {
-    id: 224, category: 'decorators', difficulty: 'medium',
+    id: 224, category: 'decorators', difficulty: 'hard',
     code: `def add_one(func):
     def wrapper(x):
         return func(x) + 1
@@ -71,7 +71,7 @@ print(value(3))`,
     explanation: `Decorators apply bottom-up: <code>@double</code> wraps <code>value</code> first, then <code>@add_one</code> wraps that. Equivalent to <code>add_one(double(value))</code>. Calling <code>value(3)</code> runs <code>add_one</code>'s wrapper first — it calls <code>double</code>'s wrapper (3 × 2 = 6), then adds 1 → 7.`,
   },
   {
-    id: 225, category: 'decorators', difficulty: 'medium',
+    id: 225, category: 'decorators', difficulty: 'hard',
     code: `import functools
 
 def my_decorator(func):
@@ -91,7 +91,7 @@ print(calculate.__name__)`,
     explanation: `<code>@functools.wraps(func)</code> copies metadata — including <code>__name__</code> and <code>__doc__</code> — from the wrapped function onto the wrapper. Without it, <code>calculate.__name__</code> would return <code>'wrapper'</code>, making debugging and introspection confusing.`,
   },
   {
-    id: 226, category: 'decorators', difficulty: 'medium',
+    id: 226, category: 'decorators', difficulty: 'hard',
     code: `def my_decorator(func):
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
@@ -108,7 +108,7 @@ print(calculate.__name__)`,
     explanation: `Without <code>@functools.wraps</code>, the decorator replaces <code>calculate</code> with <code>wrapper</code>. The name <code>calculate</code> now points to the wrapper object, so <code>__name__</code> returns <code>'wrapper'</code>. This is exactly the problem <code>functools.wraps</code> solves.`,
   },
   {
-    id: 227, category: 'decorators', difficulty: 'medium',
+    id: 227, category: 'decorators', difficulty: 'hard',
     code: `class Animal:
     kingdom = "Animalia"
 
@@ -123,7 +123,7 @@ print(Animal.get_kingdom())`,
     explanation: `<code>@classmethod</code> passes the class itself as the first argument (<code>cls</code>) instead of an instance. It can be called directly on the class without creating an object. Unlike <code>@staticmethod</code>, it has access to the class and works correctly when inherited by subclasses.`,
   },
   {
-    id: 228, category: 'decorators', difficulty: 'medium',
+    id: 228, category: 'decorators', difficulty: 'hard',
     code: `def repeat(n):
     def decorator(func):
         def wrapper():
@@ -236,5 +236,43 @@ print(result)`,
     choices: ["None", "7", "0", "TypeError"],
     answer: 0,
     explanation: `<code>wrapper</code> calls <code>func</code> but never <code>return</code>s its result. A Python function with no explicit return statement returns <code>None</code>. This is a common decorator bug — forgetting to propagate the wrapped function's return value.`,
+  },
+
+  {
+    id: 369, category: 'decorators', difficulty: 'hard',
+    code: `def require_positive(func):
+    def wrapper(x):
+        if x <= 0:
+            return None
+        return func(x)
+    return wrapper
+
+@require_positive
+def double(x):
+    return x * 2
+
+print(double(5))
+print(double(-1))`,
+    question: "What does this print?",
+    choices: ['10\nNone', '10\n-2', 'None\nNone', '10\n0'],
+    answer: 0,
+    explanation: `The decorator guards the wrapped function. When <code>x &lt;= 0</code>, the wrapper short-circuits and returns <code>None</code> without calling the original. When <code>x &gt; 0</code>, the call proceeds normally. This pattern is common for input validation, authentication checks, and feature flags — it separates guard logic from business logic.`,
+  },
+
+  {
+    id: 370, category: 'decorators', difficulty: 'hard',
+    code: `def add_label(cls):
+    cls.label = cls.__name__.upper()
+    return cls
+
+@add_label
+class Widget:
+    pass
+
+print(Widget.label)`,
+    question: "What does this print?",
+    choices: ['WIDGET', 'Widget', 'widget', 'AttributeError'],
+    answer: 0,
+    explanation: `Decorators can target <strong>classes</strong> as well as functions. <code>@add_label</code> is equivalent to <code>Widget = add_label(Widget)</code>. The decorator receives the class object, mutates it by adding a <code>label</code> attribute, and returns the same class. <code>cls.__name__</code> is the string class name as defined in source. Class decorators are used for registration, computed attributes, and enforcing conventions.`,
   },
 ];

@@ -1,5 +1,5 @@
-// output.js — 13 questions — IDs: 1001,1002,1003,1004,1005,1021,1022,1023,1024,1025,1026,1027,1028
-// Difficulties: easy×3, medium×2
+// output.js â€” 16 questions â€” IDs: 1001,1002,1003,1004,1005,1021,1022,1023,1024,1025,1026,1027,1028,1051,1052,1053
+// Difficulties: easyÃ—3, mediumÃ—2
 const CPP_OUTPUT = [
 
   {
@@ -15,7 +15,7 @@ int main() {
     question: "What does this print?",
     choices: ['3', '3.5', '4', '3.0'],
     answer: 0,
-    explanation: `In C++, dividing two <code>int</code> values performs <strong>integer division</strong> — the fractional part is discarded (truncated toward zero). <code>7 / 2</code> equals <code>3</code>, not <code>3.5</code>. To get a decimal result you need at least one floating-point operand, e.g. <code>7.0 / 2</code>.`
+    explanation: `In C++, dividing two <code>int</code> values performs <strong>integer division</strong> â€” the fractional part is discarded (truncated toward zero). <code>7 / 2</code> equals <code>3</code>, not <code>3.5</code>. To get a decimal result you need at least one floating-point operand, e.g. <code>7.0 / 2</code>.`
   },
 
   {
@@ -165,7 +165,7 @@ int main() {
     question: "What does this print?",
     choices: ['5', '20', '1', '4'],
     answer: 0,
-    explanation: `<code>sizeof(arr)</code> gives the total byte size of the array (5 ints × 4 bytes = 20). <code>sizeof(arr[0])</code> gives the byte size of one element (4). Dividing gives the element count: 5. This is the classic C++ idiom for array length — it only works when the array is in scope as an array, not after it decays to a pointer.`,
+    explanation: `<code>sizeof(arr)</code> gives the total byte size of the array (5 ints Ã— 4 bytes = 20). <code>sizeof(arr[0])</code> gives the byte size of one element (4). Dividing gives the element count: 5. This is the classic C++ idiom for array length â€” it only works when the array is in scope as an array, not after it decays to a pointer.`,
   },
 
   {
@@ -214,6 +214,55 @@ int main() {
     choices: ['odd', 'even', '1', '0'],
     answer: 0,
     explanation: `<code>x % 2</code> gives the remainder when dividing by 2. For odd numbers this is <code>1</code>, so <code>== 0</code> is <code>false</code> and the ternary evaluates its right branch: <code>"odd"</code>. The parentheses around the ternary are required here because <code>&lt;&lt;</code> has higher precedence than <code>?:</code>.`,
+  },
+
+
+  {
+    id: 1051, category: 'output', difficulty: 'easy',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    cout << true << " " << false;
+}`,
+    question: "What does this print?",
+    choices: ['1 0', 'true false', 'True False', '1 1'],
+    answer: 0,
+    explanation: `By default, <code>cout</code> prints <code>bool</code> values as <code>1</code> (true) and <code>0</code> (false), not as words. To print <code>true</code>/<code>false</code>, use the <code>std::boolalpha</code> manipulator: <code>cout &lt;&lt; boolalpha &lt;&lt; true</code>. Once set, boolalpha stays active for the stream until reset with <code>noboolalpha</code>.`,
+  },
+
+  {
+    id: 1052, category: 'output', difficulty: 'medium',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    char c = 65;
+    int  i = 65;
+    cout << c << " " << i;
+}`,
+    question: "What does this print?",
+    choices: ['A 65', '65 65', 'A A', '65 A'],
+    answer: 0,
+    explanation: `<code>cout</code> dispatches on the <em>type</em> of its argument, not the value. <code>char</code> with value 65 is printed as the corresponding ASCII character: <code>'A'</code>. <code>int</code> with value 65 is printed as the number: <code>65</code>. To print a <code>char</code> as its numeric value, cast it: <code>cout &lt;&lt; (int)c</code>.`,
+  },
+
+  {
+    id: 1053, category: 'output', difficulty: 'medium',
+    code:
+`#include <iostream>
+using namespace std;
+
+int main() {
+    cout << boolalpha << true << " "
+         << noboolalpha << false;
+}`,
+    question: "What does this print?",
+    choices: ['true 0', '1 0', 'true false', '1 false'],
+    answer: 0,
+    explanation: `<code>boolalpha</code> and <code>noboolalpha</code> are <strong>sticky</strong> stream manipulators — they change the stream's state until explicitly reversed. After <code>boolalpha</code>, <code>true</code> prints as <code>"true"</code>. After <code>noboolalpha</code>, <code>false</code> reverts to <code>0</code>. Most manipulators (like <code>setw</code>) reset after one use, but flag-type manipulators persist.`,
   },
 
 ];
