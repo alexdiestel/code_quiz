@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code_Quest — Screenshot Mode</title>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark-dimmed.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:    #7c3aed;
+      --primary-lt: #a78bfa;
+      --glow-r: 124; --glow-g: 58; --glow-b: 237;
+    }
+
+    body {
+      background: #04060a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 1rem 3rem;
+      gap: 1.25rem;
+      font-family: 'Inter', sans-serif;
+      color: #c8d5e8;
+    }
+
+    /* ── Page header ──────────────────────────────────────────────── */
+    #page-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      opacity: 0.45;
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #6b7280;
+    }
+    #page-header span { color: var(--primary-lt); }
+
+    /* ── Controls ─────────────────────────────────────────────────── */
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      justify-content: center;
+    }
+
+    .ctrl-btn {
+      padding: 5px 13px;
+      background: #0d1117;
+      border: 1px solid #1e2a3a;
+      border-radius: 6px;
+      color: #4b5563;
+      font-size: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .ctrl-btn:hover { border-color: #374151; color: #9ca3af; }
+    .ctrl-btn.on {
+      border-color: var(--primary);
+      color: var(--primary-lt);
+      background: rgba(124,58,237,.08);
+    }
+    .ctrl-sep { width: 1px; background: #1e2a3a; margin: 0 2px; }
+    .ctrl-copy { border-color: #14532d; color: #22c55e; }
+    .ctrl-copy:hover { background: rgba(34,197,94,.07); }
+
+    /* ── Card wrap (scale to viewport) ───────────────────────────── */
+    #card-wrap { transform-origin: top center; flex-shrink: 0; }
+
+    /* ── Card ─────────────────────────────────────────────────────── */
+    #card {
+      width: 1080px;
+      height: 1080px;
+      background: #0a0e1a;
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow:
+        0 0 120px rgba(var(--glow-r), var(--glow-g), var(--glow-b), 0.14),
+        0 40px 120px rgba(0,0,0,.9);
+      position: relative;
+    }
+
+    /* ── Title bar ────────────────────────────────────────────────── */
+    #card-titlebar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 28px 60px;
+      border-bottom: 1px solid #151f30;
+      flex-shrink: 0;
+      background: rgba(255,255,255,.015);
+    }
+    #card-titlebar.off { display: none; }
+
+    .tb-logo { display: flex; align-items: center; gap: 14px; }
+    .tb-icon {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: var(--primary-lt);
+      letter-spacing: -0.02em;
+    }
+    .tb-name {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #e2e8f0;
+    }
+    .tb-u { color: var(--primary-lt); }
+    .tb-lang {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--primary-lt);
+      opacity: 0.55;
+    }
+
+    /* ── Star map ─────────────────────────────────────────────────── */
+    #card-starmap {
+      height: 56px;
+      flex-shrink: 0;
+      overflow: hidden;
+      border-bottom: 1px solid #151f30;
+    }
+    #card-starmap.off { display: none; }
+    #starmap-svg { width: 100%; height: 100%; display: block; }
+
+    /* ── Body ─────────────────────────────────────────────────────── */
+    #card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 52px 72px 44px;
+      gap: 30px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .card-meta { display: flex; align-items: center; gap: 10px; }
+
+    .card-diff {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: capitalize;
+      letter-spacing: 0.02em;
+    }
+    .card-diff.easy   { background: #14532d33; color: #22c55e; }
+    .card-diff.medium { background: #78350f33; color: #f59e0b; }
+    .card-diff.hard   { background: #7f1d1d33; color: #f43f5e; }
+    .card-diff.boss   { background: #3b076466; color: var(--primary-lt); }
+
+    .card-cat {
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 6px;
+      background: #111827;
+      border: 1px solid #1e2a3a;
+    }
+
+    .card-question {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      line-height: 1.3;
+      letter-spacing: -0.025em;
+    }
+
+    /* Code window */
+    .card-code-win {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #1a2236;
+      flex-shrink: 0;
+    }
+    .card-code-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 22px;
+      background: #0d1117;
+      border-bottom: 1px solid #1a2236;
+    }
+    .dots { display: flex; gap: 7px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .code-fname {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: #4a5568;
+      margin-left: 4px;
+    }
+    .card-code-body {
+      padding: 26px 30px;
+      background: #080d14;
+      overflow: hidden;
+    }
+    .card-code-body pre { margin: 0; }
+    .card-code-body code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      background: none;
+      padding: 0;
+    }
+
+    /* Answer section */
+    #card-answer {
+      border-top: 1px solid #151f30;
+      padding-top: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    #card-answer.off { display: none; }
+
+    .ans-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #374151;
+      font-weight: 600;
+    }
+    .ans-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      color: #22c55e;
+      font-weight: 600;
+      white-space: pre;
+    }
+    .ans-explanation {
+      font-size: 0.92rem;
+      color: #6b7280;
+      line-height: 1.55;
+      /* clamp to 3 lines */
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .ans-explanation code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.86em;
+      background: #1a2236;
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--primary-lt);
+    }
+    .ans-explanation em { font-style: italic; color: #9ca3af; }
+    .ans-explanation strong { font-weight: 600; color: #9ca3af; }
+
+    /* Footer */
+    #card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 60px;
+      border-top: 1px solid #151f30;
+      flex-shrink: 0;
+      background: rgba(255,255,255,.012);
+    }
+    .footer-brand {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary-lt);
+      opacity: 0.5;
+    }
+    .footer-url {
+      font-size: 0.78rem;
+      color: #1f2937;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Error / empty state ─────────────────────────────────────── */
+    #empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: #374151;
+    }
+    .empty-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: #1f2937;
+    }
+  </style>
+</head>
+<body>
+
+<div id="page-header">
+  <span>{CQ}</span> Screenshot Mode
+</div>
+
+<div id="controls">
+  <button class="ctrl-btn on"  id="btn-title"  onclick="toggle('title')">Title bar</button>
+  <button class="ctrl-btn on"  id="btn-star"   onclick="toggle('star')">Star map</button>
+  <button class="ctrl-btn"     id="btn-answer" onclick="toggle('answer')">Answer</button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn"     id="btn-wide"   onclick="toggle('wide')">Wide (16:9)</button>
+  <div class="ctrl-sep"></div>
+  <button class="ctrl-btn ctrl-copy" id="btn-copy" onclick="copyUrl()">Copy URL</button>
+</div>
+
+<div id="card-wrap">
+  <div id="card">
+
+    <div id="card-titlebar">
+      <div class="tb-logo">
+        <span class="tb-icon">{<span style="opacity:.55">CQ</span>}</span>
+        <span class="tb-name">Code<span class="tb-u">_</span>Quest</span>
+      </div>
+      <span class="tb-lang" id="tb-lang"></span>
+    </div>
+
+    <div id="card-starmap">
+      <svg id="starmap-svg" viewBox="0 0 1080 56" preserveAspectRatio="xMidYMid slice"></svg>
+    </div>
+
+    <div id="card-body">
+      <!-- populated by JS -->
+      <div id="empty-state">
+        <div style="font-size:2rem; opacity:.2">{?}</div>
+        <div class="empty-code">screenshot.html?id=2035</div>
+      </div>
+    </div>
+
+    <div id="card-footer">
+      <span class="footer-brand">{CQ} Code_Quest</span>
+      <span class="footer-url">code-quest.dev</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- Question data -->
+<script src="questions/python/lists.js"></script>
+<script src="questions/python/strings.js"></script>
+<script src="questions/python/types.js"></script>
+<script src="questions/python/functions.js"></script>
+<script src="questions/python/memory.js"></script>
+<script src="questions/python/decorators.js"></script>
+<script src="questions/python/classes.js"></script>
+<script src="questions/python/exceptions.js"></script>
+<script src="questions/python/boss.js"></script>
+<script src="questions/cpp/output.js"></script>
+<script src="questions/cpp/types.js"></script>
+<script src="questions/cpp/pointers.js"></script>
+<script src="questions/cpp/control.js"></script>
+<script src="questions/cpp/boss.js"></script>
+<script src="questions/js/types.js"></script>
+<script src="questions/js/functions.js"></script>
+<script src="questions/js/arrays.js"></script>
+<script src="questions/js/scope.js"></script>
+<script src="questions/js/objects.js"></script>
+<script src="questions/js/boss.js"></script>
+<script src="questions/catalogue.js"></script>
+
+<script>
+  /* ── Find question ────────────────────────────────────────────── */
+  const params   = new URLSearchParams(location.search);
+  const targetId = parseInt(params.get('id') || '0');
+
+  let question, langConfig, catConfig;
+
+  if (targetId) {
+    for (const cfg of Object.values(LANGUAGES)) {
+      const q = cfg.questions.find(q => q.id === targetId);
+      if (q) { question = q; langConfig = cfg; catConfig = cfg.categories[q.category] || {}; break; }
+    }
+  }
+
+  /* ── Toggle state ─────────────────────────────────────────────── */
+  const state = {
+    title:  params.get('notitle') !== '1',
+    star:   params.get('nostar')  !== '1',
+    answer: params.get('answer')  === '1',
+    wide:   params.get('format')  === 'wide',
+  };
+
+  /* ── Apply language theme ─────────────────────────────────────── */
+  function applyTheme() {
+    if (!langConfig) return;
+    const t   = langConfig.theme;
+    const rgb = t.glowRgb.split(' ');
+    const el  = document.documentElement;
+    el.style.setProperty('--primary',    t.primary);
+    el.style.setProperty('--primary-lt', t.primaryLt);
+    el.style.setProperty('--glow-r', rgb[0]);
+    el.style.setProperty('--glow-g', rgb[1]);
+    el.style.setProperty('--glow-b', rgb[2]);
+  }
+
+  /* ── Render question into body ───────────────────────────────── */
+  function render() {
+    const body = document.getElementById('card-body');
+
+    if (!question) {
+      document.getElementById('tb-lang').textContent = '';
+      buildStarmap();
+      return;
+    }
+
+    applyTheme();
+    document.getElementById('tb-lang').textContent = langConfig.label;
+
+    const catColor = catConfig.color || '#6b7280';
+
+    body.innerHTML = `
+      <div class="card-meta">
+        <span class="card-diff ${question.difficulty}">${question.difficulty}</span>
+        <span class="card-cat" style="color:${catColor};border-color:${catColor}33">
+          ${catConfig.label || question.category}
+        </span>
+      </div>
+      <p class="card-question">${escHtml(question.question)}</p>
+      <div class="card-code-win">
+        <div class="card-code-bar">
+          <div class="dots">
+            <span class="dot dot-r"></span>
+            <span class="dot dot-y"></span>
+            <span class="dot dot-g"></span>
+          </div>
+          <span class="code-fname">${escHtml(langConfig.filename)}</span>
+        </div>
+        <div class="card-code-body">
+          <pre><code id="code-el" class="${langConfig.hlClass}"></code></pre>
+        </div>
+      </div>
+      <div id="card-answer" class="${state.answer ? '' : 'off'}">
+        <span class="ans-label">Output</span>
+        <code class="ans-value" id="ans-value"></code>
+        <p class="ans-explanation" id="ans-expl"></p>
+      </div>
+    `;
+
+    const codeEl = document.getElementById('code-el');
+    codeEl.textContent = question.code;
+    hljs.highlightElement(codeEl);
+
+    document.getElementById('ans-value').textContent = question.choices[question.answer];
+    document.getElementById('ans-expl').innerHTML    = question.explanation;
+
+    buildStarmap();
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  /* ── Star map ─────────────────────────────────────────────────── */
+  function buildStarmap() {
+    const svg = document.getElementById('starmap-svg');
+    const W = 1080, H = 56;
+    let stars = '';
+    for (let copy = 0; copy < 2; copy++) {
+      for (let i = 0; i < 55; i++) {
+        const x  = (Math.random() * W + copy * W).toFixed(1);
+        const y  = (3 + Math.random() * (H - 6)).toFixed(1);
+        const r  = Math.random() < 0.65 ? 1 : 1.7;
+        const op = (0.2 + Math.random() * 0.6).toFixed(2);
+        stars += `<circle cx="${x}" cy="${y}" r="${r}" fill="white" opacity="${op}"/>`;
+      }
+    }
+    svg.innerHTML = `<g>${stars}<animateTransform attributeName="transform" type="translate" from="0,0" to="-${W},0" dur="14s" repeatCount="indefinite"/></g>`;
+  }
+
+  /* ── Toggle handlers ──────────────────────────────────────────── */
+  function toggle(key) {
+    state[key] = !state[key];
+    applyState();
+    updateUrl();
+  }
+
+  function applyState() {
+    const card = document.getElementById('card');
+
+    // Sections
+    document.getElementById('card-titlebar').classList.toggle('off', !state.title);
+    document.getElementById('card-starmap').classList.toggle('off', !state.star);
+    const ansEl = document.getElementById('card-answer');
+    if (ansEl) ansEl.classList.toggle('off', !state.answer);
+
+    // Dimensions
+    if (state.wide) { card.style.width = '1200px'; card.style.height = '630px'; }
+    else            { card.style.width = '1080px'; card.style.height = '1080px'; }
+
+    // Button states
+    document.getElementById('btn-title').classList.toggle('on', state.title);
+    document.getElementById('btn-star').classList.toggle('on', state.star);
+    document.getElementById('btn-answer').classList.toggle('on', state.answer);
+    document.getElementById('btn-wide').classList.toggle('on', state.wide);
+
+    updateScale();
+  }
+
+  /* ── Scale to viewport ────────────────────────────────────────── */
+  function updateScale() {
+    const wrap = document.getElementById('card-wrap');
+    const card = document.getElementById('card');
+    const cw   = parseInt(card.style.width)  || 1080;
+    const ch   = parseInt(card.style.height) || 1080;
+    const avW  = window.innerWidth  - 32;
+    const avH  = window.innerHeight - 160;
+    const s    = Math.min(avW / cw, avH / ch, 1);
+    wrap.style.transform    = `scale(${s})`;
+    wrap.style.marginBottom = `${(ch * s) - ch}px`;
+  }
+
+  /* ── URL sync ─────────────────────────────────────────────────── */
+  function updateUrl() {
+    const p = new URLSearchParams(location.search);
+    if (targetId) p.set('id', targetId);
+    state.answer ? p.set('answer',  '1')    : p.delete('answer');
+    !state.title ? p.set('notitle', '1')    : p.delete('notitle');
+    !state.star  ? p.set('nostar',  '1')    : p.delete('nostar');
+    state.wide   ? p.set('format',  'wide') : p.delete('format');
+    history.replaceState(null, '', '?' + p.toString());
+  }
+
+  function copyUrl() {
+    navigator.clipboard.writeText(location.href);
+    const btn = document.getElementById('btn-copy');
+    const was = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = was, 1500);
+  }
+
+  /* ── Init ─────────────────────────────────────────────────────── */
+  render();
+  applyState();
+  window.addEventListener('resize', updateScale);
+</script>
+</body>
+</html>
