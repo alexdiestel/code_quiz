@@ -69,6 +69,14 @@
     .empty { color: #4a5568; font-size: 0.8rem; font-style: italic; text-align: center; padding: 1rem 0; }
     .total-row td { background: rgba(167,139,250,.07); font-weight: 600; color: #e2e8f0; }
 
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4a5568;
+      margin: 2rem 0 0.75rem;
+    }
+
     #login {
       max-width: 320px;
       margin: 20vh auto 0;
@@ -150,7 +158,32 @@
       <tbody id="question-table"></tbody>
     </table>
   </div>
+
+  <p class="section-label">Question Catalogue</p>
+  <div class="grid" id="catalogue-grid"></div>
 </div>
+
+<script src="questions/python/lists.js"></script>
+<script src="questions/python/strings.js"></script>
+<script src="questions/python/types.js"></script>
+<script src="questions/python/functions.js"></script>
+<script src="questions/python/memory.js"></script>
+<script src="questions/python/decorators.js"></script>
+<script src="questions/python/classes.js"></script>
+<script src="questions/python/exceptions.js"></script>
+<script src="questions/python/boss.js"></script>
+<script src="questions/cpp/output.js"></script>
+<script src="questions/cpp/types.js"></script>
+<script src="questions/cpp/pointers.js"></script>
+<script src="questions/cpp/control.js"></script>
+<script src="questions/cpp/boss.js"></script>
+<script src="questions/js/types.js"></script>
+<script src="questions/js/functions.js"></script>
+<script src="questions/js/arrays.js"></script>
+<script src="questions/js/scope.js"></script>
+<script src="questions/js/objects.js"></script>
+<script src="questions/js/boss.js"></script>
+<script src="questions/catalogue.js"></script>
 
 <script>
   let statsKey = new URL(location.href).searchParams.get('key') || '';
@@ -179,6 +212,7 @@
     fillLangPivotTable('starts-table',    data.starts_per_day);
     fillTable('completions-table', data.completions_per_day,  ['date','count']);
     fillQuestionTable(data.per_question);
+    buildCatalogueTables();
   }
 
   function fillTable(id, rows, cols) {
@@ -216,6 +250,33 @@
     tb.innerHTML =
       mkRow('Total', totPy, totCpp, totJs, true) +
       dates.map(d => mkRow(d, map[d].python || 0, map[d].cpp || 0, map[d].javascript || 0, false)).join('');
+  }
+
+  function buildCatalogueTables() {
+    const grid = document.getElementById('catalogue-grid');
+    grid.innerHTML = Object.values(LANGUAGES).map(cfg => {
+      const total = cfg.questions.length;
+      const diffCounts = { easy: 0, medium: 0, hard: 0, boss: 0 };
+      cfg.questions.forEach(q => { if (q.difficulty in diffCounts) diffCounts[q.difficulty]++; });
+
+      const catRows = Object.entries(cfg.categories).map(([key, cat]) => {
+        const n = cfg.questions.filter(q => q.category === key).length;
+        return `<tr><td>${cat.label || key}</td><td>${n}</td></tr>`;
+      }).join('');
+
+      const diffRow = ['easy','medium','hard','boss'].map(d =>
+        diffCounts[d] ? `<span class="pill ${d}">${diffCounts[d]} ${d}</span>` : ''
+      ).filter(Boolean).join(' ');
+
+      return `<div class="card">
+        <h2>${cfg.label} — ${total} questions</h2>
+        <table>
+          <thead><tr><th>Category</th><th>Questions</th></tr></thead>
+          <tbody>${catRows}</tbody>
+        </table>
+        <div style="margin-top:.75rem;display:flex;gap:.4rem;flex-wrap:wrap">${diffRow}</div>
+      </div>`;
+    }).join('');
   }
 
   function fillQuestionTable(rows) {
