@@ -10,3 +10,6 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Local-only tools
+screenshot.html
