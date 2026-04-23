@@ -286,8 +286,7 @@ body {
   /* constrain to viewport so content never clips on narrow screens */
   max-width: calc(100vw - 40px);
   width: max-content;
-  /* extra right breathing room for the absolutely-positioned cog buttons */
-  padding-right: 48px;
+  /* padding-right: 48px; — was for cog buttons, removed while filter is hidden */
 }
 
 /* ── Landing legal links ───────────────────────────────────────────────────── */
@@ -534,10 +533,12 @@ body {
 .question-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 10px;
 }
 .category-tag {
+  white-space: nowrap;
   font-size: .72rem;
   font-weight: 700;
   text-transform: uppercase;
