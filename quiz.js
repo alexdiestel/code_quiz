@@ -1150,10 +1150,8 @@ function initFromUrl() {
 
 // ── Settings panel ────────────────────────────────────────────────────────────
 function loadSettings() {
-  try {
-    const saved = JSON.parse(localStorage.getItem('cq_disabled') || '[]');
-    disabledCategories = new Set(saved);
-  } catch { disabledCategories = new Set(); }
+  // topic filter disabled — always include all categories
+  disabledCategories = new Set();
 }
 
 function saveSettings() {
