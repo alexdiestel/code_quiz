@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   CATALOGUE — Code_Quest language registry
+   CATALOGUE — Hello, Void language registry
    ───────────────────────────────────────────────────────────────────────────
 
    Each entry in LANGUAGES defines one playable language:

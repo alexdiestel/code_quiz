@@ -1078,12 +1078,12 @@ function tryShare(payload, anchorEl) {
 const shareBtn = document.getElementById('share-btn');
 
 shareBtn.addEventListener('click', () => {
-  const lang = currentLangConfig ? currentLangConfig.label : 'Code_Quest';
+  const lang = currentLangConfig ? currentLangConfig.label : 'Hello, Void';
   tryShare({
-    url:       'https://code-quest.dev',
-    text:      `I scored ${score.toLocaleString()} pts on Code_Quest (${lang}) — can you beat it?`,
-    title:     'Code_Quest Score',
-    copyValue: `I scored ${score.toLocaleString()} pts on Code_Quest (${lang}) — can you beat it?\nhttps://code-quest.dev`,
+    url:       'https://hello-void.dev',
+    text:      `I scored ${score.toLocaleString()} pts on Hello, Void (${lang}) — can you beat it?`,
+    title:     'Hello, Void Score',
+    copyValue: `I scored ${score.toLocaleString()} pts on Hello, Void (${lang}) — can you beat it?\nhttps://hello-void.dev`,
   }, shareBtn);
 });
 
@@ -1092,9 +1092,9 @@ shareQuestionBtn.addEventListener('click', () => {
   const q = deck[current];
   if (!q) return;
   tryShare({
-    url:   `https://code-quest.dev?qid=${q.id}`,
-    text:  'Can you predict the output? Try this code snippet on Code_Quest.',
-    title: 'Code_Quest — Can you predict the output?',
+    url:   `https://hello-void.dev?qid=${q.id}`,
+    text:  'Can you predict the output? Try this code snippet on Hello, Void.',
+    title: 'Hello, Void — Can you predict the output?',
   }, shareQuestionBtn);
 });
 

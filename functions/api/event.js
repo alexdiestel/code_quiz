@@ -16,7 +16,7 @@ export async function onRequestPost({ request, env }) {
   // Only accept requests originating from the game itself
   const origin  = request.headers.get('origin')  || '';
   const referer = request.headers.get('referer') || '';
-  const allowed = origin.includes('code-quest.dev') || referer.includes('code-quest.dev');
+  const allowed = origin.includes('hello-void.dev') || referer.includes('hello-void.dev');
   if (!allowed) {
     return new Response('Forbidden', { status: 403 });
   }

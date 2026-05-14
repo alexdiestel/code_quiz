@@ -235,12 +235,12 @@ print(s * 3)`,
   {
     id: 170, category: 'strings', difficulty: 'easy',
     code:
-`url = "code-quest.dev"
-print("quest" in url)`,
+`url = "hello-void.dev"
+print("void" in url)`,
     question: "What does this print?",
     choices: ['True', 'False', 'None', 'TypeError'],
     answer: 0,
-    explanation: `The <code>in</code> operator on strings checks for <strong>substring</strong> membership — it looks for <code>'quest'</code> anywhere inside <code>url</code>. It's case-sensitive. <code>'Quest' in url</code> would be <code>False</code>. This is equivalent to <code>url.find('quest') != -1</code> but far more readable.`,
+    explanation: `The <code>in</code> operator on strings checks for <strong>substring</strong> membership — it looks for <code>'void'</code> anywhere inside <code>url</code>. It's case-sensitive. <code>'Void' in url</code> would be <code>False</code>. This is equivalent to <code>url.find('void') != -1</code> but far more readable.`,
   },
 
   {
@@ -291,10 +291,10 @@ print(s.replace("aa", "X"))`,
   {
     id: 175, category: 'strings', difficulty: 'medium',
     code:
-`s = "code quest"
+`s = "hello void"
 print(s.title())`,
     question: "What does this print?",
-    choices: ["'Code Quest'", "'CODE QUEST'", "'code quest'", "'Code quest'"],
+    choices: ["'Hello Void'", "'HELLO VOID'", "'hello void'", "'Hello void'"],
     answer: 0,
     explanation: `<code>str.title()</code> capitalises the first letter of each word (defined as any sequence after a non-letter character) and lowercases the rest. It's simpler than <code>str.capitalize()</code> (which only affects the very first letter of the whole string). Useful for display formatting, though it can misbehave with apostrophes: <code>"don't".title()</code> → <code>"Don'T"</code>.`,
   },
@@ -335,12 +335,12 @@ print("-".join(words))`,
   {
     id: 179, category: 'strings', difficulty: 'hard',
     code:
-`s = "  Code Quest  "
+`s = "  Hello Void  "
 print(s.strip().lower().replace(" ", "_"))`,
     question: "What does this print?",
-    choices: ["'code_quest'", "'Code_Quest'", "'  code_quest  '", "'code quest'"],
+    choices: ["'hello_void'", "'Hello_Void'", "'  hello_void  '", "'hello void'"],
     answer: 0,
-    explanation: `Method calls chain left to right: <code>strip()</code> removes the surrounding spaces → <code>"Code Quest"</code>. <code>lower()</code> lowercases it → <code>"code quest"</code>. <code>replace(" ", "_")</code> replaces the space → <code>"code_quest"</code>. Each method returns a new string; the original <code>s</code> is unchanged throughout.`,
+    explanation: `Method calls chain left to right: <code>strip()</code> removes the surrounding spaces → <code>"Hello Void"</code>. <code>lower()</code> lowercases it → <code>"hello void"</code>. <code>replace(" ", "_")</code> replaces the space → <code>"hello_void"</code>. Each method returns a new string; the original <code>s</code> is unchanged throughout.`,
   },
 
   {
