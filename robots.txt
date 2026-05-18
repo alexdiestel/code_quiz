@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://code-quest.dev/sitemap.xml
+Sitemap: https://hello-void.dev/sitemap.xml
